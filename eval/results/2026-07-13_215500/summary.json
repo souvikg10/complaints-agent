@@ -1,0 +1,9 @@
+[
+  {
+    "scenario_name": "Chipotle delayed-order lookup completes without branch fall-through",
+    "scenario_slug": "chipotle_happy_paths",
+    "runs_passed": 0,
+    "runs_total": 1,
+    "duration_s": 11.665688559005503
+  }
+]

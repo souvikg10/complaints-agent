@@ -1,0 +1,24 @@
+scenario:
+  name: Chipotle delayed-order lookup completes without branch fall-through
+  simulation_context: >
+    You are a cooperative Chipotle customer checking delayed pickup order CP999.
+    Tell the assistant you want its status, and answer any concise order question with CP999.
+    Your goal is to receive the updated timing and delay explanation, then end the conversation.
+  goals:
+    criteria:
+      - The assistant gives a concise delay explanation and updated timing for CP999.
+      - The assistant does not continue into a not-found retry or an order-issue conversation after giving the delayed status.
+    assertions:
+      - flow_started:
+          flow_ids: [check_chipotle_order_status]
+          operator: any
+      - action_executed: action_mock_order_status
+      - slot_was_set:
+          - name: order_status
+            value: delayed
+      - bot_uttered:
+          utter_name: utter_order_delayed
+      - bot_did_not_utter:
+          utter_name: utter_order_not_found
+      - flow_completed:
+          flow_id: check_chipotle_order_status

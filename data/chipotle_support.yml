@@ -3,14 +3,15 @@ version: "3.1"
 flows:
   welcome_and_route:
     name: "Welcome and route Chipotle support"
-    description: "Welcome a new Chipotle customer support conversation. Use for greetings, opening messages, or users who need help choosing between checking pickup or delivery order timing and reporting a wrong, missing, or poor-quality order. If the opening already states a request, greet briefly and route without making the user repeat it."
+    description: "Welcome a new Chipotle customer support conversation. Use for greetings, opening messages, or when a customer needs help choosing between checking pickup or delivery order timing and reporting a wrong, missing, or poor-quality order. If the opening already states a request, greet briefly and route without making the customer repeat it."
     steps:
       - action: utter_chipotle_welcome
       - action: utter_chipotle_scope
+        next: END
 
   check_chipotle_order_status:
     name: "Order status and timing"
-    description: "Help a Chipotle customer check an existing pickup or delivery order’s preparation status, ready time, delivery ETA, delay, or when to arrive. Includes requests such as where is my order, is it ready, track delivery, and when should I pick up."
+    description: "Help a Chipotle customer check an existing pickup or delivery order’s preparation status, ready time, delivery ETA, delay, or when to arrive. Use for where is my order, is it ready, track delivery, and when should I pick up."
     persisted_slots:
       - order_id
       - order_mode
@@ -32,8 +33,10 @@ flows:
           - else: status_found
       - id: status_found
         action: utter_order_ready
+        next: END
       - id: status_delayed
         action: utter_order_delayed
+        next: END
       - id: status_not_found
         action: utter_order_not_found
         next: clear_order_id_for_retry
@@ -43,7 +46,7 @@ flows:
         next: collect_corrected_order_id
       - id: collect_corrected_order_id
         collect: order_id
-        description: "Corrected Chipotle confirmation number or phone/email used for the order after a lookup was not found. Never provide payment details."
+        description: "Corrected Chipotle confirmation number or phone/email used for the order after one lookup was not found. Never provide payment details."
         utter: utter_ask_order_id
         next: retry_status
       - id: retry_status
@@ -59,10 +62,11 @@ flows:
 
   order_status_sub_agent:
     name: "Order status lookup sub-agent"
-    description: "Child-only sub-agent task that performs the mocked local Chipotle order status lookup and returns pickup or delivery state, ETA, and delay notes."
+    description: "Child-only task that performs the mocked local Chipotle order status lookup and returns pickup or delivery state, ETA, and delay notes."
     if: False
     steps:
       - action: action_mock_order_status
+        next: END
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
@@ -80,7 +84,7 @@ flows:
       - collect: issue_category
         description: "Category of the Chipotle order problem: wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, or other."
       - collect: issue_details
-        description: "Plain-language description of what went wrong, affected items, and whether the user ate or discarded food if relevant."
+        description: "Plain-language description of what went wrong, affected items, and whether the customer ate or discarded food if relevant."
       - call: order_issue_sub_agent
       - id: issue_policy_result
         noop: true
@@ -96,6 +100,7 @@ flows:
           - else: feedback_path
       - id: safety_path
         action: utter_issue_safety
+        next: END
       - id: eligible_path
         noop: true
         next:
@@ -104,10 +109,14 @@ flows:
           - else: offer_discount
       - id: offer_credit
         action: utter_offer_credit
+        next: collect_resolution_acceptance
       - id: offer_discount
         action: utter_offer_discount
-      - collect: resolution_acceptance
+        next: collect_resolution_acceptance
+      - id: collect_resolution_acceptance
+        collect: resolution_acceptance
         description: "Whether the customer clearly accepts the offered future-meal credit or discount: yes or no."
+        next: accepted_resolution
       - id: accepted_resolution
         noop: true
         next:
@@ -117,19 +126,24 @@ flows:
           - else: declined_resolution
       - id: declined_resolution
         action: utter_resolution_declined
+        next: END
       - id: repeat_path
         action: utter_no_compensation_repeat
+        next: END
       - id: unverified_path
         action: utter_no_compensation_unverified
+        next: END
       - id: feedback_path
         action: utter_feedback_logged
+        next: END
 
   order_issue_sub_agent:
     name: "Order issue policy sub-agent"
-    description: "Child-only sub-agent task that classifies a reported Chipotle order problem and performs the mocked local eligibility and remedy policy check."
+    description: "Child-only task that classifies a reported Chipotle order problem and performs the mocked local eligibility and remedy policy check."
     if: False
     steps:
       - action: action_mock_order_issue_policy
+        next: END
 
   confirm_issue_resolution:
     name: "Issue resolution confirmation and coupon delivery"
@@ -155,6 +169,7 @@ flows:
         next: issued
       - id: issued
         action: utter_coupon_issued
+        next: END
 
   decline_or_light_help:
     name: "Light help, feedback, and out-of-scope support"
@@ -162,7 +177,7 @@ flows:
     steps:
       - action: utter_chipotle_light_help_greeting
       - collect: wants_action
-        description: "Whether the customer wants the assistant to take an order-related action now: yes or no."
+        description: "Whether the customer wants the assistant to take an available order-related action now: yes or no."
       - id: light_help_choice
         noop: true
         next:
@@ -171,5 +186,7 @@ flows:
           - else: scope
       - id: venting
         action: utter_venting_acknowledged
+        next: END
       - id: scope
         action: utter_out_of_scope
+        next: END

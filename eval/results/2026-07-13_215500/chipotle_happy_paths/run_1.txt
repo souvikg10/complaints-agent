@@ -1,0 +1,47 @@
+scenario: Chipotle delayed-order lookup completes without branch fall-through
+run: 1
+timestamp: 2026-07-13T21:54:52Z
+conversation_id: sim-a87a6583-a712-462f-83dc-0ab02654beeb
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The assistant gives a concise delay explanation and updated timing for CP999.
+  rationale: The assistant states for CP999: "Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over," which concisely explains the delay and gives updated timing.
+
+[FAIL] The assistant does not continue into a not-found retry or an order-issue conversation after giving the delayed status.
+  rationale: Immediately after giving the delayed status, the assistant says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and repeats the order-number prompt multiple times, which is exactly a not-found retry conversation after the delayed status.
+
+--- Quality Metrics ---
+bot_quality: 2.75/5
+  helpfulness: 2/5 — The assistant provided a plausible delay update but undercut it with conflicting 'couldn’t find that order' messages, making the information unreliable and only partially useful.
+  repair_quality: 5/5 — There were no explicit user pushbacks or disfluency signals for the assistant to repair from, so no repair opportunities were mishandled.
+  coherence: 1/5 — The assistant repeatedly contradicted itself about whether the order existed and kept re-asking for the same order number after it had already been provided and acknowledged.
+  tone: 3/5 — The tone was polite and clear but became noticeably repetitive and robotic by repeating the same slot-filling prompt multiple times without variation.
+  task_completion: FAIL — Although the assistant initially gave a status update, it immediately contradicted itself by saying it couldn’t find the order and kept looping, so the outcome was unclear and not reliably delivered.
+summary: The assistant started with a seemingly helpful status update but quickly fell into a contradictory loop, alternately claiming to find and not find the order while re-asking for the same information. This severely hurt coherence and overall task completion, even though the wording itself was polite and there were no missed repairs of user pushback.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] action_executed(action_mock_order_status)
+[PASS] slot_was_set(order_status='delayed')
+[PASS] bot_uttered
+[FAIL] bot_did_not_utter — Bot uttered a forbidden utterance 'utter_order_not_found'.
+[FAIL] flow_completed(check_chipotle_order_status) — Flow with id 'check_chipotle_order_status' did not complete.
+
+--- Raw Transcript ---
+[1] user: Hi, can you check the status of my delayed pickup order?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[4] user: It’s order CP999.
+[5] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
+[6] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
+[7] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[8] user: The number is CP999.
+[9] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
+[10] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
+[11] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[12] user: Okay, thanks for the update—that’s all I needed.
+[13] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-a87a6583-a712-462f-83dc-0ab02654beeb

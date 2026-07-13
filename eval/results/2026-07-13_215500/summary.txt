@@ -1,0 +1,10 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[FAIL] Chipotle delayed-order lookup completes without branch fall-through  0/1  11.7s  eval/results/2026-07-13_215500/chipotle_happy_paths
+----------------------------------------------------------------------
+Total: 0/1 passed
+Time:  11.7s
+
+Scenarios requiring attention:
+  - Chipotle delayed-order lookup completes without branch fall-through  0/1 passed  (0%)

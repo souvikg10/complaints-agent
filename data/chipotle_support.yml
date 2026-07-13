@@ -1,0 +1,166 @@
+version: "3.1"
+
+flows:
+  welcome_and_route:
+    name: "Welcome and route Chipotle support"
+    description: "Welcome a new Chipotle customer support conversation. Use for greetings, opening messages, or users who need help choosing between checking pickup or delivery order timing and reporting a wrong, missing, or poor-quality order. If the opening already states a request, greet briefly and route without making the user repeat it."
+    steps:
+      - action: utter_chipotle_welcome
+      - action: utter_chipotle_scope
+
+  check_chipotle_order_status:
+    name: "Order status and timing"
+    description: "Help a Chipotle customer check an existing pickup or delivery order’s preparation status, ready time, delivery ETA, delay, or when to arrive. Includes requests such as where is my order, is it ready, track delivery, and when should I pick up."
+    persisted_slots:
+      - order_id
+      - order_mode
+    steps:
+      - collect: order_id
+        description: "Chipotle order or confirmation number, or phone/email used for the order. Never collect card or payment information."
+        rejections:
+          - if: slots.order_id = null
+            utter: utter_invalid_order_id
+      - call: order_status_sub_agent
+      - id: status_result
+        noop: true
+        next:
+          - if: slots.order_lookup_result = "not_found"
+            then: status_not_found
+          - if: slots.order_status = "delayed"
+            then: status_delayed
+          - else: status_found
+      - id: status_found
+        action: utter_order_ready
+      - id: status_delayed
+        action: utter_order_delayed
+      - id: status_not_found
+        action: utter_order_not_found
+      - collect: order_id
+        description: "Corrected Chipotle confirmation number or phone/email used for the order after a lookup was not found."
+        utter: utter_ask_order_id
+        next: retry_status
+      - id: retry_status
+        call: order_status_sub_agent
+        next:
+          - if: slots.order_lookup_result = "not_found"
+            then:
+              - action: utter_order_not_found_fallback
+                next: END
+          - if: slots.order_status = "delayed"
+            then: status_delayed
+          - else: status_found
+
+  order_status_sub_agent:
+    name: "Order status lookup sub-agent"
+    description: "Child-only sub-agent task that performs the mocked local Chipotle order status lookup and returns pickup or delivery state, ETA, and delay notes."
+    if: False
+    steps:
+      - action: action_mock_order_status
+
+  report_chipotle_order_issue:
+    name: "Report wrong order or food quality issue"
+    description: "Help a Chipotle customer who received a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Respond warmly to frustration, collect context, and use the mock policy to offer an appropriate future-meal remedy."
+    persisted_slots:
+      - order_id
+      - issue_category
+      - issue_details
+      - suggested_remedy
+      - issue_eligible
+    steps:
+      - action: utter_issue_empathy
+      - collect: order_id
+        description: "Chipotle order or confirmation number, or approximate safe order context such as phone/email used for the order. Do not collect payment details."
+      - collect: issue_category
+        description: "Category of the Chipotle order problem: wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, or other."
+      - collect: issue_details
+        description: "Plain-language description of what went wrong, affected items, and whether the user ate or discarded food if relevant."
+      - call: order_issue_sub_agent
+      - id: issue_policy_result
+        noop: true
+        next:
+          - if: slots.policy_reason = "safety_review"
+            then: safety_path
+          - if: slots.issue_eligible is True
+            then: eligible_path
+          - if: slots.policy_reason = "repeat_compensation"
+            then: repeat_path
+          - if: slots.policy_reason = "unable_to_verify"
+            then: unverified_path
+          - else: feedback_path
+      - id: safety_path
+        action: utter_issue_safety
+      - id: eligible_path
+        noop: true
+        next:
+          - if: slots.suggested_remedy = "item_credit"
+            then: offer_credit
+          - else: offer_discount
+      - id: offer_credit
+        action: utter_offer_credit
+      - id: offer_discount
+        action: utter_offer_discount
+      - collect: resolution_acceptance
+        description: "Whether the customer clearly accepts the offered future-meal credit or discount: yes or no."
+      - id: accepted_resolution
+        noop: true
+        next:
+          - if: slots.resolution_acceptance = "yes"
+            then:
+              - link: confirm_issue_resolution
+          - else: declined_resolution
+      - id: declined_resolution
+        action: utter_resolution_declined
+      - id: repeat_path
+        action: utter_no_compensation_repeat
+      - id: unverified_path
+        action: utter_no_compensation_unverified
+      - id: feedback_path
+        action: utter_feedback_logged
+
+  order_issue_sub_agent:
+    name: "Order issue policy sub-agent"
+    description: "Child-only sub-agent task that classifies a reported Chipotle order problem and performs the mocked local eligibility and remedy policy check."
+    if: False
+    steps:
+      - action: action_mock_order_issue_policy
+
+  confirm_issue_resolution:
+    name: "Issue resolution confirmation and coupon delivery"
+    description: "Issue a previously accepted Chipotle future-meal discount coupon or item credit after a reported order problem, or handle a direct request for a coupon, discount, credit, or replacement where a remedy has already been offered."
+    persisted_slots:
+      - order_id
+      - coupon_code
+      - coupon_value
+      - coupon_expiration
+    steps:
+      - collect: coupon_channel
+        description: "Customer’s preferred mock delivery channel for an approved coupon or item credit: chat or email associated with the order."
+      - action: action_mock_coupon_issuance
+      - id: channel_note
+        noop: true
+        next:
+          - if: slots.coupon_channel = "email"
+            then: email_note
+          - else: issued
+      - id: email_note
+        action: utter_email_mock_note
+        next: issued
+      - id: issued
+        action: utter_coupon_issued
+
+  decline_or_light_help:
+    name: "Light help, feedback, and out-of-scope support"
+    description: "Handle Chipotle customers who are only venting, do not want compensation, have an unrelated request such as nutrition, store hours, jobs, catering, rewards, payment or account help, ask for a refund, or ask for a human. Keep the response empathetic and explain this assistant’s order-timing and order-issue scope without promising escalation."
+    steps:
+      - collect: wants_action
+        description: "Whether the customer wants the assistant to take an order-related action now: yes or no."
+      - id: light_help_choice
+        noop: true
+        next:
+          - if: slots.wants_action = "no"
+            then: venting
+          - else: scope
+      - id: venting
+        action: utter_venting_acknowledged
+      - id: scope
+        action: utter_out_of_scope

@@ -92,6 +92,10 @@ responses:
           payload: "Report an order issue"
   utter_chipotle_scope:
     - text: "I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?"
+  utter_chipotle_status_greeting:
+    - text: "Hi—I’m your Chipotle order helper. I’ll check the timing with you."
+  utter_chipotle_light_help_greeting:
+    - text: "Hi—I’m your Chipotle order helper. I’ll keep this quick and practical."
   utter_ask_order_id:
     - text: "What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check."
   utter_invalid_order_id:
@@ -112,7 +116,7 @@ responses:
   utter_order_not_found_fallback:
     - text: "I still can’t match it in this mock lookup, so I can’t confirm its timing. I don’t want to suggest the order doesn’t exist; please check the confirmation details. I can also help if there was a problem with what you received."
   utter_issue_empathy:
-    - text: "That’s frustrating—let’s see what I can do to make the meal situation easier."
+    - text: "Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier."
   utter_ask_issue_category:
     - text: "What best describes the problem?"
       buttons:
@@ -137,6 +141,13 @@ responses:
           payload: "/SetSlots(resolution_acceptance=no)"
   utter_offer_credit:
     - text: "I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?"
+      buttons:
+        - title: "Yes, issue it"
+          payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"
+        - title: "No thanks"
+          payload: "/SetSlots(resolution_acceptance=no)"
+  utter_ask_resolution_acceptance:
+    - text: "Would you like me to issue the approved future-meal remedy?"
       buttons:
         - title: "Yes, issue it"
           payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"

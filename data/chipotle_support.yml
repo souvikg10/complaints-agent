@@ -15,6 +15,7 @@ flows:
       - order_id
       - order_mode
     steps:
+      - action: utter_chipotle_status_greeting
       - collect: order_id
         description: "Chipotle order or confirmation number, or phone/email used for the order. Never collect card or payment information."
         rejections:
@@ -35,8 +36,14 @@ flows:
         action: utter_order_delayed
       - id: status_not_found
         action: utter_order_not_found
-      - collect: order_id
-        description: "Corrected Chipotle confirmation number or phone/email used for the order after a lookup was not found."
+        next: clear_order_id_for_retry
+      - id: clear_order_id_for_retry
+        set_slots:
+          - order_id: null
+        next: collect_corrected_order_id
+      - id: collect_corrected_order_id
+        collect: order_id
+        description: "Corrected Chipotle confirmation number or phone/email used for the order after a lookup was not found. Never provide payment details."
         utter: utter_ask_order_id
         next: retry_status
       - id: retry_status
@@ -126,7 +133,8 @@ flows:
 
   confirm_issue_resolution:
     name: "Issue resolution confirmation and coupon delivery"
-    description: "Issue a previously accepted Chipotle future-meal discount coupon or item credit after a reported order problem, or handle a direct request for a coupon, discount, credit, or replacement where a remedy has already been offered."
+    description: "Issue a previously accepted Chipotle future-meal discount coupon or item credit after a reported order problem. Use only after the order-issue flow has offered a remedy and the customer has clearly accepted it."
+    if: slots.issue_eligible is True and slots.resolution_acceptance = "yes"
     persisted_slots:
       - order_id
       - coupon_code
@@ -152,6 +160,7 @@ flows:
     name: "Light help, feedback, and out-of-scope support"
     description: "Handle Chipotle customers who are only venting, do not want compensation, have an unrelated request such as nutrition, store hours, jobs, catering, rewards, payment or account help, ask for a refund, or ask for a human. Keep the response empathetic and explain this assistant’s order-timing and order-issue scope without promising escalation."
     steps:
+      - action: utter_chipotle_light_help_greeting
       - collect: wants_action
         description: "Whether the customer wants the assistant to take an order-related action now: yes or no."
       - id: light_help_choice

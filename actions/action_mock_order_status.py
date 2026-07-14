@@ -16,6 +16,7 @@ class ActionMockOrderStatus(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
         # MOCK — replace once a real MCP server for order status is registered.
+        # Test contract: identifiers ending in 000 or NOTFOUND always return not_found.
         raw_order_id = str(tracker.get_slot("order_id") or "").strip()
         mode = str(tracker.get_slot("order_mode") or "").lower()
         normalized = raw_order_id.upper().replace(" ", "")

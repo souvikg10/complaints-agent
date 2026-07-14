@@ -1,14 +1,15 @@
 scenario:
-  name: Customer corrects an unfound order id and then gets status
+  name: Customer corrects a documented mock not-found identifier and gets status
   simulation_context: >
-    You are a cooperative Chipotle customer checking an order status.
-    Speak in English. Start by asking where your order is. If asked for the order number,
-    first provide CP000. If the assistant says it cannot find that order and asks again,
-    provide CP999. Your goal is to complete the retry path and then receive the order status.
+    You are a cooperative Chipotle customer checking an order status. Speak in English.
+    Start by asking where your order is. When asked for an order number, first provide
+    MOCK-NOTFOUND. This is the documented deterministic mock identifier that must return
+    not found. After the assistant asks you to verify it, provide CP999, which is a found
+    delayed mock order. Your goal is to complete the retry path and receive the updated status.
   goals:
     criteria:
-      - The agent asks for a corrected order identifier after the first lookup is not found.
-      - The agent completes the second lookup instead of getting stuck after the retry.
+      - The first lookup uses the documented deterministic not-found fixture, so the assistant asks once for corrected details.
+      - The corrected identifier completes a second lookup and returns an order status rather than leaving the customer in a retry loop.
     assertions:
       - flow_started:
           flow_ids: [check_chipotle_order_status]

@@ -1,198 +1,75 @@
 version: "3.1"
 
 slots:
-  order_id:
-    type: text
-    mappings:
-      - type: from_llm
-  order_mode:
-    type: categorical
-    values: [pickup, delivery]
-    mappings:
-      - type: from_llm
-  order_lookup_result:
-    type: categorical
-    values: [found, not_found]
-    mappings:
-      - type: controlled
-  order_status:
-    type: text
-    mappings:
-      - type: controlled
-  order_eta:
-    type: text
-    mappings:
-      - type: controlled
-  order_delay_note:
-    type: text
-    mappings:
-      - type: controlled
-  issue_category:
-    type: categorical
-    values: [wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, other]
-    mappings:
-      - type: from_llm
-  issue_details:
-    type: text
-    mappings:
-      - type: from_llm
-  issue_eligible:
-    type: bool
-    mappings:
-      - type: controlled
-  suggested_remedy:
-    type: categorical
-    values: [next_meal_discount, item_credit, feedback_only, none]
-    mappings:
-      - type: controlled
-  policy_reason:
-    type: categorical
-    values: [eligible, safety_review, unable_to_verify, repeat_compensation, limited_issue]
-    mappings:
-      - type: controlled
-  resolution_acceptance:
-    type: categorical
-    values: [yes, no]
-    mappings:
-      - type: from_llm
-  coupon_channel:
-    type: categorical
-    values: [chat, email]
-    mappings:
-      - type: from_llm
-  coupon_code:
-    type: text
-    mappings:
-      - type: controlled
-  coupon_value:
-    type: text
-    mappings:
-      - type: controlled
-  coupon_expiration:
-    type: text
-    mappings:
-      - type: controlled
-  coupon_issued:
-    type: bool
-    mappings:
-      - type: controlled
-  wants_action:
-    type: categorical
-    values: [yes, no]
-    mappings:
-      - type: from_llm
+  order_id: {type: text, mappings: [{type: from_llm}]}
+  order_mode: {type: categorical, values: [pickup, delivery], mappings: [{type: from_llm}]}
+  order_lookup_result: {type: categorical, values: [found, not_found], mappings: [{type: controlled}]}
+  order_status: {type: text, mappings: [{type: controlled}]}
+  order_eta: {type: text, mappings: [{type: controlled}]}
+  order_delay_note: {type: text, mappings: [{type: controlled}]}
+  issue_category: {type: categorical, values: [wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, other], mappings: [{type: from_llm}]}
+  issue_details: {type: text, mappings: [{type: from_llm}]}
+  issue_eligible: {type: bool, mappings: [{type: controlled}]}
+  suggested_remedy: {type: categorical, values: [next_meal_discount, item_credit, feedback_only, none], mappings: [{type: controlled}]}
+  policy_reason: {type: categorical, values: [eligible, safety_review, unable_to_verify, repeat_compensation, limited_issue], mappings: [{type: controlled}]}
+  resolution_acceptance: {type: categorical, values: [yes, no], mappings: [{type: from_llm}]}
+  coupon_channel: {type: categorical, values: [chat, email], mappings: [{type: from_llm}]}
+  coupon_code: {type: text, mappings: [{type: controlled}]}
+  coupon_value: {type: text, mappings: [{type: controlled}]}
+  coupon_expiration: {type: text, mappings: [{type: controlled}]}
+  coupon_issued: {type: bool, mappings: [{type: controlled}]}
+  wants_action: {type: categorical, values: [yes, no], mappings: [{type: from_llm}]}
+  feedback_only_active: {type: bool, mappings: [{type: controlled}]}
 
 responses:
   utter_chipotle_welcome:
     - text: "Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong."
-      buttons:
-        - title: "Check my order time"
-          payload: "Check my order time"
-        - title: "Report an order issue"
-          payload: "Report an order issue"
-  utter_chipotle_scope:
-    - text: "I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?"
-  utter_chipotle_status_greeting:
-    - text: "Hi—I’m your Chipotle order helper. I’ll check the timing with you."
-  utter_chipotle_light_help_greeting:
-    - text: "Hi—I’m your Chipotle order helper. I’ll keep this quick and practical."
-  utter_safe_boundary_redirect:
-    - text: "I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order."
-  utter_ask_order_id:
-    - text: "What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check."
-  utter_invalid_order_id:
-    - text: "I need a usable order detail to check it. Try the confirmation number, or the phone or email used for the order—never payment details."
+      buttons: [{title: "Check my order time", payload: "Check my order time"}, {title: "Report an order issue", payload: "Report an order issue"}]
+  utter_chipotle_scope: [{text: "I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?"}]
+  utter_chipotle_status_greeting: [{text: "Hi—I’m your Chipotle order helper. I’ll check the timing with you."}]
+  utter_chipotle_light_help_greeting: [{text: "Hi—I’m your Chipotle order helper. I’ll keep this quick and practical."}]
+  utter_safe_boundary_redirect: [{text: "I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order."}]
+  utter_ask_order_id: [{text: "What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check."}]
+  utter_invalid_order_id: [{text: "I need a usable order detail to check it. Try the confirmation number, or the phone or email used for the order—never payment details."}]
   utter_ask_order_mode:
     - text: "Was this pickup or delivery?"
-      buttons:
-        - title: "Pickup"
-          payload: "/SetSlots(order_mode=pickup)"
-        - title: "Delivery"
-          payload: "/SetSlots(order_mode=delivery)"
-  utter_order_ready:
-    - text: "Good news—order {order_id} is {order_status}. Your timing is {order_eta}."
-  utter_order_delayed:
-    - text: "Order {order_id} is delayed. {order_delay_note} The updated timing is {order_eta}; please wait for that window before heading over."
-  utter_order_not_found:
-    - text: "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more."
-  utter_order_not_found_fallback:
-    - text: "I still can’t match it in this mock lookup, so I can’t confirm its timing. I don’t want to suggest the order doesn’t exist; please check the confirmation details. I can also help if there was a problem with what you received."
-  utter_issue_empathy:
-    - text: "Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier."
+      buttons: [{title: "Pickup", payload: "/SetSlots(order_mode=pickup)"}, {title: "Delivery", payload: "/SetSlots(order_mode=delivery)"}]
+  utter_order_ready: [{text: "Good news—order {order_id} is {order_status}. Your timing is {order_eta}."}]
+  utter_order_delayed: [{text: "Order {order_id} is delayed. {order_delay_note} The updated timing is {order_eta}; please wait for that window before heading over."}]
+  utter_order_not_found: [{text: "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more."}]
+  utter_order_not_found_fallback: [{text: "I still can’t match it in this mock lookup, so I can’t confirm its timing. I don’t want to suggest the order doesn’t exist; please check the confirmation details. I can also help if there was a problem with what you received."}]
+  utter_issue_empathy: [{text: "Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier."}]
   utter_ask_issue_category:
     - text: "What best describes the problem?"
-      buttons:
-        - title: "Wrong order"
-          payload: "/SetSlots(issue_category=wrong_order)"
-        - title: "Missing item"
-          payload: "/SetSlots(issue_category=missing_item)"
-        - title: "Food quality"
-          payload: "/SetSlots(issue_category=food_quality)"
-        - title: "Cold or damaged"
-          payload: "/SetSlots(issue_category=cold_food)"
-  utter_ask_issue_details:
-    - text: "Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it."
-  utter_issue_safety:
-    - text: "I’m sorry this happened. Please don’t eat any more of the item, and keep the packaging and order details if you can. I’ve logged this for mock policy review; this build can’t provide a human handoff or issue compensation for a safety concern."
+      buttons: [{title: "Wrong order", payload: "/SetSlots(issue_category=wrong_order)"}, {title: "Missing item", payload: "/SetSlots(issue_category=missing_item)"}, {title: "Food quality", payload: "/SetSlots(issue_category=food_quality)"}, {title: "Cold or damaged", payload: "/SetSlots(issue_category=cold_food)"}]
+  utter_ask_issue_details: [{text: "Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it."}]
+  utter_issue_safety: [{text: "I’m sorry this happened. Please don’t eat any more of the item, and keep the packaging and order details if you can. I’ve logged this for mock policy review; this build can’t provide a human handoff or issue compensation for a safety concern."}]
   utter_offer_discount:
     - text: "I can offer 20% off one entrée on a future meal. Would you like me to issue that in chat?"
-      buttons:
-        - title: "Yes, issue it"
-          payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"
-        - title: "No thanks"
-          payload: "/SetSlots(resolution_acceptance=no)"
+      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_offer_credit:
     - text: "I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?"
-      buttons:
-        - title: "Yes, issue it"
-          payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"
-        - title: "No thanks"
-          payload: "/SetSlots(resolution_acceptance=no)"
+      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_ask_resolution_acceptance:
     - text: "Would you like me to issue the approved future-meal remedy?"
-      buttons:
-        - title: "Yes, issue it"
-          payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"
-        - title: "No thanks"
-          payload: "/SetSlots(resolution_acceptance=no)"
-  utter_no_compensation_repeat:
-    - text: "I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback."
-  utter_repeat_compensation_closure:
-    - text: "I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged."
-  utter_no_compensation_unverified:
-    - text: "I’m sorry this was frustrating. Without a matching order detail, this mock policy can’t issue a credit or coupon. I can still log what happened."
-  utter_feedback_logged:
-    - text: "Thanks for telling me. I’ve logged the feedback in this mock flow so the preparation issue is captured."
-  utter_refund_limit:
-    - text: "I understand a refund would feel more fitting. This build can only offer a future-meal discount or item credit when eligible; it can’t process refunds."
-  utter_resolution_declined:
-    - text: "No problem—I won’t issue anything. I’ve still recorded the feedback."
-  utter_coupon_issued:
-    - text: "Issued: {coupon_value}. Your code is {coupon_code}, valid for {coupon_expiration}. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer."
+      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
+  utter_no_compensation_repeat: [{text: "I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback."}]
+  utter_repeat_compensation_closure: [{text: "I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged."}]
+  utter_no_compensation_unverified: [{text: "I’m sorry this was frustrating. Without a matching order detail, this mock policy can’t issue a credit or coupon. I can still log what happened."}]
+  utter_feedback_logged: [{text: "Thanks for telling me. I’ve logged the feedback in this mock flow so the preparation issue is captured."}]
+  utter_refund_limit: [{text: "I understand a refund would feel more fitting. This build can only offer a future-meal discount or item credit when eligible; it can’t process refunds."}]
+  utter_resolution_declined: [{text: "No problem—I won’t issue anything. I’ve still recorded the feedback."}]
+  utter_coupon_issued: [{text: "Issued: {coupon_value}. Your code is {coupon_code}, valid for {coupon_expiration}. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer."}]
   utter_ask_coupon_channel:
     - text: "Would you like the code shown here or sent to the email used for the order?"
-      buttons:
-        - title: "Show in chat"
-          payload: "/SetSlots(coupon_channel=chat)"
-        - title: "Email"
-          payload: "/SetSlots(coupon_channel=email)"
-  utter_email_mock_note:
-    - text: "I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now."
+      buttons: [{title: "Show in chat", payload: "/SetSlots(coupon_channel=chat)"}, {title: "Email", payload: "/SetSlots(coupon_channel=email)"}]
+  utter_email_mock_note: [{text: "I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now."}]
   utter_ask_wants_action:
     - text: "Would you like me to take an available action, or are you mainly sharing feedback?"
-      buttons:
-        - title: "Just feedback"
-          payload: "/SetSlots(wants_action=no)"
-        - title: "I need help"
-          payload: "/SetSlots(wants_action=yes)"
-  utter_venting_acknowledged:
-    - text: "I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback, and I’m here if you want to check an order or report a specific issue."
-  utter_out_of_scope:
-    - text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions."
-  utter_no_human_handoff:
-    - text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."
+      buttons: [{title: "Just feedback", payload: "/SetSlots(wants_action=no)"}, {title: "I need help", payload: "/SetSlots(wants_action=yes)"}]
+  utter_venting_acknowledged: [{text: "I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback, and I’m here if you want to check an order or report a specific issue."}]
+  utter_feedback_closed: [{text: "Understood. Take care."}]
+  utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions."}]
+  utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."}]
 
-actions:
-  - action_mock_order_status
-  - action_mock_order_issue_policy
-  - action_mock_coupon_issuance
+actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance]

@@ -1,0 +1,25 @@
+scenario:
+  name: Order status sub-agent handles not-found retry before a successful lookup
+  simulation_context: >
+    You are a cooperative Chipotle customer checking an order status.
+    Speak in English. Start by asking where your order is. If asked for the order
+    number, first provide CP000. If the assistant says it cannot find that order and
+    asks again, provide CP999. Your goal is to complete the retry path and then get
+    the updated status.
+  goals:
+    criteria:
+      - The agent asks for a corrected order identifier after the first lookup is not found.
+      - The agent completes the second lookup instead of stopping after the failed first lookup.
+    assertions:
+      - flow_started:
+          flow_ids: [order_status_sub_agent]
+          operator: any
+      - action_executed: utter_order_not_found
+      - sequencing:
+          - flow_started: order_status_sub_agent
+          - action_executed: utter_order_not_found
+          - action_executed: utter_ask_order_id
+          - flow_started: order_status_sub_agent
+          - action_executed: action_mock_order_status
+      - flow_completed:
+          flow_id: check_chipotle_order_status

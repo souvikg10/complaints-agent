@@ -1,21 +1,21 @@
 scenario: User asks an out-of-scope nutrition question
 run: 1
-timestamp: 2026-07-14T07:54:14Z
-conversation_id: sim-126ce977-50d5-4163-8c22-67603c53a090
+timestamp: 2026-07-14T08:11:41Z
+conversation_id: sim-1d02680a-621e-4370-b129-221a050b8d0e
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
-  rationale: The bot explicitly says "I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions," clearly setting scope limits in response to the nutrition question.
+  rationale: In response to the calorie question, the bot explicitly says “I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions,” which clearly defines its limited order-support scope and excludes the user’s request.
 
 --- Quality Metrics ---
 bot_quality: 3.75/5
-  helpfulness: 1/5 — The assistant provided no substantive information or alternative resources about calories and only stated its limitations.
-  repair_quality: 5/5 — There were no misunderstandings or user pushbacks to repair; the user accepted the limitation and ended the request.
-  coherence: 5/5 — The assistant consistently maintained its stated scope and responded appropriately to the user's closing message without contradiction or confusion.
-  tone: 4/5 — The tone was polite and conversational, though slightly scripted and formulaic in how it declared its constraints and then launched into a feedback question.
-  task_completion: FAIL — The user wanted calorie information, which the assistant explicitly refused as out of scope, so their goal was never met in this conversation.
-summary: The assistant clearly communicated its scope limitations and stayed coherent and polite throughout the brief exchange. However, it did not help the user with their actual request or offer any workaround, leading to a complete failure on task completion and minimal helpfulness overall.
+  helpfulness: 1/5 — The assistant provided no substantive help toward the user's nutrition question and only stated its limitations.
+  repair_quality: 5/5 — There were no user corrections or pushback, so there was no need for repair and thus no mishandling of disfluency.
+  coherence: 5/5 — The assistant consistently maintained its stated scope and responded appropriately to the user's closing message without contradicting itself.
+  tone: 4/5 — The tone was polite and conversational, though a bit scripted and transactional with the closing survey-style question.
+  task_completion: FAIL — The user asked for calorie information, which the assistant explicitly stated it could not provide, so the original task was never completed.
+summary: The assistant clearly communicated its limitations and maintained a polite, coherent interaction, but it did not address the user's actual request for calorie information at all. While scope limitations may be intentional, from the user's perspective the interaction was unhelpful for the requested task, even though the closure and follow-up question were handled smoothly.
 
 --- Assertion Results ---
 [PASS] flow_started(decline_or_light_help)
@@ -23,13 +23,13 @@ summary: The assistant clearly communicated its scope limitations and stayed coh
 [PASS] flow_completed(decline_or_light_help)
 
 --- Raw Transcript ---
-[1] user: Hi, could you tell me how many calories are in a chicken burrito bowl with white rice, black beans, mild salsa, cheese, and sour cream?
+[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, mild salsa, cheese, and sour cream?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
 [3] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
-[4] agent: Is there anything else I can help you with regarding your order today?
-[5] user: Got it, thanks anyway. No, that’s all I needed.
-[6] agent: Alright, I’ll be here if you need anything else later.
+[4] agent: Is there something else I can assist you with today?
+[5] user: Got it, thanks anyway. That’s all I needed.
+[6] agent: No problem—if you need anything else later, I’ll be here to help.
 [7] agent: How did your experience with us go today?
 
 --- Inspector URL ---
-http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-126ce977-50d5-4163-8c22-67603c53a090
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-1d02680a-621e-4370-b129-221a050b8d0e

@@ -1,0 +1,48 @@
+scenario: Welcome and route Chipotle support from a greeting
+run: 2
+timestamp: 2026-07-14T08:13:09Z
+conversation_id: sim-651823a3-6d3f-47f6-9cee-f9839de0b341
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent introduces its Chipotle order-support scope clearly after the greeting.
+  rationale: Immediately after the user’s greeting "Hi there!", the bot replies "Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong" and further specifies it can help with pickup/delivery time and wrong/missing/poor-quality orders, which clearly introduces its Chipotle order-support scope after the greeting.
+
+--- Quality Metrics ---
+bot_quality: 3.0/5
+  helpfulness: 3/5 — The final clarification about scope was accurate and useful, but earlier turns just repeated the same narrow script instead of directly answering the user's broader capability question.
+  repair_quality: 2/5 — After multiple user clarifications about wanting a full capabilities description, the assistant mostly repeated its initial script and only slightly adjusted once, without explicitly acknowledging or tailoring to the user's disfluency.
+  coherence: 4/5 — The assistant stayed consistent about its function and did not contradict itself, but it somewhat ignored the evolving nuance of the user's questions by reverting to the same canned response.
+  tone: 3/5 — The tone was polite and neutral but also repetitive and a bit robotic, reusing the same phrasing several times and sounding scripted rather than conversational.
+  task_completion: PASS — The user only wanted to understand the bot's capabilities, and the assistant clearly explained its scope and limitations, which the user confirmed as sufficient.
+summary: The assistant ultimately answered the user’s question about its capabilities and maintained a consistent description of its scope, leading to successful task completion. However, it relied heavily on a repeated scripted response, only minimally adjusted to user clarification, which reduced perceived helpfulness, adaptability, and naturalness of tone.
+
+--- Assertion Results ---
+[PASS] flow_started(welcome_and_route)
+[PASS] action_executed(utter_chipotle_welcome)
+[PASS] action_executed(utter_chipotle_scope)
+[PASS] flow_completed(welcome_and_route)
+
+--- Raw Transcript ---
+[1] user: Hi there!
+[2] agent: Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong.
+[3] agent: I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?
+[4] agent: Is there anything else I can assist you with today?
+[5] user: Before we get into that, can you tell me everything you’re able to help with?
+[6] agent: Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong.
+[7] agent: I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?
+[8] agent: Is there anything else I can assist you with?
+[9] user: So just to confirm, you mainly help with order timing and problems with my order, right? Anything else you can do?
+[10] agent: Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong.
+[11] agent: I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?
+[12] agent: Is there anything else you’d like help with today?
+[13] user: Okay, thanks. So you only handle order timing and fixing issues with orders, not things like menu questions or rewards, right?
+[14] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[15] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[16] agent: Is there anything else you’d like help with today?
+[17] user: Got it, thanks for explaining. Nope, that answers what I was wondering about—appreciate the help.
+[18] agent: I’m glad I could help—I’ll be here if you need anything else with your order.
+[19] agent: Before we wrap up, how would you rate your experience with me today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-651823a3-6d3f-47f6-9cee-f9839de0b341

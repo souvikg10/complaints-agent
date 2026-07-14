@@ -1,0 +1,28 @@
+scenario:
+  name: Order status sub-agent is reached through the parent happy path
+  simulation_context: >
+    You are a cooperative Chipotle customer checking a pickup order status.
+    Speak in English. Start by asking where your order is, and when the assistant
+    asks for the order number provide CP999. Your goal is to complete the normal
+    status-check conversation and get the delayed status update.
+  goals:
+    criteria:
+      - The agent performs the status lookup after collecting the order identifier.
+    assertions:
+      - flow_started:
+          flow_ids: [check_chipotle_order_status]
+          operator: any
+      - flow_started:
+          flow_ids: [order_status_sub_agent]
+          operator: any
+      - action_executed: action_mock_order_status
+      - slot_was_set:
+          - name: order_status
+            value: delayed
+      - sequencing:
+          - flow_started: check_chipotle_order_status
+          - slot_was_set: order_id
+          - flow_started: order_status_sub_agent
+          - action_executed: action_mock_order_status
+      - flow_completed:
+          flow_id: check_chipotle_order_status

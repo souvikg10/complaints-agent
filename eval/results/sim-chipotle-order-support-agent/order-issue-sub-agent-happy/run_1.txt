@@ -1,0 +1,43 @@
+scenario: Order issue sub-agent is reached through the parent happy path
+run: 1
+timestamp: 2026-07-14T08:12:46Z
+conversation_id: sim-3d28882e-04c4-4fab-b4c9-1999874244e3
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The agent runs the issue-policy check after collecting the order context and issue details.
+  rationale: After collecting issue_details and issue_category at T1 and then the order_id at T2, the ledger shows the policy check executed as `action: action_mock_order_issue_policy`, indicating the issue-policy check was run after the order context and issue details were set.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It directly resolved the reported issue with an appropriate remedy, provided a usable credit code, and clearly described terms of use.
+  repair_quality: 5/5 — There were no user disfluencies or corrections, so no repair was needed or mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order context and the requested remedy without re-asking or contradicting itself.
+  tone: 5/5 — The tone was warm, empathetic, and natural throughout, with clear closing and a polite feedback request.
+  task_completion: PASS — The assistant successfully issued the requested $8 credit with clear details and then confirmed if any further help was needed.
+summary: The assistant efficiently resolved the user’s problem by issuing a clear, appropriately detailed credit for the missing chips. It maintained consistent context, a friendly tone, and concluded with a brief satisfaction check, resulting in a high-quality, production-ready interaction.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] slot_was_set(issue_category, issue_details, resolution_acceptance='yes')
+[FAIL] sequencing — Sequencing failed: 'slot_was_set: issue_category' not found after position 29 in the conversation.
+[PASS] flow_completed(report_chipotle_order_issue)
+
+--- Raw Transcript ---
+[1] user: Hi, my Chipotle order was missing the chips that were supposed to come with it.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[4] user: The order number is CP123.
+[5] agent: I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?
+[6] agent: Would you like me to issue the approved future-meal remedy?
+[7] user: Yes, please issue the credit here in chat.
+[8] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[9] agent: Is there anything else I can help with regarding your order today?
+[10] user: No, that’s all I needed, thanks for the help.
+[11] agent: You’re very welcome—glad I could help. I’ll be here if you need anything else in the future.
+[12] agent: Before you go, how would you rate your experience with us today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3d28882e-04c4-4fab-b4c9-1999874244e3

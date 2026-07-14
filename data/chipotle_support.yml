@@ -12,15 +12,12 @@ flows:
   check_chipotle_order_status:
     name: "Order status and timing"
     description: "Help a Chipotle customer check an existing pickup or delivery order’s preparation status, ready time, delivery ETA, delay, or when to arrive. Use for where is my order, is it ready, track delivery, and when should I pick up."
-    persisted_slots:
-      - order_id
+    persisted_slots: [order_id]
     steps:
       - action: utter_chipotle_status_greeting
       - collect: order_id
         description: "Chipotle order or confirmation number, or phone/email used for the order. Never collect card or payment information."
-        rejections:
-          - if: slots.order_id = null
-            utter: utter_invalid_order_id
+        rejections: [{if: slots.order_id = null, utter: utter_invalid_order_id}]
       - call: order_status_sub_agent
       - id: status_result
         noop: true
@@ -40,16 +37,13 @@ flows:
         action: utter_order_not_found
         next: clear_order_id_for_retry
       - id: clear_order_id_for_retry
-        set_slots:
-          - order_id: null
+        set_slots: [{order_id: null}]
         next: collect_corrected_order_id
       - id: collect_corrected_order_id
         collect: order_id
         description: "Corrected Chipotle confirmation number or phone/email used for the order after one lookup was not found. Never provide payment details."
         utter: utter_ask_order_id
-        rejections:
-          - if: slots.order_id = null
-            utter: utter_invalid_order_id
+        rejections: [{if: slots.order_id = null, utter: utter_invalid_order_id}]
         next: retry_status
       - id: retry_status
         call: order_status_sub_agent
@@ -73,28 +67,18 @@ flows:
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
     description: "Help a Chipotle customer who received a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily. Respond warmly, collect safe order context and the issue, then use the mock policy to offer an appropriate future-meal remedy."
-    persisted_slots:
-      - order_id
-      - issue_category
-      - issue_details
-      - resolution_acceptance
+    persisted_slots: [order_id, issue_category, issue_details, resolution_acceptance]
     steps:
       - action: utter_issue_empathy
       - collect: order_id
         description: "Chipotle order or confirmation number, or approximate safe order context such as phone/email used for the order. Do not collect payment details."
-        rejections:
-          - if: slots.order_id = null
-            utter: utter_invalid_order_id
+        rejections: [{if: slots.order_id = null, utter: utter_invalid_order_id}]
       - collect: issue_category
         description: "Category of the Chipotle order problem: wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, or other."
-        rejections:
-          - if: slots.issue_category = null
-            utter: utter_ask_issue_category
+        rejections: [{if: slots.issue_category = null, utter: utter_ask_issue_category}]
       - collect: issue_details
         description: "Plain-language description of what went wrong, affected items, and whether the customer ate or discarded food if relevant."
-        rejections:
-          - if: slots.issue_details = null
-            utter: utter_ask_issue_details
+        rejections: [{if: slots.issue_details = null, utter: utter_ask_issue_details}]
       - call: order_issue_sub_agent
       - id: issue_policy_result
         noop: true
@@ -126,9 +110,7 @@ flows:
       - id: collect_resolution_acceptance
         collect: resolution_acceptance
         description: "Whether the customer clearly accepts the offered future-meal credit or discount: yes or no."
-        rejections:
-          - if: slots.resolution_acceptance = null
-            utter: utter_ask_resolution_acceptance
+        rejections: [{if: slots.resolution_acceptance = null, utter: utter_ask_resolution_acceptance}]
         next: accepted_resolution
       - id: accepted_resolution
         noop: true
@@ -167,9 +149,7 @@ flows:
     steps:
       - collect: coupon_channel
         description: "Customer’s preferred mock delivery channel for an approved coupon or item credit: chat or email associated with the order."
-        rejections:
-          - if: slots.coupon_channel = null
-            utter: utter_ask_coupon_channel
+        rejections: [{if: slots.coupon_channel = null, utter: utter_ask_coupon_channel}]
       - action: action_mock_coupon_issuance
       - id: channel_note
         noop: true
@@ -196,8 +176,20 @@ flows:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
     description: "Use when a Chipotle customer is only venting or sharing disappointment about an order and clearly says they do not want compensation, a status check, a report, or any other action. Acknowledge the frustration and thank them for the feedback without collecting order details, opening issue triage, offering a coupon, or forcing a resolution. Do not use for a customer who asks to fix an order problem or wants any action."
+    persisted_slots: [feedback_only_active]
     steps:
+      - set_slots: [{feedback_only_active: true}]
       - action: utter_venting_acknowledged
+        next: END
+
+  close_feedback_only:
+    name: "Close a feedback-only conversation"
+    always_include_in_prompt: true
+    description: "Use only after the assistant has acknowledged a Chipotle feedback-only conversation and the customer then says they are done, says no that is it, declines further help, or says goodbye. Close warmly and briefly. Do not ask a survey question, collect order details, start triage, offer compensation, or reopen support."
+    if: slots.feedback_only_active is True
+    steps:
+      - set_slots: [{feedback_only_active: false}]
+      - action: utter_feedback_closed
         next: END
 
   decline_or_light_help:

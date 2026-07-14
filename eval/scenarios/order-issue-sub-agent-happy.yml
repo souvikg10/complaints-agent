@@ -1,0 +1,32 @@
+scenario:
+  name: Order issue sub-agent is reached through the parent happy path
+  simulation_context: >
+    You are a cooperative Chipotle customer whose order had a missing item. Speak in English.
+    Start by saying your order was missing chips. The assistant may correctly infer the missing-item
+    category and the issue details from that opening message before it asks for an order number.
+    When asked for the order context, provide CP123. If offered a remedy, accept it and choose chat
+    for delivery.
+  goals:
+    criteria:
+      - The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
+      - Once the report has enough context, the order-issue sub-agent runs the mock policy check and offers the eligible resolution path.
+    assertions:
+      - flow_started:
+          flow_ids: [report_chipotle_order_issue]
+          operator: any
+      - flow_started:
+          flow_ids: [order_issue_sub_agent]
+          operator: any
+      - action_executed: action_mock_order_issue_policy
+      - slot_was_set:
+          - name: order_id
+          - name: issue_category
+          - name: issue_details
+          - name: resolution_acceptance
+            value: yes
+      - sequencing:
+          - flow_started: report_chipotle_order_issue
+          - flow_started: order_issue_sub_agent
+          - action_executed: action_mock_order_issue_policy
+      - flow_completed:
+          flow_id: report_chipotle_order_issue

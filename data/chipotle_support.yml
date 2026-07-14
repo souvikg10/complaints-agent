@@ -210,17 +210,17 @@ flows:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
     run_pattern_completed: false
-    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. This flow stays active after its acknowledgement so its own follow-up collection, not flow routing, handles a later goodbye. Do not use if the customer asks for a remedy."
+    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. This flow remains active after acknowledgement and captures the literal next message; a deterministic local validator, not competing flow routing or fragile category extraction, recognizes a goodbye, new action request, or added feedback. Do not use if the customer asks for a remedy."
     persisted_slots: [feedback_only_active]
     steps:
-      - set_slots: [{feedback_only_active: true}]
+      - set_slots: [{feedback_only_active: true}, {feedback_followup_message: null}, {feedback_followup_choice: null}]
       - action: action_mock_feedback_logging
-      - collect: feedback_followup_choice
-        description: "The customer’s next choice after a feedback-only acknowledgement: close when they clearly say thanks, bye, goodbye, that is all, all set, or they are done; needs_action when they now request a coupon, credit, replacement, refund, order lookup, or other help; continue_feedback when they add more complaint detail but still do not want action."
+      - collect: feedback_followup_message
+        description: "The customer's complete next message after a feedback-only acknowledgement. Preserve it as literal text; it may be an explicit goodbye such as thanks or that's it, a new request for help, or additional feedback."
         utter: utter_venting_acknowledged
         ask_before_filling: true
         force_slot_filling: true
-        rejections: [{if: slots.feedback_followup_choice = null, utter: utter_venting_acknowledged}]
+        rejections: [{if: slots.feedback_followup_message = null, utter: utter_venting_acknowledged}]
         next: feedback_followup_route
       - id: feedback_followup_route
         noop: true
@@ -237,25 +237,25 @@ flows:
         link: report_chipotle_order_issue
       - id: feedback_continue
         action: action_mock_feedback_logging
-        next: clear_feedback_followup_choice
-      - id: clear_feedback_followup_choice
-        set_slots: [{feedback_followup_choice: null}]
+        next: clear_feedback_followup
+      - id: clear_feedback_followup
+        set_slots: [{feedback_followup_message: null}, {feedback_followup_choice: null}]
         next: await_feedback_followup
       - id: await_feedback_followup
-        collect: feedback_followup_choice
-        description: "The customer’s next choice after additional feedback: close for an explicit goodbye or thanks; needs_action if they now ask for help; continue_feedback if they add more detail but still want no action."
+        collect: feedback_followup_message
+        description: "The customer's complete next message after additional feedback. Preserve it as literal text so deterministic validation can recognize a goodbye, a new request for help, or more feedback."
         utter: utter_feedback_continued
         ask_before_filling: true
         force_slot_filling: true
-        rejections: [{if: slots.feedback_followup_choice = null, utter: utter_feedback_continued}]
+        rejections: [{if: slots.feedback_followup_message = null, utter: utter_feedback_continued}]
         next: feedback_followup_route
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
-    description: "Child-only terminal close called after the active feedback-only flow collects an explicit close choice. It cannot be selected by the router. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
+    description: "Child-only terminal close called after the active feedback-only flow deterministically classifies an explicit close message. It cannot be selected by the router. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
     if: False
     steps:
-      - set_slots: [{feedback_only_active: false}, {feedback_followup_choice: null}]
+      - set_slots: [{feedback_only_active: false}, {feedback_followup_message: null}, {feedback_followup_choice: null}]
       - action: utter_feedback_closed
         next: END
 

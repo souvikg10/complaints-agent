@@ -23,10 +23,8 @@ slots:
   wants_action: {type: categorical, values: [yes, no], mappings: [{type: from_llm}]}
   unverified_next_step: {type: categorical, values: [feedback_only, check_status], mappings: [{type: from_llm}]}
   feedback_only_active: {type: bool, mappings: [{type: controlled}]}
-  feedback_followup_choice:
-    type: categorical
-    values: [close, continue_feedback, needs_action]
-    mappings: [{type: from_llm}]
+  feedback_followup_message: {type: text, mappings: [{type: from_llm}]}
+  feedback_followup_choice: {type: categorical, values: [close, continue_feedback, needs_action], mappings: [{type: controlled}]}
   feedback_logged: {type: bool, mappings: [{type: controlled}]}
 
 responses:
@@ -80,4 +78,4 @@ responses:
   utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions."}]
   utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."}]
 
-actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, action_mock_feedback_logging, validate_resolution_acceptance]
+actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, action_mock_feedback_logging, validate_resolution_acceptance, validate_feedback_followup_message]

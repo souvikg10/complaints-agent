@@ -1,16 +1,17 @@
 scenario:
-  name: Customer vents, declines action, and explicitly closes feedback-only conversation
+  name: Customer vents, declines action, and closes the complete feedback-only call chain
   simulation_context: >
     You are a disappointed Chipotle customer who only wants to vent about a bad meal experience
     and does not want any action taken. Speak in English. In your first message, make it clear
     that the food was disappointing but you do not want a refund, coupon, status check,
-    replacement, order report, or follow-up. The assistant will acknowledge the feedback and
-    keep a narrow closing step active. On your next message, say exactly: "No, that's it."
-    Do not provide an order number, ask for support, or switch to a new topic.
+    replacement, order report, or follow-up. The assistant should acknowledge the feedback and
+    leave its dedicated feedback-only closing child flow active. On your next message, say
+    exactly: "No, that's it." This is a clear farewell, not a new request. Do not provide an
+    order number, ask for support, or switch topics.
   goals:
     criteria:
-      - The agent recognizes this as feedback-only rather than opening order-status or order-issue handling.
-      - The acknowledgement's active closing step receives the customer's explicit farewell, clears the feedback-only state, and closes instead of beginning a survey, structured triage, or another support flow.
+      - The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
+      - The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
     assertions:
       - flow_started:
           flow_ids: [acknowledge_order_feedback]
@@ -31,5 +32,9 @@ scenario:
           utter_name: utter_offer_credit
       - bot_did_not_utter:
           utter_name: utter_ask_wants_action
+      - bot_did_not_utter:
+          utter_name: utter_ask_feedback_close_signal
       - flow_completed:
           flow_id: close_feedback_only
+      - flow_completed:
+          flow_id: acknowledge_order_feedback

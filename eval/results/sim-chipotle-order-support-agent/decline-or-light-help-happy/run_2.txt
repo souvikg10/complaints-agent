@@ -1,24 +1,24 @@
 scenario: Customer vents about an order and explicitly does not want action
 run: 2
-timestamp: 2026-07-14T08:14:08Z
-conversation_id: sim-f4a9f4ef-8b6d-43fb-9072-59bc11d19968
+timestamp: 2026-07-14T08:46:28Z
+conversation_id: sim-67b754cb-aa2e-432a-8bc2-137147bcd5dd
 overall_result: FAIL
 
 --- Quality Criteria Results ---
 [PASS] The assistant recognizes this as feedback-only rather than a request for order support.
-  rationale: The assistant responds with 'I’ve logged the feedback, and I’m here if you want to check an order or report a specific issue,' which treats the interaction as feedback-only and does not initiate order support flows.
+  rationale: The ledger shows `flow_started: acknowledge_order_feedback` and `slot_set: feedback_only_active = true`, indicating the system treated this as feedback-only and not an order support request.
 
-[FAIL] The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
-  rationale: Although the assistant acknowledges the frustration and does not request order details or offer compensation, it partially forces issue triage by saying 'I’m here if you want to check an order or report a specific issue' and later asking 'How would you describe your overall experience with today’s order?', pushing the user toward structured feedback beyond simple venting.
+[PASS] The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
+  rationale: The assistant responds with empathy ("I hear you. Thanks for sharing it—having a meal go sideways is disappointing.") and the ledger shows no attempts to collect order details, offer refunds/coupons, or initiate any troubleshooting or escalation flows.
 
 --- Quality Metrics ---
-bot_quality: 4.0/5
-  helpfulness: 3/5 — The assistant acknowledged and logged the feedback, but missed an opportunity to provide substantive emotional support or reflective validation beyond brief generic thanks.
-  repair_quality: 5/5 — There were no user corrections or pushback indicating misunderstanding, so there was no need for repair and nothing mishandled.
-  coherence: 4/5 — The assistant remained consistent about logging feedback but slightly undercut the user’s clear 'that’s it' by re-initiating with another feedback question instead of simply closing or affirming.
-  tone: 4/5 — The tone is polite and empathetic but somewhat formulaic and survey-like, especially in the closing question.
-  task_completion: PASS — The user only wanted to vent and share what went wrong without any follow-up actions, and the assistant acknowledged this and logged the feedback.
-summary: The assistant correctly understood that the user primarily wanted to vent and have their feedback acknowledged, and it did log and acknowledge the complaint. However, it stayed fairly transactional and generic instead of offering deeper validation, and it slightly conflicted with the user’s 'No, that’s it' by probing again with a survey-style question. Overall, the interaction is polite and coherent but could feel more supportive and less scripted in this venting context.
+bot_quality: 2.75/5
+  helpfulness: 2/5 — The assistant initially acknowledged the venting and claimed to log feedback (which is somewhat helpful), but then gave no closure response when the user ended the conversation and instead looped.
+  repair_quality: 5/5 — There were no explicit user corrections or pushback for the assistant to repair from, so no repair opportunities were mishandled.
+  coherence: 1/5 — After the user clearly said 'Goodbye', the assistant ignored this new state and kept repeating the same line asking the user to say goodbye, contradicting the current context twice.
+  tone: 3/5 — The wording is polite and appropriate but becomes awkwardly repetitive and robotic by repeating the same sentence multiple times.
+  task_completion: FAIL — The user said goodbye and indicated they were done, but the assistant failed to close the interaction and instead repeated its prior instruction.
+summary: The assistant started out reasonably by acknowledging the user’s desire to vent and stating the feedback was logged, but it then failed to recognize the user’s clear goodbye and need for closure. Instead, it got stuck repeating the same instruction, which hurt coherence, task completion, and the conversational feel. A brief closing acknowledgment after the user’s goodbye would have meaningfully improved the interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -26,15 +26,15 @@ summary: The assistant correctly understood that the user primarily wanted to ve
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
-[PASS] flow_completed(acknowledge_order_feedback)
+[FAIL] flow_completed(acknowledge_order_feedback) — Flow with id 'acknowledge_order_feedback' did not complete.
 
 --- Raw Transcript ---
-[1] user: I’m really disappointed with the Chipotle I got today and just need to vent about it a bit — I’m not looking for a refund, coupon, replacement, or any kind of follow-up, just want to share what went wrong.
-[2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback, and I’m here if you want to check an order or report a specific issue.
-[3] agent: Is there anything else you’d like help with today?
-[4] user: No, that’s it. Just wanted to say the bowl was super skimpy and the chicken was dry and bland compared to usual, which was really frustrating, but I’m not asking for anything back.
-[5] agent: Got it—thanks for sharing that. I’ll be here if you need anything else.
-[6] agent: How would you describe your overall experience with today’s order?
+[1] user: I’m really disappointed with the Chipotle I had today and just need to vent about it a bit — I’m not looking for a refund, coupon, replacement, or any kind of follow-up on the order.
+[2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
+[3] agent: When you’re all set, just say goodbye and I’ll close this out.
+[4] user: Okay, thanks for listening and passing it along, that’s all I wanted to do. Goodbye.
+[5] agent: When you’re all set, just say goodbye and I’ll close this out.
+[6] agent: When you’re all set, just say goodbye and I’ll close this out.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-f4a9f4ef-8b6d-43fb-9072-59bc11d19968
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-67b754cb-aa2e-432a-8bc2-137147bcd5dd

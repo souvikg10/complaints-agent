@@ -194,14 +194,11 @@ flows:
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
-    description: "Child-only closing task used after feedback-only acknowledgement. Wait for a clear farewell such as goodbye, bye, that is all, no that is it, or I am all set; reset feedback-only state and close warmly."
+    description: "Child-only closing task used after feedback-only acknowledgement. It accepts natural goodbyes, including Goodbye, That’s all I needed, thanks. Goodbye, and No, that's it. The custom validator normalizes Unicode punctuation and returns a canonical close value, then the task resets feedback-only state and closes warmly."
     if: False
     steps:
       - collect: feedback_close_signal
-        description: "A clear conversational farewell or statement that the customer is done after feedback-only acknowledgement, such as goodbye, bye, that is all, no that is it, or I am all set."
-        rejections:
-          - if: not (slots.feedback_close_signal matches "(?i).*\\b(goodbye|bye|all set|that.s all|that is all|that.s it|that is it|nothing else|no thanks)\\b.*")
-            utter: utter_ask_feedback_close_signal
+        description: "A clear conversational farewell or statement that the customer is done after feedback-only acknowledgement, such as goodbye, bye, that is all, no that is it, or I am all set. Validation is performed exclusively by validate_feedback_close_signal so flow regex behavior cannot reject valid Unicode farewell text."
       - set_slots: [{feedback_only_active: false}]
       - action: utter_feedback_closed
         next: END

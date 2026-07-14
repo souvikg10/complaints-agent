@@ -1,24 +1,24 @@
 scenario: Feedback-only acknowledgement stays active until a plain goodbye closes it
 run: 2
-timestamp: 2026-07-14T08:23:11Z
-conversation_id: sim-4e415a94-afb9-4b13-97b8-2d3fc500b2f4
+timestamp: 2026-07-14T08:46:26Z
+conversation_id: sim-233d3467-0477-4672-accd-3a4035e2c340
 overall_result: FAIL
 
 --- Quality Criteria Results ---
 [PASS] The feedback-only acknowledgement leaves its dedicated child closing task active, so the farewell is collected as the expected next input rather than routed through generic fallback or knowledge-base behavior.
-  rationale: At T1 the ledger shows `flow_started: close_feedback_only` and at T2 the user's goodbye is captured in `slot_set: feedback_close_signal = That’s all I needed, thanks. Goodbye`, indicating the feedback-only closing flow remained active to collect the farewell rather than falling back to generic behavior.
+  rationale: After `flow_started: close_feedback_only` at T1, there is no `flow_completed` for it, and at T2 the user message is written into `feedback_close_signal` and handled by `validate_feedback_close_signal` with no other flows or fallback behaviors started, indicating the close task remained active to collect the farewell.
 
 [FAIL] The goodbye deterministically clears feedback-only state before the assistant sends its one-sentence close.
-  rationale: Although T2 shows `slot_set: feedback_close_signal = null`, there is no evidence in the ledger that `feedback_only_active` or the close-feedback-only flow is cleared before the bot’s (incorrectly repeated) response, and the visible reply is not a one-sentence close but the same prompt repeated twice.
+  rationale: At T2 the ledger shows `slot_set: feedback_close_signal = That’s all I needed, thanks. Goodbye` followed by `slot_set: feedback_close_signal = null`, but there is no evidence that `feedback_only_active` is cleared or that a final one-sentence close is sent (the assistant instead repeats the prompt line twice), so the required deterministic state clear and close message are not demonstrated.
 
 --- Quality Metrics ---
-bot_quality: 3.5/5
-  helpfulness: 4/5 — The assistant correctly acknowledged and logged the feedback, though it missed an opportunity to gracefully close after the user said goodbye.
-  repair_quality: 5/5 — There were no user corrections or pushback, so no repair was needed or mishandled.
-  coherence: 2/5 — The assistant contradicted its own prior instructions by repeating 'When you’re all set, just say goodbye' even after the user had already said goodbye, showing a state-tracking failure.
-  tone: 3/5 — The initial response was natural and empathetic, but the repeated closing line felt formulaic and slightly robotic by the end.
-  task_completion: PASS — The user only wanted to share feedback without further action, and the assistant acknowledged it and stated it had logged the feedback.
-summary: The assistant successfully fulfilled the user’s simple goal of sharing feedback and having it acknowledged. However, it failed to update its behavior after the user said goodbye, instead repeating the same line twice, which hurt coherence and made the tone feel canned at the end. A graceful closing acknowledgment after the goodbye would significantly improve the interaction.
+bot_quality: 2.75/5
+  helpfulness: 3/5 — The assistant correctly acknowledged and logged the feedback, but added irrelevant instructions about saying goodbye and then failed to provide an appropriate closing when the user did say goodbye.
+  repair_quality: 5/5 — There were no user corrections or pushback, so there were no repair opportunities to mishandle.
+  coherence: 1/5 — After the user said 'Goodbye', the assistant repeatedly gave the same prompt to say goodbye, contradicting the current state of the conversation.
+  tone: 2/5 — The initial acknowledgment was fine, but the repeated formulaic line 'When you’re all set, just say goodbye and I’ll close this out' made the interaction feel robotic and awkward.
+  task_completion: PASS — The user only wanted to share feedback without further action, and the assistant acknowledged and explicitly said it logged the feedback.
+summary: The assistant successfully acknowledged and logged the user’s feedback, meeting the substantive task. However, it became stuck in a loop, repeatedly asking the user to say goodbye even after they had done so, which hurt coherence and made the tone feel robotic. A proper closing message after the user's goodbye would have made the exchange feel complete and natural.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -31,7 +31,7 @@ summary: The assistant successfully fulfilled the user’s simple goal of sharin
 [FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
 
 --- Raw Transcript ---
-[1] user: I just wanted to share some feedback about a disappointing meal I had today—I'm not looking for a refund, coupon, replacement, or any kind of follow-up action, just to let you know what happened.
+[1] user: Hi, I just want to share some feedback about a disappointing meal I had today—I'm not looking for a refund, coupon, replacement, or any follow-up action, just want you to know what happened.
 [2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
 [3] agent: When you’re all set, just say goodbye and I’ll close this out.
 [4] user: That’s all I needed, thanks. Goodbye.
@@ -39,4 +39,4 @@ summary: The assistant successfully fulfilled the user’s simple goal of sharin
 [6] agent: When you’re all set, just say goodbye and I’ll close this out.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-4e415a94-afb9-4b13-97b8-2d3fc500b2f4
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-233d3467-0477-4672-accd-3a4035e2c340

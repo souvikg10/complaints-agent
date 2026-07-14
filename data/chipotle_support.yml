@@ -14,7 +14,6 @@ flows:
     description: "Help a Chipotle customer check an existing pickup or delivery order’s preparation status, ready time, delivery ETA, delay, or when to arrive. Use for where is my order, is it ready, track delivery, and when should I pick up."
     persisted_slots:
       - order_id
-      - order_mode
     steps:
       - action: utter_chipotle_status_greeting
       - collect: order_id
@@ -75,8 +74,6 @@ flows:
       - order_id
       - issue_category
       - issue_details
-      - suggested_remedy
-      - issue_eligible
     steps:
       - action: utter_issue_empathy
       - collect: order_id
@@ -149,11 +146,6 @@ flows:
     name: "Issue resolution confirmation and coupon delivery"
     description: "Issue a previously accepted Chipotle future-meal discount coupon or item credit after a reported order problem. Use only after the order-issue flow has offered a remedy and the customer has clearly accepted it."
     if: slots.issue_eligible is True and slots.resolution_acceptance = "yes"
-    persisted_slots:
-      - order_id
-      - coupon_code
-      - coupon_value
-      - coupon_expiration
     steps:
       - collect: coupon_channel
         description: "Customer’s preferred mock delivery channel for an approved coupon or item credit: chat or email associated with the order."

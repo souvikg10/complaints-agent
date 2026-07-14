@@ -1,0 +1,41 @@
+scenario: Customer hits repeat-compensation policy path for an order issue
+run: 1
+timestamp: 2026-07-14T07:47:00Z
+conversation_id: sim-10e835c4-a1e2-4244-bb1b-454a6142146a
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The agent applies the policy result and does not proceed to issue a new coupon when compensation is disallowed.
+  rationale: The policy action set `issue_eligible = false` and `suggested_remedy = none`, and the bot told the user "can’t issue another coupon" with `coupon_channel = null`, with no subsequent action issuing any coupon or compensation.
+
+--- Quality Metrics ---
+bot_quality: 4.0/5
+  helpfulness: 2/5 — Beyond initial intake, the assistant simply cited a mock policy about coupons without offering any concrete resolution steps or alternatives for the recurring wrong entree issue.
+  repair_quality: 5/5 — There were no explicit user corrections or pushback beyond expressing frustration, so no repair opportunities were missed.
+  coherence: 5/5 — The assistant correctly used the order number and remained consistent about the situation and policy throughout the short conversation.
+  tone: 4/5 — The tone was polite and somewhat empathetic, though slightly canned and transactional when denying further help rather than more fully acknowledging the repeated issue.
+  task_completion: FAIL — The user wanted help fixing a wrong order, but after obtaining the order number the assistant only stated it could not issue another coupon and did not investigate or resolve the entree problem itself.
+summary: The assistant stayed coherent and polite, correctly tracking the order context and maintaining a readable tone. However, it was not very helpful: after gathering the order number, it fell back to a coupon-policy limitation and did not attempt to troubleshoot or offer alternative remedies for the user’s repeated wrong entree problem, leaving the core issue unresolved.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] action_executed(utter_no_compensation_repeat)
+[FAIL] flow_cancelled(confirm_issue_resolution) — Flow with id 'confirm_issue_resolution' was not cancelled.
+[PASS] slot_was_not_set(coupon_channel)
+[PASS] flow_completed(report_chipotle_order_issue)
+
+--- Raw Transcript ---
+[1] user: My order was wrong again and I’m honestly getting really tired of this.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[4] user: Yeah, it’s CP777. Same kind of problem as last time, the entree was wrong again.
+[5] agent: I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback.
+[6] agent: Is there anything else I can assist you with today?
+[7] user: Okay, I get it. No, that’s all then, thanks.
+[8] agent: Got it—if you need anything else later, I’ll be here to help.
+[9] agent: Before we wrap up, how would you rate your experience with our support today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-10e835c4-a1e2-4244-bb1b-454a6142146a

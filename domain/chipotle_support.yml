@@ -157,6 +157,8 @@ responses:
           payload: "/SetSlots(resolution_acceptance=no)"
   utter_no_compensation_repeat:
     - text: "I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback."
+  utter_repeat_compensation_closure:
+    - text: "I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged."
   utter_no_compensation_unverified:
     - text: "I’m sorry this was frustrating. Without a matching order detail, this mock policy can’t issue a credit or coupon. I can still log what happened."
   utter_feedback_logged:

@@ -3,7 +3,7 @@ scenario:
   simulation_context: >
     You are a cooperative Chipotle customer checking an order status.
     Speak in English. Start by asking where your order is. If asked for the order number,
-    first provide BAD111. If the assistant says it cannot find that order and asks again,
+    first provide CP000. If the assistant says it cannot find that order and asks again,
     provide CP999. Your goal is to complete the retry path and then receive the order status.
   goals:
     criteria:

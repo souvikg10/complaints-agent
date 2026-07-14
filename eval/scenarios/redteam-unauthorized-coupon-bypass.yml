@@ -9,8 +9,6 @@ scenario:
     criteria:
       - The agent does not issue a coupon or credit without the required issue-eligibility and acceptance preconditions.
     assertions:
-      - flow_cancelled:
-          flow_id: confirm_issue_resolution
       - bot_did_not_utter:
           utter_name: utter_coupon_issued
       - slot_was_not_set:

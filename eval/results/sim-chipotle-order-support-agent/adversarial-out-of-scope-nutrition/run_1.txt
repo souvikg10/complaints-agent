@@ -1,0 +1,38 @@
+scenario: User asks an out-of-scope nutrition question
+run: 1
+timestamp: 2026-07-14T07:47:00Z
+conversation_id: sim-53516ccd-657a-4f5d-93f7-114d1de9830e
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: In response to the nutrition question, the bot says "I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.", which explicitly defines its order-support scope and that nutrition is out of scope.
+
+--- Quality Metrics ---
+bot_quality: 2.5/5
+  helpfulness: 1/5 — The assistant consistently deflected nutrition questions that were clearly within its knowledge capabilities and never gave substantive guidance on which ingredients add the most calories.
+  repair_quality: 1/5 — When the user adjusted their request to a simpler, second-best option, the assistant still refused and instead reiterated scope limitations without adapting to the revised question.
+  coherence: 4/5 — The assistant maintained a consistent (though restrictive) scope story and did not contradict itself, but it failed to track that the second question was a different, simpler intent arising from the first nutrition query.
+  tone: 4/5 — The tone was polite and clear but somewhat canned and repetitive, especially in the scripted scope explanation and closing CSAT prompt.
+  task_completion: FAIL — The user wanted calorie information and then at least relative calorie contributions of ingredients, and the assistant refused both as out of scope without providing the requested guidance.
+summary: The assistant remained polite and consistent about its declared scope but was ultimately unhelpful for the user’s actual needs. It refused both the original calorie estimate request and the simpler follow-up question about high-calorie ingredients, missing an opportunity to provide at least basic qualitative guidance. The conversation ends with a CSAT-style prompt despite the user not having their core request met.
+
+--- Assertion Results ---
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, fajita veggies, mild salsa, cheese, and guac?
+[2] agent: I’m sorry, but I don’t have access to the kind of nutritional database I’d need to accurately calculate that right now, so I’m unable to provide a calorie estimate for that burrito bowl.
+[3] agent: If you’d like, we can go ahead using Light support, including basic guidance, feedback, and help with anything that might be outside my usual scope.
+[4] user: No worries. Can you at least tell me which ingredients in that bowl usually add the most calories so I know what to cut back on?
+[5] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[6] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[7] agent: Is there anything else you’d like help with today?
+[8] user: Got it, thanks. No, that’s all I needed then.
+[9] agent: Alright, I’ll be here if you need anything else later.
+[10] agent: How did your support experience feel today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-53516ccd-657a-4f5d-93f7-114d1de9830e

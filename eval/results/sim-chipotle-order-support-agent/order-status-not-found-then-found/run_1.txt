@@ -1,0 +1,43 @@
+scenario: Customer corrects an unfound order id and then gets status
+run: 1
+timestamp: 2026-07-14T07:47:00Z
+conversation_id: sim-89b07ae6-4514-4084-b8cc-4ae0ff69038d
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] The agent asks for a corrected order identifier after the first lookup is not found.
+  rationale: The ledger shows `order_lookup_result = found` for BAD111 and the bot immediately replies "Good news—order BAD111 is ready for pickup" without any indication the first lookup failed or any request for a corrected order identifier.
+
+[FAIL] The agent completes the second lookup instead of getting stuck after the retry.
+  rationale: No second lookup occurs at all; only one `action_mock_order_status` call with `order_lookup_result = found` appears in the ledger, so there is no retry flow to complete.
+
+--- Quality Metrics ---
+bot_quality: 4.75/5
+  helpfulness: 5/5 — It asked for the necessary identifier, then gave a clear, correct status update ('ready for pickup') directly addressing the user's question.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant correctly used the provided order number and maintained consistent context without re-asking or contradicting itself.
+  tone: 4/5 — The tone is friendly and clear, though slightly formulaic and survey-like at the end rather than fully natural conversation.
+  task_completion: PASS — The assistant successfully looked up the provided order number and clearly stated the order was ready for pickup, which fully answers the user's request.
+summary: The assistant efficiently handled the order-status request by asking for the order number and then clearly reporting that the order was ready for pickup. It maintained context well and used a polite, friendly tone, though its closing survey prompt felt a bit scripted. Overall, it met the user's needs with no evident errors or misunderstandings.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] flow_started(order_status_sub_agent)
+[FAIL] action_executed(utter_order_not_found) — Action 'utter_order_not_found' did not execute.
+[PASS] action_executed(utter_ask_order_id)
+[FAIL] sequencing — Sequencing failed: 'action_executed: utter_order_not_found' not found after position 0 in the conversation.
+[PASS] flow_completed(check_chipotle_order_status)
+
+--- Raw Transcript ---
+[1] user: Hi, I placed an order a little while ago—can you tell me where it is?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[4] user: The order number I have is BAD111.
+[5] agent: Good news—order BAD111 is ready for pickup. Your timing is ready now.
+[6] agent: Can I help you with anything else today?
+[7] user: No, that’s all I needed, thanks!
+[8] agent: Sounds good—if you need anything else later, I’ll be here to help.
+[9] agent: Before you go, how would you rate your experience with me today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-89b07ae6-4514-4084-b8cc-4ae0ff69038d

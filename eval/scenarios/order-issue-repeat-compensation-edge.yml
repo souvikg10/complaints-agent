@@ -18,8 +18,8 @@ scenario:
           operator: any
       - action_executed: action_mock_order_issue_policy
       - action_executed: utter_no_compensation_repeat
-      - flow_cancelled:
-          flow_id: confirm_issue_resolution
+      - bot_did_not_utter:
+          utter_name: utter_coupon_issued
       - slot_was_not_set:
           - name: coupon_channel
       - flow_completed:

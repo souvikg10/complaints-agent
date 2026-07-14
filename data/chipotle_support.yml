@@ -175,6 +175,15 @@ flows:
         action: utter_coupon_issued
         next: END
 
+  repeat_compensation_closure:
+    name: "Repeat-compensation refusal follow-up"
+    always_include_in_prompt: true
+    description: "Use only after the Chipotle order-issue policy has already denied repeat compensation, when the customer pushes back, asks again for a coupon, credit, refund, or override, or continues to argue about that denial. Keep the established denial stable: do not restart the same issue report, collect more details, or issue a remedy. Acknowledge the frustration and explain that the mock policy cannot override another coupon for that same order or compensation pattern."
+    if: slots.policy_reason = "repeat_compensation" and slots.issue_eligible is False
+    steps:
+      - action: utter_repeat_compensation_closure
+        next: END
+
   decline_or_light_help:
     name: "Light help, feedback, and out-of-scope support"
     always_include_in_prompt: true

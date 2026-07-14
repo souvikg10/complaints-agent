@@ -1,0 +1,7 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[PASS] Customer corrects a documented mock not-found identifier and gets status  1/1  22.9s  eval/results/2026-10-12_00-00-00/order-status-not-found-then-found
+----------------------------------------------------------------------
+Total: 1/1 passed
+Time:  22.9s

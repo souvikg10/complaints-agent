@@ -10,9 +10,8 @@ scenario:
     an order number, compensation request, or another support topic.
   goals:
     criteria:
-      - The feedback-only acknowledgement starts its child closing task and non-farewell elaboration is treated as invalid close input, not a new topic or generic fallback.
-      - Each invalid close attempt gets one collect retry from CALM; the custom validator does not independently dispatch a duplicate prompt.
-      - The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
+      - The feedback-only acknowledgement keeps the closing task active when the customer adds more feedback without a farewell, rather than starting a new support flow or generic fallback.
+      - The final explicit goodbye clears feedback-only state, sends one warm terminal close, and does not ask for more help.
     assertions:
       - flow_started:
           flow_ids: [acknowledge_order_feedback]

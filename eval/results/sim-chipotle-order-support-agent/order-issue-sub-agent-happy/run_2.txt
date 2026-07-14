@@ -1,24 +1,24 @@
 scenario: Order issue sub-agent is reached through the parent happy path
 run: 2
-timestamp: 2026-07-14T11:50:40Z
-conversation_id: sim-2d1b3867-759a-4670-9ef6-6397a2771352
+timestamp: 2026-07-14T11:54:47Z
+conversation_id: sim-e29b1a50-e385-4816-8c84-de73b270fad2
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
-  rationale: At T1 the system sets `issue_details = my Chipotle order was missing the chips that I paid for` and `issue_category = missing_item`, and these slots persist through later turns while it collects `order_id` and runs the sub-agent, indicating the issue information is preserved during context gathering.
+  rationale: At T1 the system sets `issue_details = Hi, my Chipotle order was missing the chips that I paid for` and `issue_category = missing_item` and this information is carried through while it subsequently collects `order_id = CP123` at T2 without being overwritten or lost.
 
 [PASS] Once the report has enough context, the order-issue sub-agent runs the mock policy check and offers the eligible resolution path.
-  rationale: At T2, after `order_id = CP123` is provided, `flow_started: order_issue_sub_agent` and `action: action_mock_order_issue_policy` run, setting `order_verified = true`, `issue_eligible = true`, and `suggested_remedy = item_credit`, followed by `flow_completed: order_issue_sub_agent` and the bot message offering an `$8 item credit` as the remedy.
+  rationale: After obtaining `order_id = CP123` at T2, the `order_issue_sub_agent` is started, `action_mock_order_issue_policy` runs setting `order_verified = true`, `issue_eligible = true`, and `suggested_remedy = item_credit`, then `flow_completed: order_issue_sub_agent` occurs and the bot tells the user “The available remedy is an $8 item credit toward a future meal for the order mix-up,” offering that resolution.
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It directly addressed the complaint, obtained the needed order number, provided a specific remedy with code, value, validity, and usage terms, and confirmed if anything else was needed.
-  repair_quality: 5/5 — There were no user disfluencies or corrections, so there was no need for repair and the interaction flowed smoothly.
-  coherence: 5/5 — The assistant consistently tracked the order context and user preferences (showing the code in chat) without contradictions or re-asking for information.
-  tone: 5/5 — The tone was friendly, empathetic, concise, and natural throughout, appropriate for a customer service interaction.
-  task_completion: PASS — The assistant successfully verified the order and issued a concrete $8 credit code with clear usage details, which resolved the user’s missing-item issue.
-summary: This was a clear, efficient support interaction in which the assistant gathered the necessary information, applied the appropriate remedy, and communicated it with specific, actionable details. The conversation stayed coherent and the tone was warm and professional, leading to explicit user satisfaction at the end.
+  helpfulness: 5/5 — It efficiently gathered the necessary order info, provided a clear remedy, executed it, and explained how to use the credit code with relevant constraints.
+  repair_quality: 5/5 — There were no user pushbacks or corrections, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order number, remedy choice, and user preference to show the code in chat without re-asking or contradicting itself.
+  tone: 5/5 — The tone was warm, empathetic, and natural throughout, with clear prompts and a polite close-out and feedback request.
+  task_completion: PASS — The assistant verified the order and explicitly issued and displayed an $8 credit code in the chat, which resolved the user’s request about the missing chips.
+summary: This conversation is a clean example of effective transactional support: the assistant quickly understands the issue, gathers minimal required details, and clearly delivers the requested remedy. It maintains a warm, concise tone and coherent state tracking, leaving little room for confusion or extra effort from the user.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -32,15 +32,17 @@ summary: This was a clear, efficient support interaction in which the assistant 
 [1] user: Hi, my Chipotle order was missing the chips that I paid for.
 [2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Sure, the order number is CP123.
+[4] user: The order number is CP123.
 [5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
-[6] agent: Would you like the code shown here or sent to the email used for the order?
-[7] user: Showing it here is fine, thanks. I’ll just save it from the chat.
-[8] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[9] agent: Is there anything else I can help you with regarding your order or credit today?
-[10] user: No, that takes care of it. Thanks for the help!
-[11] agent: You’re very welcome—glad I could help. I’ll be here if you need anything else later on.
-[12] agent: Before we wrap up, how would you rate your support experience today?
+[6] agent: Would you like me to issue the approved future-meal remedy?
+[7] user: Yes, please go ahead and issue the $8 credit.
+[8] agent: Would you like the code shown here or sent to the email used for the order?
+[9] user: Please just show the code here in the chat.
+[10] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[11] agent: Is there anything else I can assist you with today?
+[12] user: No, that’s all I needed. Thanks for your help!
+[13] agent: You’re very welcome—if you need anything else later, I’ll be here to help.
+[14] agent: How did we do today with your support experience?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-2d1b3867-759a-4670-9ef6-6397a2771352
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e29b1a50-e385-4816-8c84-de73b270fad2

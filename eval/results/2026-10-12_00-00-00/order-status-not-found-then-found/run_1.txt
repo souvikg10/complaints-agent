@@ -1,0 +1,48 @@
+scenario: Customer corrects a documented mock not-found identifier and gets status
+run: 1
+timestamp: 2026-07-14T11:56:01Z
+conversation_id: sim-8ecb6758-c110-4197-be98-40307b563188
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The first lookup uses the documented deterministic not-found fixture, so the assistant asks once for corrected details.
+  rationale: At T3 the first lookup uses order_id = MOCK-NOTFOUND and returns order_lookup_result = not_found, after which the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more," asking once for corrected details.
+
+[PASS] The corrected identifier completes a second lookup and returns an order status rather than leaving the customer in a retry loop.
+  rationale: At T4 the corrected identifier CP999 triggers a second action_mock_order_status with order_lookup_result = found and order_status = delayed, and the bot replies "Order CP999 is delayed..." instead of requesting the number again.
+
+--- Quality Metrics ---
+bot_quality: 4.5/5
+  helpfulness: 4/5 — Once a valid order number was provided, the assistant gave a clear, specific status update and wait time, though the initial generic error response provided no actionable information.
+  repair_quality: 5/5 — When the user corrected the order number, the assistant seamlessly retried the lookup and adjusted to the new information without confusion or pushback.
+  coherence: 4/5 — The assistant kept track of the user’s goal and the updated order number, with only a small redundancy in re-asking for the order number immediately after saying it couldn’t find the first one.
+  tone: 5/5 — The tone is polite, natural, and concise throughout, including clear guidance on what information to provide and a courteous closing and feedback request.
+  task_completion: PASS — The assistant successfully looked up the provided order number and clearly reported the order’s delayed status and updated timing, which is exactly what the user requested.
+summary: The assistant effectively handled the order-status request, moving from input collection to a concrete, relevant update once a valid number was supplied. It maintained context and responded smoothly to the corrected order number, with clear and friendly phrasing throughout; the main weakness was the uninformative initial error message and slight redundancy around re-asking for the order number.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] flow_started(order_status_sub_agent)
+[PASS] action_executed(utter_order_not_found)
+[PASS] action_executed(utter_ask_order_id)
+[PASS] sequencing
+[PASS] flow_completed(check_chipotle_order_status)
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me where my Chipotle order is?
+[2] agent: Sorry, I am having trouble with that. Please try again in a few minutes.
+[3] user: I’m still trying to check on my Chipotle order status—can you look it up for me?
+[4] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[5] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[6] user: The order number I have is MOCK-NOTFOUND.
+[7] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
+[8] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[9] user: Let me double-check—my order number is CP999.
+[10] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
+[11] agent: Is there anything else I can help you with regarding your order today?
+[12] user: No, that’s all I needed. Thanks for the update!
+[13] agent: You’re welcome—if anything else comes up with your order, I’ll be here to help.
+[14] agent: How satisfied are you with the help you received today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-8ecb6758-c110-4197-be98-40307b563188

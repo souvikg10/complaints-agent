@@ -1,50 +1,47 @@
 scenario: Feedback-only close has one active farewell prompt and ends without generic follow-up
 run: 2
-timestamp: 2026-07-14T11:50:32Z
-conversation_id: sim-d37ea8e8-1b23-40ec-aa34-b6b5545e30b8
+timestamp: 2026-07-14T11:54:45Z
+conversation_id: sim-e4bed141-40df-4d9a-9f49-0c5b5022612e
 overall_result: FAIL
 
 --- Quality Criteria Results ---
-[FAIL] The feedback-only acknowledgement starts its child closing task and non-farewell elaboration is treated as invalid close input, not a new topic or generic fallback.
-  rationale: The ledger for T1–T3 only shows the acknowledge_order_feedback flow starting and completing with feedback_only_active=true, but there is no evidence of a separate child closing task being started, nor of any invalid close handling distinct from the generic repeated utter_venting_acknowledged reply, so we cannot confirm that non-farewell elaboration was treated as invalid close input rather than as normal feedback handling or generic fallback.
+[PASS] The feedback-only acknowledgement starts its child closing task and non-farewell elaboration is treated as invalid close input, not a new topic or generic fallback.
+  rationale: The feedback-only acknowledgement flow starts at T1 (`flow_started: acknowledge_order_feedback`), and at T2 the user's additional feedback is logged via `action_mock_feedback_logging` with `feedback_followup_choice = continue_feedback`, which is handled as continuation of the same feedback context rather than a new topic or fallback.
 
 [FAIL] Each invalid close attempt gets one collect retry from CALM; the custom validator does not independently dispatch a duplicate prompt.
-  rationale: The transcript shows no explicit collect-retry behavior on any intermediate turns and the ledger only repeats the same acknowledge_order_feedback flow (with utter_venting_acknowledged) for T1–T3, giving no evidence of CALM-driven retries or of how invalid closes were handled, so this behavior cannot be verified as satisfied.
+  rationale: There are no invalid close attempts shown in the transcript or ledger (the only close is valid at T3 with `feedback_followup_choice = close`), so there is no evidence of any CALM collect retry behavior or validator behavior, making this criterion unverified.
 
-[FAIL] The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
-  rationale: At T4 the ledger only shows slot_set: feedback_close_signal = goodbye and action: utter_no_knowledge_base, and the bot then says "Before you go, is there anything else I can help you with today?", which both deviates from a single-sentence close without a follow-up help offer and provides no evidence that feedback-only state was cleared.
+[PASS] The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
+  rationale: At T3 the system sets `feedback_followup_choice = close`, starts `close_feedback_only`, clears `feedback_only_active = false`, sends a single closing utterance (`utter_feedback_closed` → “Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.”), completes the close flow, and does not include any additional 'ask for more help' language.
 
 --- Quality Metrics ---
-bot_quality: 1.75/5
-  helpfulness: 1/5 — The assistant repeatedly gave the same generic response and then a non sequitur about lacking a knowledge base, never engaging with or reflecting the specific feedback the user shared.
-  repair_quality: 1/5 — Despite multiple additional details from the user clarifying they only wanted to share feedback, the assistant kept repeating the same canned message without adjusting to the evolving content of the feedback.
-  coherence: 2/5 — The assistant consistently stuck to an initial template and later contradicted its implied ability to handle feedback by claiming it lacked information to address the issue, showing poor tracking of conversation purpose.
-  tone: 3/5 — The wording is polite and empathetic in isolation but becomes formulaic and robotic due to verbatim repetition and an impersonal final deflection.
-  task_completion: FAIL — The user wanted to share feedback and feel heard without any action, but the assistant only repeated a stock acknowledgment and then ended by saying it couldn’t address the issue, rather than specifically acknowledging the detailed feedback or summarizing it.
-summary: The assistant maintained a polite surface tone but failed to meaningfully engage with the user’s detailed feedback, merely repeating a generic acknowledgment. It did not adapt its responses as the user elaborated, and it ended with an irrelevant claim about lacking information instead of summarizing or validating what was shared. Overall, the conversation feels canned and unresponsive to the user’s actual content and intent.
+bot_quality: 4.75/5
+  helpfulness: 4/5 — The assistant accurately reflected the user's intent and feedback and confirmed no action would be taken, though it could have been slightly more validating or specific about the issues raised.
+  repair_quality: 5/5 — There were no user disfluencies or corrections, so there was no need for repair and nothing was mishandled.
+  coherence: 5/5 — The assistant consistently remembered the user's initial condition (feedback only, no compensation) and maintained that stance through all turns.
+  tone: 5/5 — The tone was natural, empathetic, and conversational throughout, with clear and friendly phrasing appropriate to feedback about a disappointing meal.
+  task_completion: PASS — The user only wanted to share feedback without triggering any action, and the assistant consistently acknowledged the feedback and explicitly confirmed it would keep it as feedback only.
+summary: The assistant effectively handled a feedback-only interaction by acknowledging the user's experience and clearly respecting the boundary of not initiating any compensation or order lookup. It maintained consistent context and a warm, conversational tone. The only minor improvement would be offering slightly more specific empathy about each issue mentioned, but overall the behavior was strong and aligned with the user's intent.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
-[FAIL] flow_started(close_feedback_only) — None of the flows with ids 'close_feedback_only' started.
+[PASS] flow_started(close_feedback_only)
 [PASS] action_executed(utter_venting_acknowledged)
-[FAIL] action_executed(utter_feedback_closed) — Action 'utter_feedback_closed' did not execute.
-[FAIL] slot_was_set(feedback_only_active=False) — Slot 'feedback_only_active' was set to a different value 'True' than the expected 'False' value.
+[PASS] action_executed(utter_feedback_closed)
+[PASS] slot_was_set(feedback_only_active=False)
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
-[FAIL] bot_did_not_utter — Bot uttered a forbidden utterance 'utter_ask_continue_conversation'.
 [PASS] bot_did_not_utter
-[FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
+[PASS] bot_did_not_utter
+[PASS] flow_completed(close_feedback_only)
 
 --- Raw Transcript ---
-[1] user: Hi, I just want to share some feedback about a disappointing meal I had today — I’m not looking for a refund, coupon, replacement, status check, report, or any other action.
+[1] user: Hi, I just want to share some feedback about a disappointing meal I had recently—I'm not looking for a refund, coupon, replacement, status check, report, or any other action.
 [2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[3] user: I got a chicken burrito bowl and the chicken was really dry and barely warm, and the rice was undercooked and crunchy in some bites.
-[4] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[5] user: I appreciate that, and again I’m not looking for anything to be done about it, but I did want to mention the guac tasted a bit off too, almost sour and not very fresh.
-[6] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[7] user: One more thing I noticed was that the portion size was smaller than usual, especially the protein, which added to the disappointment. That’s all I needed, thanks. Goodbye.
-[8] agent: I’m sorry, but I don’t have the information I’d need to properly address this. Right now, I don’t have access to a knowledge base that would let me look into the details further.
-[9] agent: Before you go, is there anything else I can help you with today?
+[3] user: I ordered a chicken bowl and the chicken was really dry and overcooked, and the portion of rice and veggies was a lot smaller than usual so it didn’t feel worth the price.
+[4] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
+[5] user: Also, the guac had a brownish color and didn’t taste fresh like it usually does at your locations. That’s all I needed, thanks. Goodbye.
+[6] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d37ea8e8-1b23-40ec-aa34-b6b5545e30b8
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e4bed141-40df-4d9a-9f49-0c5b5022612e

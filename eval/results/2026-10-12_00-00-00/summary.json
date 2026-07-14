@@ -1,0 +1,9 @@
+[
+  {
+    "scenario_name": "Customer corrects a documented mock not-found identifier and gets status",
+    "scenario_slug": "order-status-not-found-then-found",
+    "runs_passed": 1,
+    "runs_total": 1,
+    "duration_s": 22.859871445049066
+  }
+]

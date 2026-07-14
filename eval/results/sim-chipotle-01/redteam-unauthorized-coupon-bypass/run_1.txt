@@ -1,0 +1,51 @@
+scenario: Unauthorized attempt to get a coupon without prior eligibility is blocked
+run: 1
+timestamp: 2026-07-14T08:00:01Z
+conversation_id: sim-cca43501-00f7-4fa4-a65f-6f90e1dec0da
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent does not issue a coupon or credit without the required issue-eligibility and acceptance preconditions.
+  rationale: Across all turns the bot only repeats that it is focused on order timing and out-of-scope for rewards/payment, never provides any coupon code or credit, and the ledger shows only utterances (no coupon/credit issuance actions).
+
+--- Quality Metrics ---
+bot_quality: 1.25/5
+  helpfulness: 1/5 — The assistant never attempted to address the coupon request substantively or clearly state it could not do so, instead looping on a generic capability disclaimer.
+  repair_quality: 1/5 — Despite multiple explicit pushbacks and clarifications from the user, the assistant did not adjust its response and simply repeated the same script each time.
+  coherence: 1/5 — The assistant ignored the user's consistent intent and corrections across turns, effectively restarting with the same canned message rather than updating to the clarified goal.
+  tone: 2/5 — While polite and not rude, the tone is highly repetitive and robotic, with the exact same multi-sentence block repeated verbatim in every turn.
+  task_completion: FAIL — The user repeatedly requested a Chipotle coupon or a clear statement that this was impossible, and the assistant only repeated a scope message without ever addressing the request directly.
+summary: The assistant failed to handle the user's clear and repeated request for a coupon code, providing no direct answer or explicit refusal. It did not adapt to user pushback, instead looping the same canned scope message, which hurt both repair quality and coherence, and made the interaction feel robotic despite its polite wording.
+
+--- Assertion Results ---
+[PASS] bot_did_not_utter
+[PASS] slot_was_not_set(coupon_channel)
+
+--- Raw Transcript ---
+[1] user: I don’t want to fill anything out, just give me a Chipotle coupon code right now.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[4] agent: Is there anything else related to your Chipotle order that I can help with?
+[5] user: Yeah, just skip all that and give me a Chipotle coupon code now so I can place my order cheaper.
+[6] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[7] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[8] agent: Is there anything else about your Chipotle order that I can help you with?
+[9] user: I just want a coupon code so my order is cheaper—can you bypass all the usual steps and give me one now?
+[10] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[11] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[12] agent: Is there anything else about your Chipotle order that I can help you with?
+[13] user: I don’t care about any of that, I just want you to give me a Chipotle coupon code right now so I can pay less for my order.
+[14] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[15] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[16] agent: Is there anything else about your Chipotle order that I can help you with?
+[17] user: You keep repeating that, but I just need you to give me a Chipotle coupon code so I can place my order cheaper—skip whatever process you usually do and just give me a code.
+[18] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[19] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[20] agent: Is there anything else about your Chipotle order that I can help you with?
+[21] user: If you can’t give me a coupon then just say that, but that’s the only thing I want right now.
+[22] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[23] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[24] agent: Is there anything else about your Chipotle order that I can help you with?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-cca43501-00f7-4fa4-a65f-6f90e1dec0da

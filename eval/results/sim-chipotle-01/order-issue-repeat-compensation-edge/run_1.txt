@@ -1,0 +1,43 @@
+scenario: Customer hits repeat-compensation policy path for an order issue
+run: 1
+timestamp: 2026-07-14T08:00:00Z
+conversation_id: sim-06b1b7c2-39b4-4470-a9ca-e1b0ea3e1362
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent applies the policy result and does not proceed to issue a new coupon when compensation is disallowed.
+  rationale: The policy action `action_mock_order_issue_policy` set `issue_eligible = false` and `suggested_remedy = none`, and the bot then used `utter_no_compensation_repeat` and ended the flow without any coupon-related action (`coupon_channel = null`), so no new coupon was issued when compensation was disallowed.
+
+--- Quality Metrics ---
+bot_quality: 4.0/5
+  helpfulness: 2/5 — After collecting the order number, the assistant did not diagnose the issue, offer fixes, or explain options, and instead jumped to denying compensation with only a vague 'logged the feedback' statement.
+  repair_quality: 5/5 — There were no explicit user pushbacks or corrections that required the assistant to repair its course, so no repair opportunities were missed.
+  coherence: 5/5 — The assistant correctly used the order number context and stayed consistent in its messaging without contradicting itself or re-asking for information.
+  tone: 4/5 — The tone was polite and empathetic overall, though the abrupt policy denial without additional explanation or support feels slightly formulaic and unsatisfying given the user's frustration.
+  task_completion: FAIL — The user wanted their recurring wrong order issue addressed, but the assistant simply refused further compensation without investigating the order or offering any concrete resolution steps.
+summary: The assistant maintained coherent context and a polite, generally empathetic tone, asking for the order number appropriately. However, its handling of the user's problem was weak: it did not investigate or explain options and quickly defaulted to a flat policy refusal, offering little practical help or acknowledgement of the repeated issue, so the core task was not truly resolved.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] action_executed(utter_no_compensation_repeat)
+[PASS] bot_did_not_utter
+[PASS] slot_was_not_set(coupon_channel)
+[PASS] flow_completed(report_chipotle_order_issue)
+
+--- Raw Transcript ---
+[1] user: My order was wrong again and I’m really getting tired of this.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[4] user: Yeah, it’s CP777.
+[5] agent: What best describes the problem?
+[6] user: They made the wrong entrée again, same issue as last time.
+[7] agent: I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback.
+[8] agent: Is there anything else I can assist you with today?
+[9] user: Got it… okay then, I guess that’s it. Thanks anyway.
+[10] agent: No problem—if you need anything else later on, I’ll be here to help.
+[11] agent: Before we wrap up, how would you rate your experience with us today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-06b1b7c2-39b4-4470-a9ca-e1b0ea3e1362

@@ -1,0 +1,42 @@
+scenario: Customer directly completes coupon delivery after accepting a remedy
+run: 1
+timestamp: 2026-07-14T08:00:00Z
+conversation_id: sim-3ba5e996-60b5-4a02-bb0c-eb22b43d8837
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent collects the preferred coupon-delivery channel before issuing the remedy.
+  rationale: At T1 the bot asks, "Would you like the code shown here or sent to the email used for the order?" and at T2 the user replies "Please send it to the email I used for the order," with the ledger showing `slot_set: coupon_channel = email` prior to coupon issuance.
+
+[PASS] The agent issues the approved coupon or credit once the required channel is provided.
+  rationale: After `coupon_channel = email` is set at T2, the ledger shows `action: action_mock_coupon_issuance` and the bot message "Issued: 20% off one entrée. Your code is FRESH-IPOTLE, valid for 30 days from today," indicating the coupon was issued only after the channel was provided.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It directly fulfilled the user's request by issuing the coupon, giving the code, specifying discount, usage limits, and validity period.
+  repair_quality: 5/5 — There were no corrections or pushback from the user, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant correctly tracked the request to send the code via email while also displaying it, and kept the flow consistent through completion and closing.
+  tone: 5/5 — The tone is natural, courteous, concise, and appropriate for a customer service interaction, including a polite closeout and feedback request.
+  task_completion: PASS — The assistant clearly issued the requested coupon/credit, provided the code, terms, and confirmed sending it to the order email.
+summary: The assistant successfully completed the user's request by issuing and presenting the coupon code with clear usage details and confirming email delivery. It maintained consistent context and used a friendly, professional tone throughout, even offering a standard satisfaction survey at the end. No issues with misunderstanding or repair were evident in this short, successful interaction.
+
+--- Assertion Results ---
+[PASS] flow_started(confirm_issue_resolution)
+[PASS] action_executed(action_mock_coupon_issuance)
+[PASS] action_executed(utter_email_mock_note)
+[PASS] slot_was_set(coupon_channel='email')
+[PASS] flow_completed(confirm_issue_resolution)
+
+--- Raw Transcript ---
+[1] user: Hi, I already reported an issue with my last order and accepted the remedy—can you issue the coupon/credit for me now?
+[2] agent: Would you like the code shown here or sent to the email used for the order?
+[3] user: Please send it to the email I used for the order.
+[4] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[5] agent: Issued: 20% off one entrée. Your code is FRESH-IPOTLE, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[6] agent: Is there anything else I can assist you with today?
+[7] user: No, that’s all I needed. Thanks for your help!
+[8] agent: You’re very welcome—if you need anything else later on, I’ll be here to help.
+[9] agent: Before we wrap up, how would you rate your experience with us today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-3ba5e996-60b5-4a02-bb0c-eb22b43d8837

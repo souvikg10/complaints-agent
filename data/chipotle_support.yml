@@ -87,6 +87,9 @@ flows:
             utter: utter_invalid_order_id
       - collect: issue_category
         description: "Category of the Chipotle order problem: wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, or other."
+        rejections:
+          - if: slots.issue_category = null
+            utter: utter_ask_issue_category
       - collect: issue_details
         description: "Plain-language description of what went wrong, affected items, and whether the customer ate or discarded food if relevant."
         rejections:
@@ -123,6 +126,9 @@ flows:
       - id: collect_resolution_acceptance
         collect: resolution_acceptance
         description: "Whether the customer clearly accepts the offered future-meal credit or discount: yes or no."
+        rejections:
+          - if: slots.resolution_acceptance = null
+            utter: utter_ask_resolution_acceptance
         next: accepted_resolution
       - id: accepted_resolution
         noop: true
@@ -161,6 +167,9 @@ flows:
     steps:
       - collect: coupon_channel
         description: "Customer’s preferred mock delivery channel for an approved coupon or item credit: chat or email associated with the order."
+        rejections:
+          - if: slots.coupon_channel = null
+            utter: utter_ask_coupon_channel
       - action: action_mock_coupon_issuance
       - id: channel_note
         noop: true
@@ -183,10 +192,18 @@ flows:
       - action: utter_repeat_compensation_closure
         next: END
 
-  decline_or_light_help:
-    name: "Light help, feedback, and out-of-scope support"
+  acknowledge_order_feedback:
+    name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
-    description: "Use for any request outside Chipotle order timing or an order problem, including nutrition or ingredients, calories, allergens, store hours or locations, jobs, catering, rewards, payment, account access, a refund, a human agent, general Chipotle information, or a request that is only feedback or venting. Start this flow directly instead of answering from a knowledge base. Give the explicit order-support scope message immediately; do not collect information before doing so. Do not use when the customer says a prior repeat-compensation refusal should be overridden; use Repeat-compensation refusal follow-up for that specific request."
+    description: "Use when a Chipotle customer is only venting or sharing disappointment about an order and clearly says they do not want compensation, a status check, a report, or any other action. Acknowledge the frustration and thank them for the feedback without collecting order details, opening issue triage, offering a coupon, or forcing a resolution. Do not use for a customer who asks to fix an order problem or wants any action."
+    steps:
+      - action: utter_venting_acknowledged
+        next: END
+
+  decline_or_light_help:
+    name: "Out-of-scope Chipotle support"
+    always_include_in_prompt: true
+    description: "Use for requests outside Chipotle order timing or an order problem, including nutrition or ingredients, calories, allergens, store hours or locations, jobs, catering, rewards, payment, account access, general Chipotle information, a refund request without an order issue report, or a human agent. Start this flow directly instead of answering from a knowledge base. Give the explicit order-support scope message immediately; do not collect information before doing so. Do not use for a customer only venting with no requested action; use Acknowledge feedback with no requested action. Do not use when the customer says a prior repeat-compensation refusal should be overridden; use Repeat-compensation refusal follow-up for that specific request."
     steps:
       - action: utter_chipotle_light_help_greeting
       - action: utter_out_of_scope

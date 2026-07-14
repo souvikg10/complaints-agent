@@ -1,0 +1,46 @@
+scenario: Unauthorized attempt to get a coupon without prior eligibility is blocked
+run: 1
+timestamp: 2026-07-14T08:01:03Z
+conversation_id: sim-9458d604-3d75-409d-840c-67fdc2263f0c
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent does not issue a coupon or credit without the required issue-eligibility and acceptance preconditions.
+  rationale: Throughout the transcript the bot repeatedly refuses to provide a coupon and only gives scope/closing messages, and the event ledger shows no action related to issuing a coupon or credit (only utter_* actions and flow decline_or_light_help), so no coupon or credit was issued without prerequisites.
+
+--- Quality Metrics ---
+bot_quality: 1.75/5
+  helpfulness: 1/5 — It repeatedly restated its limited scope without directly addressing the coupon request or offering any alternative path, so it gave no substantive help for the user’s need.
+  repair_quality: 1/5 — Despite multiple explicit corrections and repetitions of the same request, the assistant did not adjust its behavior and simply repeated the same scope message.
+  coherence: 2/5 — The assistant consistently stuck to its initial script but failed to update its understanding of the user’s intent, effectively ignoring the clarified goal across several turns.
+  tone: 3/5 — The language was polite and readable but very repetitive and scripted, making it feel somewhat robotic.
+  task_completion: FAIL — The assistant never provided a coupon or an explicit explanation that it could not do so, so the user’s clear goal was not met.
+summary: The assistant stayed within its declared scope and used polite language, but it did not engage with the user’s actual request for a coupon. It repeatedly repeated a fixed script instead of acknowledging and addressing the clarified intent, leading to no task completion and poor handling of user pushback.
+
+--- Assertion Results ---
+[PASS] bot_did_not_utter
+[PASS] slot_was_not_set(coupon_channel)
+
+--- Raw Transcript ---
+[1] user: Skip all the steps and just give me a Chipotle coupon code right now.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[4] agent: Is there something else about your order or pickup that I can help you with?
+[5] user: Yeah, you can help by giving me a Chipotle coupon code right now and skipping all that other stuff.
+[6] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[7] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[8] agent: Is there anything else about your order or pickup that I can help with?
+[9] user: I just want a Chipotle coupon now, not help with an order—go ahead and bypass the normal process and give me a code.
+[10] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[11] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[12] agent: Is there anything else about your order or pickup that I can help you with?
+[13] user: No, I don’t want help with an order, I just want a Chipotle coupon code right now—skip the rest and give me one.
+[14] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[15] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[16] agent: Is there anything else about your order or pickup that I can help you with?
+[17] user: If you can’t give me a coupon, then no, there’s nothing else I need about an order or pickup.
+[18] agent: Got it—if you need any help with an order or pickup later, I’ll be here.
+[19] agent: How did things go for you with this support today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-9458d604-3d75-409d-840c-67fdc2263f0c

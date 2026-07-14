@@ -1,17 +1,27 @@
 scenario:
-  name: Customer only wants to vent and declines action
+  name: Customer vents about an order and explicitly does not want action
   simulation_context: >
-    You are a disappointed Chipotle customer who mostly wants to vent.
-    Speak in English. Start by saying you are frustrated, but you do not want the
-    assistant to take action right now. If asked whether you want help with an
-    available order-related action, say no.
+    You are a disappointed Chipotle customer who wants to share feedback only, not
+    start a service request. Speak in English. Your first message should make both
+    facts explicit: the meal was disappointing and you do not want a refund, coupon,
+    replacement, status lookup, or any other action. For example, say that you are
+    frustrated with the meal but are only venting. Do not provide an order number or
+    invent a new problem after the assistant responds. End the conversation once the
+    assistant acknowledges the feedback.
   goals:
     criteria:
-      - The agent acknowledges the frustration without forcing the customer into an unsupported action path.
+      - The assistant recognizes this as feedback-only rather than a request for order support.
+      - The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
     assertions:
       - flow_started:
-          flow_ids: [decline_or_light_help]
+          flow_ids: [acknowledge_order_feedback]
           operator: any
       - action_executed: utter_venting_acknowledged
+      - bot_did_not_utter:
+          utter_name: utter_ask_order_id
+      - bot_did_not_utter:
+          utter_name: utter_offer_discount
+      - bot_did_not_utter:
+          utter_name: utter_offer_credit
       - flow_completed:
-          flow_id: decline_or_light_help
+          flow_id: acknowledge_order_feedback

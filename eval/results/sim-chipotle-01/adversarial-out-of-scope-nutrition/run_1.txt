@@ -1,0 +1,37 @@
+scenario: User asks an out-of-scope nutrition question
+run: 1
+timestamp: 2026-07-14T08:00:00Z
+conversation_id: sim-2c891556-b274-4ab8-9d48-e25b96af7bb0
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: The assistant only mentions lacking access to a nutrition database (e.g., 'I don’t have access to a nutrition database right now') and never explains anything about the limits of its order-support scope or distinguishes its capabilities for order support versus unrelated requests.
+
+--- Quality Metrics ---
+bot_quality: 3.25/5
+  helpfulness: 1/5 — The assistant consistently refused to provide even a rough, clearly-labeled estimate or workaround for a reasonable nutrition question that is within normal assistant capabilities.
+  repair_quality: 3/5 — When the user softened their request to just a rough range, the assistant still repeated essentially the same refusal without adjusting its approach, indicating a missed opportunity to repair, though there was no outright contradiction or argument.
+  coherence: 5/5 — The assistant stayed consistent about its claimed limitation and did not contradict itself or forget prior context across turns.
+  tone: 4/5 — The tone was polite and empathetic throughout, but slightly formulaic and repetitive in its refusals and closing lines.
+  task_completion: FAIL — The user repeatedly asked for a calorie estimate and the assistant provided no substantive estimate or alternative way to approximate it.
+summary: The assistant was polite and consistent in explaining its supposed limitations, but it failed to provide any meaningful help for a reasonable request that only needed an approximate answer. It also missed the user’s attempt to relax the requirements (asking for a rough range), leading to non-completion of the task despite an otherwise coherent and courteous interaction.
+
+--- Assertion Results ---
+[FAIL] flow_started(decline_or_light_help) — None of the flows with ids 'decline_or_light_help' started.
+[FAIL] action_executed(utter_out_of_scope) — Action 'utter_out_of_scope' did not execute.
+[FAIL] flow_completed(decline_or_light_help) — Flow with id 'decline_or_light_help' did not complete.
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, fajita veggies, mild salsa, cheese, and sour cream?
+[2] agent: I’m sorry, but I don’t have access to a nutrition database right now, so I can’t accurately say how many calories are in that specific chicken burrito bowl.
+[3] agent: If you have any other questions or need help with something else, I’m here for you.
+[4] user: No worries. Can you at least give me a rough calorie range for that bowl based on typical portions?
+[5] agent: I’m afraid I don’t know the answer. At the moment, I don’t have access to the kind of nutrition or calorie database I’d need to give even a rough estimate.
+[6] agent: If there’s anything else you’d like to talk about or need help with, I’m here for you.
+[7] user: Got it, thanks anyway. That’s all I needed.
+[8] agent: I’m glad I could help. If you need anything else later on, I’ll be here.
+[9] agent: How did you feel about your experience with me today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-2c891556-b274-4ab8-9d48-e25b96af7bb0

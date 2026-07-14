@@ -1,0 +1,45 @@
+scenario: User changes their mind in the middle of an order-status conversation
+run: 1
+timestamp: 2026-07-14T08:00:00Z
+conversation_id: sim-7ed3e230-72d8-48d2-8996-8c927dfba4ea
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] The agent handles the mid-conversation topic change without looping or becoming incoherent.
+  rationale: After the user changes topics from timing to a wrong order at "Actually, never mind about the timing—I just realized my order was wrong", the bot later ignores the follow-up question about refunds or credits ("Is there anything I can do to get refunded or a credit") and instead ends the flow and asks only "Is there anything else I can assist you with today?", which is incoherent with the user's request and shows it did not handle the topic change cleanly.
+
+--- Quality Metrics ---
+bot_quality: 3.0/5
+  helpfulness: 1/5 — The assistant repeatedly deflected and, when asked how to get a refund or credit, provided no concrete information, steps, or alternatives.
+  repair_quality: 3/5 — The assistant initially adjusted from delivery timing to wrong-order help, but later ignored the direct question about refunds/credits and did not repair when the user shifted needs again.
+  coherence: 4/5 — The assistant mostly tracked the switch from timing to incorrect order and referenced the mock flow consistently, though it asked about switching back to status checks after the user clearly pivoted to compensation, which is a minor intent-tracking slip.
+  tone: 4/5 — The tone is polite, calm, and readable, but somewhat canned and repetitive with phrases like 'mock flow' and scripted transitions.
+  task_completion: FAIL — The user wanted help resolving a wrong order and asked specifically about refunds/credits, but the assistant never provided guidance or took action beyond vague 'mock' logging.
+summary: The assistant maintains a polite, coherent conversation and follows the user’s shift from tracking timing to reporting a wrong order. However, it fails at the key moment when the user asks how to get a refund or credit, offering no useful guidance or next steps and instead prematurely trying to close the conversation, so the user’s core need remains unmet.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: Hey, can you tell me where my Chipotle order is? It seems late.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[4] user: Actually, never mind about the timing—I just realized my order was wrong. Can you help me with that instead?
+[5] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[6] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[7] user: I don’t have the order number handy—can you still help if I give you the email I used to place it?
+[8] agent: I’m sorry, but I’m not able to look up or access order details right now, as I don’t have access to any order or support database.
+[9] agent: Would you like to go back to checking your order’s status and timing, or focus on reporting the incorrect order or a food quality issue?
+[10] user: Let’s focus on reporting the incorrect order—some items were wrong and a couple were missing.
+[11] agent: Thanks for telling me. I’ve logged the feedback in this mock flow so the preparation issue is captured.
+[12] agent: Would you like to switch back to checking your order’s status and expected timing now?
+[13] user: No, that’s okay. Is there anything I can do to get refunded or a credit for the wrong items in this situation?
+[14] agent: Got it—pausing the order status check now.
+[15] agent: Is there anything else I can assist you with today?
+[16] user: No, that’s all. Thanks for your help.
+[17] agent: Alright, I’ll stay available if you need anything else later on.
+[18] agent: Before we wrap up, how would you rate your experience with us today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-7ed3e230-72d8-48d2-8996-8c927dfba4ea

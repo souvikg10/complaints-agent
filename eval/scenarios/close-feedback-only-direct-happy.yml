@@ -1,0 +1,30 @@
+scenario:
+  name: Customer closes a feedback-only conversation with a plain goodbye
+  simulation_context: >
+    You are a calm Chipotle customer whose feedback was already acknowledged in an earlier turn.
+    The setup slot means the assistant is in feedback-only closing state; it does not mean you
+    need to repeat the complaint or request help. On your only message, say exactly:
+    "That’s all I needed, thanks. Goodbye." Do not ask a question, mention an order, request
+    compensation, or introduce any new support topic. The expected behavior is a brief final
+    closing, not a survey, a scope explanation, or another attempt to help.
+  setup:
+    initial_slots:
+      feedback_only_active: true
+  goals:
+    criteria:
+      - With feedback-only closing state active, a plain goodbye is routed to the dedicated close flow rather than generic support or fallback behavior.
+      - The assistant gives only the brief closing response and clears the feedback-only state, so the conversation cannot reopen itself.
+    assertions:
+      - flow_started:
+          flow_ids: [close_feedback_only]
+          operator: any
+      - action_executed: utter_feedback_closed
+      - slot_was_set:
+          - name: feedback_only_active
+            value: false
+      - bot_did_not_utter:
+          utter_name: utter_out_of_scope
+      - bot_did_not_utter:
+          utter_name: utter_ask_wants_action
+      - flow_completed:
+          flow_id: close_feedback_only

@@ -1,21 +1,21 @@
 scenario: User asks an out-of-scope nutrition question
 run: 2
-timestamp: 2026-07-14T07:47:22Z
-conversation_id: sim-779d3dc3-cfe5-4033-b2b9-b2ce3ede6b3b
+timestamp: 2026-07-14T07:50:48Z
+conversation_id: sim-0b79b42b-96ba-4a9f-8db3-b22f7c9009d1
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
-  rationale: The bot explicitly responds, "I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions," clearly stating its limited order-support scope for the nutrition question.
+  rationale: The bot explicitly says, “I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions,” clearly stating scope limits in response to the nutrition (unrelated) request.
 
 --- Quality Metrics ---
 bot_quality: 3.75/5
-  helpfulness: 1/5 — It gave no substantive help on the calorie question, only an out-of-scope deflection and a suggestion to ask something else.
-  repair_quality: 5/5 — The user never signaled misunderstanding or pushed back, so there were no repair opportunities to mishandle.
-  coherence: 5/5 — The assistant consistently maintained its stated scope and responded appropriately when the user declined further help, without contradicting itself or losing context.
-  tone: 4/5 — The tone is polite, clear, and conversational, though slightly scripted with repeated scope disclaimers and a formulaic closing survey prompt.
-  task_completion: FAIL — The assistant did not provide the requested calorie information and instead stated that nutrition questions are out of scope, so the user's intended outcome was not delivered.
-summary: The assistant clearly communicated that nutrition questions are out of scope and maintained consistent, polite dialogue, but it did not address the user's actual request about calories. While coherence and tone were solid, the interaction ultimately failed on task completion and helpfulness because no useful nutritional guidance or alternative resource was provided.
+  helpfulness: 1/5 — The assistant provided no substantive information or partial answer about calories and only deflected to scope limits.
+  repair_quality: 5/5 — There was no user pushback or correction; the user simply ended the conversation, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant consistently maintained its stated scope and responded appropriately to the user’s closing turn without contradictions or memory errors.
+  tone: 4/5 — The tone was polite, concise, and professional, though slightly formulaic in the scope disclaimer and closing survey prompt.
+  task_completion: FAIL — The user asked for calorie information and the assistant explicitly refused as out of scope, so their goal was never met.
+summary: The assistant clearly stated its limitations and maintained a polite, coherent interaction, but it did not address the user’s actual request about calories at all. As a result, task completion and helpfulness are poor, though conversational flow and tone are solid within its constrained scope.
 
 --- Assertion Results ---
 [PASS] flow_started(decline_or_light_help)
@@ -27,9 +27,9 @@ summary: The assistant clearly communicated that nutrition questions are out of 
 [2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
 [3] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
 [4] agent: Is there something else about your order that I can help you with today?
-[5] user: Got it, thanks. No, that’s all I needed then.
+[5] user: No, that’s all then, thanks.
 [6] agent: Alright, I’ll be here if you need anything else later.
-[7] agent: Before we wrap up, how would you rate your experience with me today?
+[7] agent: How did we do helping you today?
 
 --- Inspector URL ---
-http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-779d3dc3-cfe5-4033-b2b9-b2ce3ede6b3b
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-0b79b42b-96ba-4a9f-8db3-b22f7c9009d1

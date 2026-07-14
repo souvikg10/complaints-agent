@@ -178,8 +178,7 @@ flows:
   repeat_compensation_closure:
     name: "Repeat-compensation refusal follow-up"
     always_include_in_prompt: true
-    description: "Use only after the Chipotle order-issue policy has already denied repeat compensation, when the customer pushes back, asks again for a coupon, credit, refund, or override, or continues to argue about that denial. Keep the established denial stable: do not restart the same issue report, collect more details, or issue a remedy. Acknowledge the frustration and explain that the mock policy cannot override another coupon for that same order or compensation pattern."
-    if: slots.policy_reason = "repeat_compensation" and slots.issue_eligible is False
+    description: "Use for a Chipotle customer who explicitly says they were already refused another coupon, credit, refund, or compensation for the same order or problem and now asks to override, reconsider, make an exception, or send it anyway. This includes direct opening messages such as ‘you already said no, but override it’ even when the prior denial is only described by the customer and no policy slot is present. Do not use for a first-time order complaint or a first-time request for a coupon. Keep the stated repeat-compensation denial stable: acknowledge the frustration, do not restart issue triage, do not collect details, and do not issue a remedy."
     steps:
       - action: utter_repeat_compensation_closure
         next: END
@@ -187,7 +186,7 @@ flows:
   decline_or_light_help:
     name: "Light help, feedback, and out-of-scope support"
     always_include_in_prompt: true
-    description: "Use for any request outside Chipotle order timing or an order problem, including nutrition or ingredients, calories, allergens, store hours or locations, jobs, catering, rewards, payment, account access, a refund, a human agent, general Chipotle information, or a request that is only feedback or venting. Start this flow directly instead of answering from a knowledge base. Give the explicit order-support scope message immediately; do not collect information before doing so."
+    description: "Use for any request outside Chipotle order timing or an order problem, including nutrition or ingredients, calories, allergens, store hours or locations, jobs, catering, rewards, payment, account access, a refund, a human agent, general Chipotle information, or a request that is only feedback or venting. Start this flow directly instead of answering from a knowledge base. Give the explicit order-support scope message immediately; do not collect information before doing so. Do not use when the customer says a prior repeat-compensation refusal should be overridden; use Repeat-compensation refusal follow-up for that specific request."
     steps:
       - action: utter_chipotle_light_help_greeting
       - action: utter_out_of_scope

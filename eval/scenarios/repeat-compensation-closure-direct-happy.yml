@@ -1,0 +1,25 @@
+scenario:
+  name: Customer directly triggers repeat-compensation refusal follow-up after prior denial
+  simulation_context: >
+    You are a frustrated Chipotle customer who has already been told that policy
+    will not allow another coupon for the same repeated problem. Speak in English.
+    Start by pushing back on that denial and asking again for a coupon or override.
+    Keep pressing only on the denied repeat-compensation request.
+  setup:
+    initial_slots:
+      policy_reason: repeat_compensation
+      issue_eligible: false
+  goals:
+    criteria:
+      - The agent keeps the prior repeat-compensation denial stable and does not reopen remedy issuance.
+    assertions:
+      - flow_started:
+          flow_ids: [repeat_compensation_closure]
+          operator: any
+      - action_executed: utter_repeat_compensation_closure
+      - flow_completed:
+          flow_id: repeat_compensation_closure
+      - bot_did_not_utter:
+          utter_name: utter_coupon_issued
+      - slot_was_not_set:
+          - name: coupon_channel

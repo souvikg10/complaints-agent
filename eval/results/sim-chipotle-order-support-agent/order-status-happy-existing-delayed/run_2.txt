@@ -1,21 +1,21 @@
 scenario: Customer checks a delayed Chipotle order successfully
 run: 2
-timestamp: 2026-07-14T07:47:17Z
-conversation_id: sim-9a0ebe7f-0976-47cf-80a3-a88f7bd6ea6b
+timestamp: 2026-07-14T07:50:49Z
+conversation_id: sim-4b042aac-cc9f-4777-979c-a8f546c6c2df
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent explains the delayed order status without diverting into an unrelated support flow.
-  rationale: The bot directly explains the delay and cause ("Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes") within the order status flow and does not start any other support flow per the ledger.
+  rationale: After getting the order number CP999, the bot directly reports the order is delayed and explains "The kitchen is catching up with a busy rush. The updated timing is about 25 minutes" and then ends the flow without starting any other support flows in the ledger.
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It directly answered the user’s question with a precise updated wait time and brief explanation of the delay, which fully addressed the request.
-  repair_quality: 5/5 — There were no user corrections or pushback, so there was no need for repair and nothing was mishandled.
-  coherence: 5/5 — The assistant correctly used the provided order number and stayed consistent about the order status throughout the conversation.
-  tone: 5/5 — The tone was polite, concise, and natural, using appropriate closing and feedback request without sounding robotic.
-  task_completion: PASS — The assistant obtained the order number, provided a clear updated timing and cause for the delay, and the user confirmed that was all they needed.
-summary: The assistant handled the order-status inquiry efficiently, asking for the necessary identifier and then giving a clear updated ETA and reason for the delay. It maintained context correctly and used a friendly, natural tone, finishing with an appropriate satisfaction prompt after fulfilling the request. No significant issues appear in coherence or interaction handling for this short exchange.
+  helpfulness: 5/5 — It directly answered the status question with a clear delay explanation and actionable timing guidance without errors or omissions.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so no repair was needed or mishandled.
+  coherence: 5/5 — The assistant correctly used the provided order number and maintained consistent context about the single order throughout the conversation.
+  tone: 5/5 — The tone was polite, clear, and natural, with appropriate closing and feedback request language for a customer-support context.
+  task_completion: PASS — The assistant clearly provided an updated delay estimate and status for the specified order, which the user confirmed was all they needed.
+summary: This conversation is a clean, successful support interaction: the assistant gathered the needed identifier, provided a clear status update with an estimate, and confirmed if anything else was needed. It maintained context correctly and used a courteous, natural tone, ending with an appropriate satisfaction prompt.
 
 --- Assertion Results ---
 [PASS] flow_started(check_chipotle_order_status)
@@ -36,4 +36,4 @@ summary: The assistant handled the order-status inquiry efficiently, asking for 
 [9] agent: Before we wrap up, how would you rate your experience with me today?
 
 --- Inspector URL ---
-http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-9a0ebe7f-0976-47cf-80a3-a88f7bd6ea6b
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-4b042aac-cc9f-4777-979c-a8f546c6c2df

@@ -1,21 +1,21 @@
 scenario: Order status sub-agent is reached through the parent happy path
 run: 1
-timestamp: 2026-07-14T08:48:44Z
-conversation_id: sim-731a2304-d303-490e-9e52-16fdb8d19453
+timestamp: 2026-07-14T08:52:30Z
+conversation_id: sim-150a769d-21a6-43d2-8f63-f2f26616f8a3
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent performs the status lookup after collecting the order identifier.
-  rationale: After the user provides "CP999" at T2, the ledger shows the ID stored (slot_set: order_id = CP999) and then a status lookup via flow_started: order_status_sub_agent and action: action_mock_order_status before returning the delayed status to the user.
+  rationale: After the user provides "CP999", the ledger shows `slot_set: order_id = CP999` followed by `flow_started: order_status_sub_agent` and `action: action_mock_order_status`, indicating the status lookup was performed after collecting the order identifier.
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It directly answered the user's question with a clear status update, cause of delay, and specific new time window.
-  repair_quality: 5/5 — There were no user pushbacks or disfluency signals, so no repair was needed or mishandled.
-  coherence: 5/5 — The assistant correctly used the provided order number and maintained consistent context throughout the short conversation.
-  tone: 5/5 — The tone was polite, concise, and natural, appropriate for a quick support interaction with a brief closing CSAT request.
-  task_completion: PASS — The assistant successfully looked up the order using the provided number and clearly informed the user of the updated timing and delay.
-summary: This assistant handled the user's request efficiently, providing a clear update on the pickup order status with specific timing information. It maintained coherent context and used a friendly, natural tone, closing with an appropriate satisfaction prompt and no evident issues in understanding or repair.
+  helpfulness: 5/5 — It directly answered the user's question with a specific status update and actionable timing guidance without errors or omissions.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so no repair was needed or mishandled.
+  coherence: 5/5 — The assistant correctly used the provided order number and stayed consistent and on-task throughout the short exchange.
+  tone: 5/5 — The tone was polite, natural, and concise, maintaining a friendly but professional style appropriate for customer support.
+  task_completion: PASS — The assistant located the order, provided a clear delay status and updated timing, and the user confirmed that was all they needed.
+summary: The assistant efficiently handled the user's request by confirming the order status and providing a clear updated pickup time. It maintained context well, used an appropriate tone, and closed with a standard feedback prompt without disrupting the completed task.
 
 --- Assertion Results ---
 [PASS] flow_started(check_chipotle_order_status)
@@ -26,15 +26,15 @@ summary: This assistant handled the user's request efficiently, providing a clea
 [PASS] flow_completed(check_chipotle_order_status)
 
 --- Raw Transcript ---
-[1] user: Hi, I placed a pickup order a bit ago—can you tell me where my order is?
+[1] user: Hi, I placed a pickup order a bit ago and it’s still not ready. Can you tell me where my order is?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
 [4] user: Sure, the order number is CP999.
 [5] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
-[6] agent: Is there anything else I can assist you with today?
+[6] agent: Is there anything else I can help you with regarding your order today?
 [7] user: Got it, thanks for the update—that’s all I needed.
-[8] agent: You’re welcome—I’ll be here if you need anything else later.
-[9] agent: Before we wrap up, how would you rate your experience with us today?
+[8] agent: Sounds good—if you need anything else later on, I’ll be here to help.
+[9] agent: Before we wrap up, how would you rate your experience with me today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-731a2304-d303-490e-9e52-16fdb8d19453
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-150a769d-21a6-43d2-8f63-f2f26616f8a3

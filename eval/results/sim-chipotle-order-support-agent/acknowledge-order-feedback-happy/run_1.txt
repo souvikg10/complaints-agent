@@ -1,24 +1,24 @@
 scenario: Customer vents, declines action, and closes the complete feedback-only call chain
 run: 1
-timestamp: 2026-07-14T08:48:44Z
-conversation_id: sim-f43f7236-d96f-4ae9-a406-f9ddeab826e8
+timestamp: 2026-07-14T08:52:30Z
+conversation_id: sim-b3130fc1-7f4f-4916-8c7d-49d49d8c7dd3
 overall_result: FAIL
 
 --- Quality Criteria Results ---
 [PASS] The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
-  rationale: On T1 the system starts the `acknowledge_order_feedback` flow and immediately sets `feedback_only_active = true` without starting any order-status or order-issue flows, matching the user’s statement that they don’t want refund/coupon/replacement/follow-up.
+  rationale: On T1 the ledger shows flow_started: acknowledge_order_feedback and slot_set: feedback_only_active = true with no order-status or issue-resolution flows started, aligning with the user’s statement they are “not looking for a refund, coupon, replacement, or any follow-up, just venting.”
 
 [PASS] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
-  rationale: At T2 the `close_feedback_only` flow’s `validate_feedback_close_signal` accepts "No, that's it" by normalizing `feedback_close_signal` to "goodbye" on the first attempt, then `feedback_only_active` is set to false, `utter_feedback_closed` sends the concise close ("Understood. Take care."), `flow_completed: close_feedback_only` fires, and then `flow_completed: acknowledge_order_feedback` shows the parent feedback flow also completes.
+  rationale: At T2 the close_feedback_only flow’s validate_feedback_close_signal maps the user’s “No, that’s it.” to feedback_close_signal = goodbye on the first attempt, then sets feedback_only_active = false, runs utter_feedback_closed (the concise close), and completes both close_feedback_only and acknowledge_order_feedback flows.
 
 --- Quality Metrics ---
-bot_quality: 4.0/5
-  helpfulness: 4/5 — For a pure-venting scenario the assistant appropriately listened, acknowledged, and logged feedback, though it added a small bit of unnecessary process talk about saying goodbye.
-  repair_quality: 5/5 — The user did not indicate any misunderstanding or pushback on the assistant’s actions, so there were no repair opportunities to mishandle.
-  coherence: 4/5 — The assistant correctly tracked that the user just wanted to vent and then was done, but slightly contradicted itself by asking if there was anything else after saying it understood and telling them to take care.
-  tone: 3/5 — The tone is polite and empathetic, but somewhat scripted and repetitive (e.g., repeating the same line about saying goodbye), which makes it feel less natural.
-  task_completion: PASS — The user only wanted to vent without follow-up, and the assistant acknowledged the complaint and closed the interaction when the user said they were done.
-summary: The assistant handled the user’s desire to vent reasonably well by acknowledging the bad experience and indicating the feedback was logged, then ending the interaction when the user said they were finished. However, it repeated a procedural line twice and then re-opened the conversation with a follow-up question after signaling closure, and its phrasing felt a bit formulaic and canned overall.
+bot_quality: 3.5/5
+  helpfulness: 4/5 — The assistant correctly acknowledged the venting and confirmed the feedback was logged, which is all the user requested, though it added some unnecessary process language about closing the chat.
+  repair_quality: 5/5 — When the user said 'No, that’s it,' the assistant accepted that as closure and did not push for unwanted resolution or offers.
+  coherence: 2/5 — The assistant redundantly repeated 'When you’re all set, just say goodbye and I’ll close this out' in consecutive turns and then asked if there was anything else after the user already said they were done, showing inconsistency in tracking closure intent.
+  tone: 3/5 — The tone is polite and empathetic but somewhat scripted and repetitive, with formulaic closing lines that feel less natural.
+  task_completion: PASS — The user only wanted to vent without follow-up, and the assistant acknowledged the complaint and closed things out when the user said they were done.
+summary: The assistant successfully met the user’s simple goal of being heard and having feedback logged without pushing unwanted remedies. It handled the user’s closure signal appropriately but exhibited some coherence issues and slightly robotic, repetitive phrasing around how the conversation would be closed. Overall it was adequate for the context but could be more concise and less scripted at the end.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -35,13 +35,13 @@ summary: The assistant handled the user’s desire to vent reasonably well by ac
 [PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I just wanted to say my last Chipotle meal was really disappointing – the rice was hard, the steak was cold and chewy, and everything was pretty bland. I don’t want a refund, coupon, replacement, or any follow-up, I just needed to vent about it.
+[1] user: I just wanted to say my last Chipotle bowl was really disappointing—undercooked rice, barely any protein, and everything was cold—but I’m not looking for a refund, coupon, replacement, or any follow-up, just venting.
 [2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
 [3] agent: When you’re all set, just say goodbye and I’ll close this out.
 [4] agent: When you’re all set, just say goodbye and I’ll close this out.
-[5] user: No, that's it.
+[5] user: No, that’s it.
 [6] agent: Understood. Take care.
 [7] agent: Is there anything else you’d like help with today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-f43f7236-d96f-4ae9-a406-f9ddeab826e8
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-b3130fc1-7f4f-4916-8c7d-49d49d8c7dd3

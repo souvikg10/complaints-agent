@@ -4,7 +4,6 @@ from typing import Any, Dict, List, Text
 
 from rasa_sdk import Action, Tracker
 from rasa_sdk.events import SlotSet
-from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 
 
@@ -16,7 +15,7 @@ class ValidateFeedbackCloseSignal(Action):
 
     async def run(
         self,
-        dispatcher: CollectingDispatcher,
+        dispatcher: Any,
         tracker: Tracker,
         domain: DomainDict,
     ) -> List[Dict[Text, Any]]:
@@ -36,8 +35,8 @@ class ValidateFeedbackCloseSignal(Action):
             r"\b(?:i'?m|i am)\s+(?:done|finished)\b",
         )
         if any(re.search(pattern, normalized) for pattern in completion_patterns):
-            # Keep the flow independent of the runtime regex dialect by returning one canonical value.
             return [SlotSet("feedback_close_signal", "goodbye")]
 
-        dispatcher.utter_message(response="utter_ask_feedback_close_signal")
+        # Returning None makes CALM's collect pattern re-ask exactly once. Do not dispatch
+        # the question here, or it is sent once by this action and once by the collect pattern.
         return [SlotSet("feedback_close_signal", None)]

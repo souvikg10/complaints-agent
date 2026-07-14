@@ -1,17 +1,18 @@
 scenario:
-  name: Feedback-only acknowledgement stays active until a plain goodbye closes it
+  name: Feedback-only close has one active farewell prompt and ends without generic follow-up
   simulation_context: >
     You are a calm Chipotle customer who only wants to share feedback about a disappointing meal.
-    On your first message, make clear that you do not want a refund, coupon, replacement, status
-    check, report, or any other action. After the assistant acknowledges the feedback and tells
-    you that a goodbye will close the conversation, say exactly: "That’s all I needed, thanks.
-    Goodbye." Do not introduce a new question, order number, compensation request, or support
-    topic. This scenario deliberately exercises the active feedback-only closing step rather
-    than injecting a slot and expecting the LLM to retrieve a separate standalone goodbye flow.
+    First, explicitly say you do not want a refund, coupon, replacement, status check, report, or
+    other action. After the acknowledgement and its farewell instruction, add one more sentence of
+    meal feedback without saying goodbye. The assistant should keep the feedback-only close active
+    and ask the same farewell question once, rather than starting another support flow or producing
+    fallback language. Then say exactly: "That’s all I needed, thanks. Goodbye." Do not introduce
+    an order number, compensation request, or another support topic.
   goals:
     criteria:
-      - The feedback-only acknowledgement leaves its dedicated child closing task active, so the farewell is collected as the expected next input rather than routed through generic fallback or knowledge-base behavior.
-      - The goodbye deterministically clears feedback-only state before the assistant sends its one-sentence close.
+      - The feedback-only acknowledgement starts its child closing task and non-farewell elaboration is treated as invalid close input, not a new topic or generic fallback.
+      - Each invalid close attempt gets one collect retry from CALM; the custom validator does not independently dispatch a duplicate prompt.
+      - The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
     assertions:
       - flow_started:
           flow_ids: [acknowledge_order_feedback]
@@ -28,5 +29,9 @@ scenario:
           utter_name: utter_out_of_scope
       - bot_did_not_utter:
           utter_name: utter_ask_wants_action
+      - bot_did_not_utter:
+          utter_name: utter_ask_continue_conversation
+      - bot_did_not_utter:
+          utter_name: utter_ask_rephrase
       - flow_completed:
           flow_id: close_feedback_only

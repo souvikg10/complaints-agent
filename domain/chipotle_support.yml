@@ -47,12 +47,8 @@ responses:
       buttons: [{title: "Wrong order", payload: "/SetSlots(issue_category=wrong_order)"}, {title: "Missing item", payload: "/SetSlots(issue_category=missing_item)"}, {title: "Food quality", payload: "/SetSlots(issue_category=food_quality)"}, {title: "Cold or damaged", payload: "/SetSlots(issue_category=cold_food)"}]
   utter_ask_issue_details: [{text: "Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it."}]
   utter_issue_safety: [{text: "I’m sorry this happened. Please don’t eat any more of the item, and keep the packaging and order details if you can. I’ve logged this for mock policy review; this build can’t provide a human handoff or issue compensation for a safety concern."}]
-  utter_offer_discount:
-    - text: "I found and verified the order. I can offer 20% off one entrée on a future meal. Would you like me to issue it?"
-      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
-  utter_offer_credit:
-    - text: "I found and verified the order. I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it?"
-      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
+  utter_offer_discount: [{text: "I found and verified the order. The available remedy is 20% off one entrée on a future meal."}]
+  utter_offer_credit: [{text: "I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up."}]
   utter_ask_resolution_acceptance:
     - text: "Would you like me to issue the approved future-meal remedy?"
       buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]

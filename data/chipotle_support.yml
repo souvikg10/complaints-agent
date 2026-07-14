@@ -66,9 +66,10 @@ flows:
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
-    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
+    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Starting this flow deliberately abandons any interrupted timing lookup so the customer is not asked to resume it afterward. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
     persisted_slots: [order_id, issue_category, issue_details, resolution_acceptance]
     steps:
+      - action: action_cancel_interrupted_flows
       - action: utter_issue_empathy
       - collect: order_id
         description: "Chipotle order or confirmation number. A matching, valid Chipotle order number such as CP123 is required before this mock flow can offer any coupon or credit. Do not collect payment details."
@@ -109,7 +110,8 @@ flows:
         next: collect_resolution_acceptance
       - id: collect_resolution_acceptance
         collect: resolution_acceptance
-        description: "Whether the customer clearly accepts the offered future-meal credit or discount: yes or no."
+        description: "Whether the customer clearly accepts the offered future-meal credit or discount: yes or no. This is a fresh decision for the remedy just offered."
+        ask_before_filling: true
         force_slot_filling: true
         rejections: [{if: slots.resolution_acceptance = null, utter: utter_ask_resolution_acceptance}]
         next: accepted_resolution
@@ -187,7 +189,8 @@ flows:
   acknowledge_order_feedback:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
-    description: "Use before every other support flow when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. This is still Chipotle meal feedback, not an unrelated request. They may be upset about bad, cold, wrong, or disappointing food, but they explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge without collecting an order number, without offering compensation, and keep the feedback-only goodbye child active."
+    run_pattern_completed: false
+    description: "Use before every other support flow when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. This is still Chipotle meal feedback, not an unrelated request. They may be upset about bad, cold, wrong, or disappointing food, but they explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge without collecting an order number, without offering compensation, and keep the feedback-only goodbye child active. The deliberate close is final and must not trigger a generic further-help question."
     persisted_slots: [feedback_only_active]
     steps:
       - set_slots: [{feedback_only_active: true}]
@@ -197,11 +200,12 @@ flows:
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
-    description: "Child-only closing task used after feedback-only acknowledgement. It accepts natural goodbyes, including Goodbye, That’s all I needed, thanks. Goodbye, and No, that's it. The custom validator normalizes Unicode punctuation and returns a canonical close value, then the task resets feedback-only state and closes warmly."
+    run_pattern_completed: false
+    description: "Child-only closing task used after feedback-only acknowledgement. It accepts natural goodbyes, including Goodbye, That’s all I needed, thanks. Goodbye, and No, that's it. Until a farewell arrives, it stays active and asks the close question once per non-farewell response. The custom validator normalizes Unicode punctuation and returns a canonical close value, then the task resets feedback-only state and closes warmly without a generic follow-up."
     if: False
     steps:
       - collect: feedback_close_signal
-        description: "A clear conversational farewell or statement that the customer is done after feedback-only acknowledgement, such as goodbye, bye, that is all, no that is it, or I am all set. Validation is performed exclusively by validate_feedback_close_signal so flow regex behavior cannot reject valid Unicode farewell text."
+        description: "A clear conversational farewell or statement that the customer is done after feedback-only acknowledgement, such as goodbye, bye, that is all, no that is it, or I am all set. Other feedback detail is not a farewell and should leave this closing question active. Validation is performed exclusively by validate_feedback_close_signal so flow regex behavior cannot reject valid Unicode farewell text."
         force_slot_filling: true
       - set_slots: [{feedback_only_active: false}]
       - action: utter_feedback_closed

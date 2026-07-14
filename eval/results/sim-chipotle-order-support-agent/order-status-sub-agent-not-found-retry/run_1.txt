@@ -1,24 +1,24 @@
 scenario: Order status sub-agent handles not-found retry before a successful lookup
 run: 1
-timestamp: 2026-07-14T08:52:30Z
-conversation_id: sim-c08b9222-9f4b-4f44-92b3-99cdcd54fcea
+timestamp: 2026-07-14T08:55:44Z
+conversation_id: sim-08ce3de2-5b5f-4a46-b057-4290de2da8e7
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent asks for a corrected order identifier after the first lookup is not found.
-  rationale: After the first lookup result `order_lookup_result = not_found`, the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and then asks again "What’s the order or confirmation number?", which is a request for a corrected order identifier.
+  rationale: After the first lookup result was not_found at T2, the bot said "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and then asked again "What’s the order or confirmation number?", explicitly requesting a corrected identifier.
 
 [PASS] The agent completes the second lookup instead of stopping after the failed first lookup.
-  rationale: On T3, after the user provides CP999, the ledger shows `flow_started: order_status_sub_agent`, `action: action_mock_order_status`, and then `flow_completed: order_status_sub_agent` with the bot returning a delayed status, indicating the second lookup was completed.
+  rationale: At T3, after the user provided CP999, the ledger shows flow_started: order_status_sub_agent, action: action_mock_order_status, and flow_completed: order_status_sub_agent, and the bot reports "Order CP999 is delayed", confirming the second lookup was completed.
 
 --- Quality Metrics ---
-bot_quality: 4.75/5
-  helpfulness: 5/5 — Once given a valid order number, the assistant gave a concrete status update, delay reason, timing estimate, and next-step guidance fully addressing the user's request.
-  repair_quality: 5/5 — The user never signaled misunderstanding or pushed back, so there was no repair opportunity to mishandle.
-  coherence: 5/5 — The assistant correctly updated from the initial invalid order number to the new one and stayed consistent about the user's intent to track that specific order.
-  tone: 4/5 — The tone is polite and clear but slightly formulaic and repetitive in the order-number prompt, though still easy to read and appropriate.
-  task_completion: PASS — The assistant successfully checked the revised order number, provided a clear delay estimate and guidance, and the user explicitly confirmed their question was answered.
-summary: The assistant efficiently guided the user through providing a valid order number, then supplied a specific and actionable status update on the delayed order. It maintained consistent context and responded in a polite, clear style, though some of the slot-filling phrasing was a bit repetitive. Overall, the conversation resolved the user's need smoothly and completely.
+bot_quality: 5.0/5
+  helpfulness: 5/5 — Once given a valid order number, the assistant clearly stated the order was delayed, explained why, and provided a specific updated timing and guidance on what to do.
+  repair_quality: 5/5 — When the first order number failed, the assistant prompted the user to re-check and then correctly proceeded with the new number without any misunderstanding or pushback from the user.
+  coherence: 5/5 — The assistant maintained context correctly, handled the transition from CP000 to CP999 smoothly, and kept the conversation aligned with the user’s goal throughout.
+  tone: 5/5 — The tone was friendly, clear, and natural, with appropriate politeness and simple language that fit the support context.
+  task_completion: PASS — The user wanted to know the status of their Chipotle order, and the assistant successfully provided a concrete delay update and timeframe for the order they confirmed (CP999).
+summary: The assistant efficiently helped the user find the status of their order by requesting the needed information, handling an invalid order number gracefully, and then providing a clear delay update once a valid number was given. It maintained context well and used a polite, natural tone throughout, ending with a standard but appropriate feedback prompt.
 
 --- Assertion Results ---
 [PASS] flow_started(order_status_sub_agent)
@@ -30,15 +30,15 @@ summary: The assistant efficiently guided the user through providing a valid ord
 [1] user: Hi, where is my Chipotle order?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Sure, the order number is CP000.
+[4] user: The order number is CP000.
 [5] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
 [6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[7] user: Let’s try CP999 instead.
+[7] user: Let me double-check—use CP999 instead.
 [8] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
-[9] agent: Is there anything else I can help you with regarding your order today?
-[10] user: No, that answers my question, thanks.
+[9] agent: Is there anything else you’d like help with regarding your order today?
+[10] user: Got it, thanks for the update—that’s all I needed.
 [11] agent: You’re welcome—if anything else comes up with your order, I’ll be here to help.
-[12] agent: How did I do in helping you today?
+[12] agent: How did this support experience go for you today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-c08b9222-9f4b-4f44-92b3-99cdcd54fcea
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-08ce3de2-5b5f-4a46-b057-4290de2da8e7

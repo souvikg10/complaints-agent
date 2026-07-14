@@ -1,24 +1,24 @@
 scenario: Customer vents, declines action, and closes the complete feedback-only call chain
 run: 1
-timestamp: 2026-07-14T08:52:30Z
-conversation_id: sim-b3130fc1-7f4f-4916-8c7d-49d49d8c7dd3
+timestamp: 2026-07-14T08:55:44Z
+conversation_id: sim-86e49357-f4dc-4b68-ac81-09f8c2db039a
 overall_result: FAIL
 
 --- Quality Criteria Results ---
 [PASS] The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
-  rationale: On T1 the ledger shows flow_started: acknowledge_order_feedback and slot_set: feedback_only_active = true with no order-status or issue-resolution flows started, aligning with the user’s statement they are “not looking for a refund, coupon, replacement, or any follow-up, just venting.”
+  rationale: On T1 the flow `acknowledge_order_feedback` starts with `feedback_only_active = true` and no order-status or order-issue flows are started, matching the user's statement that they do not want any resolution, only to share feedback.
 
 [PASS] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
-  rationale: At T2 the close_feedback_only flow’s validate_feedback_close_signal maps the user’s “No, that’s it.” to feedback_close_signal = goodbye on the first attempt, then sets feedback_only_active = false, runs utter_feedback_closed (the concise close), and completes both close_feedback_only and acknowledge_order_feedback flows.
+  rationale: On T2 the `close_feedback_only` flow’s `validate_feedback_close_signal` accepts "No, that's it" by setting `feedback_close_signal = goodbye`, then clears `feedback_only_active = false`, runs `utter_feedback_closed`, and both `close_feedback_only` and `acknowledge_order_feedback` show `flow_completed`, indicating the child accepted the first closure signal, closed, and let the parent complete.
 
 --- Quality Metrics ---
-bot_quality: 3.5/5
-  helpfulness: 4/5 — The assistant correctly acknowledged the venting and confirmed the feedback was logged, which is all the user requested, though it added some unnecessary process language about closing the chat.
-  repair_quality: 5/5 — When the user said 'No, that’s it,' the assistant accepted that as closure and did not push for unwanted resolution or offers.
-  coherence: 2/5 — The assistant redundantly repeated 'When you’re all set, just say goodbye and I’ll close this out' in consecutive turns and then asked if there was anything else after the user already said they were done, showing inconsistency in tracking closure intent.
-  tone: 3/5 — The tone is polite and empathetic but somewhat scripted and repetitive, with formulaic closing lines that feel less natural.
-  task_completion: PASS — The user only wanted to vent without follow-up, and the assistant acknowledged the complaint and closed things out when the user said they were done.
-summary: The assistant successfully met the user’s simple goal of being heard and having feedback logged without pushing unwanted remedies. It handled the user’s closure signal appropriately but exhibited some coherence issues and slightly robotic, repetitive phrasing around how the conversation would be closed. Overall it was adequate for the context but could be more concise and less scripted at the end.
+bot_quality: 5.0/5
+  helpfulness: 5/5 — For a user whose sole goal was to express dissatisfaction without remediation, the assistant’s acknowledgment and confirmation that feedback was logged fully met the need.
+  repair_quality: 5/5 — There were no signs of misunderstanding or user pushback that required repair, so no repair opportunities were missed.
+  coherence: 5/5 — The assistant consistently tracked the user's intent to just share feedback and then end the interaction, responding appropriately to the final 'No, that's it.'
+  tone: 5/5 — The tone was empathetic, concise, and natural, acknowledging the user’s disappointment and closing politely without being pushy.
+  task_completion: PASS — The user only wanted to vent without any follow-up, and the assistant acknowledged the complaint, logged the feedback, and then cleanly closed the conversation when the user said they were done.
+summary: The assistant accurately understood that the user only wanted to vent and not receive any concrete resolution, acknowledged the issue, and confirmed the feedback was logged. It then respected the user’s indication that they were done and closed the conversation with an appropriate, empathetic tone. Overall, the exchange was concise, coherent, and well-suited to the user’s limited request.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -35,13 +35,11 @@ summary: The assistant successfully met the user’s simple goal of being heard 
 [PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I just wanted to say my last Chipotle bowl was really disappointing—undercooked rice, barely any protein, and everything was cold—but I’m not looking for a refund, coupon, replacement, or any follow-up, just venting.
+[1] user: I just wanted to say my Chipotle order today was really disappointing—everything was cold and bland—but I don’t want a refund, coupon, replacement, or any follow-up, just getting it off my chest.
 [2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
 [3] agent: When you’re all set, just say goodbye and I’ll close this out.
-[4] agent: When you’re all set, just say goodbye and I’ll close this out.
-[5] user: No, that’s it.
-[6] agent: Understood. Take care.
-[7] agent: Is there anything else you’d like help with today?
+[4] user: No, that's it.
+[5] agent: Understood. Take care.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-b3130fc1-7f4f-4916-8c7d-49d49d8c7dd3
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-86e49357-f4dc-4b68-ac81-09f8c2db039a

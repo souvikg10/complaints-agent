@@ -3,7 +3,7 @@ version: "3.1"
 flows:
   welcome_and_route:
     name: "Welcome and route Chipotle support"
-    description: "Start a new Chipotle order-support conversation only when the customer greets the assistant, asks what it can do, or needs help choosing a support topic. Give the Chipotle welcome and offer order timing or order-problem help. Do not use for an explicit order-status request, an explicit wrong, missing, or food-quality complaint, or a customer who is only venting and expressly wants no action."
+    description: "Start a new Chipotle order-support conversation when the customer greets the assistant, asks what it can do, or needs help choosing a support topic. Give the Chipotle welcome and offer order timing or order-problem help. Do not use for an explicit order-status request, an explicit wrong, missing, or food-quality complaint, or a customer who is only venting and expressly wants no action."
     steps:
       - action: utter_chipotle_welcome
       - action: utter_chipotle_scope
@@ -66,10 +66,9 @@ flows:
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
-    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Starting this flow deliberately abandons any interrupted timing lookup so the customer is not asked to resume it afterward. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
+    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
     persisted_slots: [order_id, issue_category, issue_details, resolution_acceptance]
     steps:
-      - action: action_cancel_interrupted_flows
       - action: utter_issue_empathy
       - collect: order_id
         description: "Chipotle order or confirmation number. A matching, valid Chipotle order number such as CP123 is required before this mock flow can offer any coupon or credit. Do not collect payment details."
@@ -190,24 +189,21 @@ flows:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
     run_pattern_completed: false
-    description: "Use before every other support flow when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. This is still Chipotle meal feedback, not an unrelated request. They may be upset about bad, cold, wrong, or disappointing food, but they explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge without collecting an order number, without offering compensation, and keep the feedback-only goodbye child active. The deliberate close is final and must not trigger a generic further-help question."
+    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. Log only the feedback detail already supplied when sufficient. Leave the conversation naturally open after the acknowledgement; do not ask for a farewell or invoke the closing flow yet. If the customer adds feedback, use this flow again. If they now want a remedy, route to report_chipotle_order_issue while retaining their details."
     persisted_slots: [feedback_only_active]
     steps:
       - set_slots: [{feedback_only_active: true}]
+      - action: action_mock_feedback_logging
       - action: utter_venting_acknowledged
-      - call: close_feedback_only
         next: END
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
     run_pattern_completed: false
-    description: "Child-only closing task used after feedback-only acknowledgement. It accepts natural goodbyes, including Goodbye, That’s all I needed, thanks. Goodbye, and No, that's it. Until a farewell arrives, it stays active and asks the close question once per non-farewell response. The custom validator normalizes Unicode punctuation and returns a canonical close value, then the task resets feedback-only state and closes warmly without a generic follow-up."
-    if: False
+    if: slots.feedback_only_active is True
+    description: "Use only after a feedback-only acknowledgement or light-help exchange when the customer clearly says they are done, for example no that is it, that is all, thanks, bye, goodbye, I am good, or all set. Never use for new complaint detail or a request for action. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
     steps:
-      - collect: feedback_close_signal
-        description: "A clear conversational farewell or statement that the customer is done after feedback-only acknowledgement, such as goodbye, bye, that is all, no that is it, or I am all set. Other feedback detail is not a farewell and should leave this closing question active. Validation is performed exclusively by validate_feedback_close_signal so flow regex behavior cannot reject valid Unicode farewell text."
-        force_slot_filling: true
-      - set_slots: [{feedback_only_active: false}]
+      - set_slots: [{feedback_only_active: false}, {feedback_close_signal: "closed"}]
       - action: utter_feedback_closed
         next: END
 

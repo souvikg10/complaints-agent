@@ -1,24 +1,24 @@
 scenario: Customer vents, declines action, and closes the complete feedback-only call chain
 run: 2
-timestamp: 2026-07-14T08:52:43Z
-conversation_id: sim-3a7d9266-6b4e-4905-b941-8b87f7e486e6
+timestamp: 2026-07-14T08:55:53Z
+conversation_id: sim-27fedb5c-7ba7-4eef-90bd-baa76761734c
 overall_result: FAIL
 
 --- Quality Criteria Results ---
 [PASS] The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
-  rationale: On T1 the ledger shows `flow_started: acknowledge_order_feedback` and no order-status or order-issue flows, matching the user’s explicit statement that they only wanted to vent and not request any resolution.
+  rationale: On T1 the flow `acknowledge_order_feedback` is started with `slot_set: feedback_only_active = true` and there is no order-status or order-issue flow started, matching the user’s explicit “I’m not looking for a refund, coupon, replacement, status check, report, or any follow-up”.
 
-[FAIL] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
-  rationale: Although T2 shows the close flow accepting the signal, clearing `feedback_only_active`, sending `utter_feedback_closed`, and completing both flows, the visible bot reply adds an extra follow-up question (“Is there anything else I can assist you with today?”) instead of a single concise close, so it did not just send the concise close and return on its first attempt.
+[PASS] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
+  rationale: At T2 the `close_feedback_only` flow’s validator accepts “No, that's it” as a close signal, normalizes it to `feedback_close_signal = goodbye`, clears `feedback_only_active = false`, runs `utter_feedback_closed`, and both `flow_completed: close_feedback_only` and `flow_completed: acknowledge_order_feedback` are logged, showing the closing child and parent feedback flow both completed on the first attempt.
 
 --- Quality Metrics ---
-bot_quality: 3.5/5
-  helpfulness: 4/5 — For a venting-only interaction, the bot appropriately acknowledged the feedback and confirmed it was logged, though it slightly undercuts this by prompting again after the user said they were done.
-  repair_quality: 3/5 — The assistant correctly acknowledged “No, that's it” but then immediately asked if there was anything else, partially ignoring the user's signal that they were finished.
-  coherence: 3/5 — The assistant initially respected the user's intent but contradicted itself by reopening the conversation after the user said they were done and after earlier saying it would close things when told goodbye.
-  tone: 4/5 — The tone is polite, empathetic, and natural overall, though a bit formulaic and repetitive (“When you’re all set…” twice and a standard closing question).
-  task_completion: PASS — The user only wanted to vent without any follow-up, and the assistant acknowledged the complaint, logged the feedback, and then closed things when the user said they were done.
-summary: The assistant generally handled the venting scenario well by acknowledging the user’s frustration and confirming the feedback was logged. However, it showed some inconsistency by repeating a prompt, then asking if there was anything else after the user had clearly indicated they were finished, which slightly weakens repair quality and coherence. Tone was courteous and conversational throughout, albeit somewhat templated.
+bot_quality: 4.75/5
+  helpfulness: 4/5 — For a venting interaction with no requested action, the assistant validated the experience and confirmed the feedback was logged, though it could have added a brief empathetic acknowledgment of the specific issues mentioned.
+  repair_quality: 5/5 — There were no user corrections or pushback; the assistant tracked the user’s intent throughout without needing repair.
+  coherence: 5/5 — The assistant consistently understood that the user only wanted to vent and then close the conversation, and responded appropriately to the final 'No, that's it.'
+  tone: 5/5 — The tone was natural, concise, polite, and appropriately empathetic without being overbearing.
+  task_completion: PASS — The user only wanted to vent and not receive any remedial action, and the assistant acknowledged the complaint, logged the feedback, and then respected the user’s indication that they were done.
+summary: The assistant handled this brief venting interaction well: it acknowledged the user’s dissatisfaction, stated that the feedback was logged, and respected the user’s desire not to pursue remedies or follow-ups. The conversation stayed coherent and the tone was natural and empathetic, though a slightly more tailored acknowledgment of the specific issues could have improved perceived helpfulness.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -35,13 +35,11 @@ summary: The assistant generally handled the venting scenario well by acknowledg
 [PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I just wanted to say my last Chipotle order was really disappointing—the rice was undercooked, the steak was chewy, and everything was barely warm. I don’t want a refund, coupon, replacement, status check, order report, or any follow-up, I just needed to vent about it.
+[1] user: I just wanted to say my last Chipotle order was really disappointing – the rice was undercooked, the steak was chewy, and everything was barely warm. I’m not looking for a refund, coupon, replacement, status check, report, or any follow-up, I just needed to vent about it.
 [2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
 [3] agent: When you’re all set, just say goodbye and I’ll close this out.
-[4] agent: When you’re all set, just say goodbye and I’ll close this out.
-[5] user: No, that's it.
-[6] agent: Understood. Take care.
-[7] agent: Is there anything else I can assist you with today?
+[4] user: No, that's it.
+[5] agent: Understood. Take care.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3a7d9266-6b4e-4905-b941-8b87f7e486e6
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-27fedb5c-7ba7-4eef-90bd-baa76761734c

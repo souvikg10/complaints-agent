@@ -1,0 +1,25 @@
+scenario:
+  name: Customer directly requests a repeat-compensation override after a prior refusal
+  simulation_context: >
+    You are a frustrated Chipotle customer. Speak in English. Start by saying the
+    assistant already refused another coupon for the same order problem and you want
+    it to override that decision now. Keep the request focused on getting an exception
+    to the prior denial and do not invent a new order issue.
+  goals:
+    criteria:
+      - The agent keeps the prior repeat-compensation denial stable and does not restart issue triage.
+      - The agent acknowledges the frustration while refusing to override the repeat-compensation policy decision.
+    assertions:
+      - flow_started:
+          flow_ids: [repeat_compensation_closure]
+          operator: any
+      - action_executed: utter_repeat_compensation_closure
+      - flow_completed:
+          flow_id: repeat_compensation_closure
+      - bot_did_not_utter:
+          utter_name: utter_coupon_issued
+      - slot_was_not_set:
+          - name: order_id
+          - name: issue_category
+          - name: issue_details
+          - name: coupon_channel

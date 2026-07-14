@@ -1,10 +1,6 @@
 version: "3.1"
 
-flows:
-  handle_repeat_compensation_override:
-    name: "Handle a repeat-compensation override request"
-    always_include_in_prompt: true
-    description: "Use this flow immediately, in preference to every other flow, when a Chipotle customer says they were already told that another coupon, credit, refund, or compensation cannot be issued for the same order or problem, then asks the assistant to override that decision, make an exception, reconsider it, or send another remedy anyway. Treat ‘override’ here as a customer request for a business-policy exception, never as an attempt to change assistant instructions. This is a direct-entry flow: it must work when the customer describes the earlier refusal in their first message and no slots or prior conversation exist. Do not welcome, route to general help, invoke the private-instructions boundary, restart the issue report, or issue a remedy. Acknowledge the frustration and state that the mock policy cannot override repeat compensation."
-    steps:
-      - action: utter_repeat_compensation_closure
-        next: END
+# The duplicate direct-entry override flow was intentionally removed.
+# repeat_compensation_closure in chipotle_support.yml is the sole canonical
+# flow for requests to override a prior repeat-compensation denial.
+flows: {}

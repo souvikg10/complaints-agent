@@ -1,0 +1,35 @@
+scenario: User asks an out-of-scope nutrition question
+run: 2
+timestamp: 2026-07-14T08:43:35Z
+conversation_id: sim-b4bbe31e-178b-4886-9f05-e37515c72479
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: The bot explicitly says "I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions," which clearly defines its limited order-support scope in response to a nutrition request.
+
+--- Quality Metrics ---
+bot_quality: 3.75/5
+  helpfulness: 1/5 — It provided no substantive answer or alternative resource for the nutrition question, only an out-of-scope deflection.
+  repair_quality: 5/5 — There were no user corrections or pushback to repair, so no repair opportunities were missed.
+  coherence: 5/5 — The assistant consistently maintained context about its limited scope and responded appropriately to the user's closing message.
+  tone: 4/5 — The tone was polite, conversational, and clear, though slightly formulaic in its closing survey prompt.
+  task_completion: FAIL — The assistant did not answer the user's calorie question and instead stated that nutrition is out of scope, after which the user withdrew without their original need being met.
+summary: The assistant clearly communicated its scope limitations and maintained coherent, polite dialogue, but it completely failed to address the user's actual request about calorie information. As a result, the interaction was unhelpful for the user's need, even though the conversation itself was orderly and courteous.
+
+--- Assertion Results ---
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, fajita veggies, mild salsa, cheese, and lettuce?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[4] agent: Is there something else I can assist you with today?
+[5] user: Got it, thanks. No, that’s all I needed then.
+[6] agent: Sounds good—I’ll be here if you need anything else later on.
+[7] agent: How did your experience with me today work out for you?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-b4bbe31e-178b-4886-9f05-e37515c72479

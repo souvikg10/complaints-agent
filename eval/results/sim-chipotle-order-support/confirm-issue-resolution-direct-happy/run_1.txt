@@ -1,0 +1,42 @@
+scenario: Verified order can complete an already accepted remedy
+run: 1
+timestamp: 2026-07-14T08:42:16Z
+conversation_id: sim-67898cda-f7e7-44a3-a154-961622543fda
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] The agent collects the preferred delivery channel only after all three prerequisites exist: verified order, eligible issue, and accepted remedy.
+  rationale: The ledger shows the flow confirm_issue_resolution only as flow_started at T1 and immediately collecting coupon_channel at T2 without any explicit events indicating verified order, eligible issue, and accepted remedy were established before asking, so the required ordering is not clearly satisfied.
+
+[PASS] The agent issues the already-approved remedy after email is selected.
+  rationale: At T2, after coupon_channel = email is set, the action action_mock_coupon_issuance runs and slots for coupon_code, coupon_value, coupon_expiration, and coupon_issued are set, and the bot then presents the issued coupon, so issuance occurs after email is selected.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It directly fulfilled the user’s request by providing a specific, immediately usable remedy code with clear terms.
+  repair_quality: 5/5 — There were no disfluency or correction signals from the user, so no repair was needed or mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order context and the user’s choice to send the code to the order email without contradiction or re-asking.
+  tone: 5/5 — The tone was natural, polite, and conversational throughout, including a clear close and feedback request.
+  task_completion: PASS — The assistant clearly delivered the requested remedy by issuing and presenting the discount code and confirming it would be sent to the order email.
+summary: The assistant successfully helped the user receive their remedy by issuing and displaying a clear discount code and acknowledging it would go to the order email. It maintained consistent context and a friendly, professional tone, and the interaction ended smoothly with a brief satisfaction check.
+
+--- Assertion Results ---
+[PASS] flow_started(confirm_issue_resolution)
+[PASS] action_executed(action_mock_coupon_issuance)
+[PASS] action_executed(utter_email_mock_note)
+[PASS] slot_was_set(coupon_channel='email', coupon_issued=True)
+[PASS] flow_completed(confirm_issue_resolution)
+
+--- Raw Transcript ---
+[1] user: Hi, I already reported an issue with order CP123 and accepted the remedy—can you help me receive it now?
+[2] agent: Would you like the code shown here or sent to the email used for the order?
+[3] user: Please send it to the email used for the order.
+[4] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[5] agent: Issued: 20% off one entrée. Your code is FRESH-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[6] agent: Is there anything else I can assist you with today?
+[7] user: No, that’s all I needed, thanks for your help.
+[8] agent: You’re very welcome—if you need anything else later, I’ll be here to help.
+[9] agent: Before we wrap up, how would you rate your experience with us today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-67898cda-f7e7-44a3-a154-961622543fda

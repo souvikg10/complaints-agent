@@ -1,0 +1,42 @@
+scenario: Feedback-only acknowledgement stays active until a plain goodbye closes it
+run: 1
+timestamp: 2026-07-14T08:42:16Z
+conversation_id: sim-f9c3118f-5fa5-4491-ac76-2d2fe45a38ba
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The feedback-only acknowledgement leaves its dedicated child closing task active, so the farewell is collected as the expected next input rather than routed through generic fallback or knowledge-base behavior.
+  rationale: At T1 `flow_started: close_feedback_only` is initiated and at T2 the user’s goodbye is captured as `slot_set: feedback_close_signal = That’s all I needed, thanks. Goodbye` with no evidence of fallback or other flows, showing the dedicated closing task remained active to collect the farewell.
+
+[FAIL] The goodbye deterministically clears feedback-only state before the assistant sends its one-sentence close.
+  rationale: While T2 shows `slot_set: feedback_close_signal = null` (clearing the close signal), there is no evidence in the ledger that `feedback_only_active` is cleared and, in the transcript, the bot never sends a distinct one-sentence close, instead repeating “When you’re all set, just say goodbye and I’ll close this out.” twice.
+
+--- Quality Metrics ---
+bot_quality: 2.5/5
+  helpfulness: 1/5 — The assistant did not invite or capture any details about the user's disappointing meal and instead gave generic acknowledgments and a repeated closing line, providing no substantive help with the requested feedback task.
+  repair_quality: 5/5 — There were no user corrections or pushback in the conversation, so there were no repair opportunities to mishandle.
+  coherence: 1/5 — The assistant contradicted its own state by saying it had 'logged the feedback' before any feedback was given and then repeatedly prompted the user to say goodbye even after the user did so.
+  tone: 3/5 — The wording is generally polite and conversational, but the repeated closing phrase feels formulaic and slightly robotic.
+  task_completion: FAIL — The assistant never actually let the user share any feedback content and instead repeated a closing prompt, so the user's goal of expressing what went wrong with their meal was not fulfilled.
+summary: The assistant was polite but fundamentally failed the core task: it neither collected nor conveyed the user’s actual feedback, instead offering a premature claim of logging it and then looping on a closing prompt. Its main issues are a lack of substantive engagement with the user’s stated goal and poor context tracking, leading to an incoherent interaction despite neutral, civil tone.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] flow_started(close_feedback_only)
+[PASS] action_executed(utter_venting_acknowledged)
+[FAIL] action_executed(utter_feedback_closed) — Action 'utter_feedback_closed' did not execute.
+[FAIL] slot_was_set(feedback_only_active=False) — Slot 'feedback_only_active' was set to a different value 'True' than the expected 'False' value.
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
+
+--- Raw Transcript ---
+[1] user: I had a pretty disappointing meal from Chipotle today and just want to share feedback about what went wrong—I’m not looking for a refund, coupon, replacement, or any kind of follow-up action.
+[2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
+[3] agent: When you’re all set, just say goodbye and I’ll close this out.
+[4] user: That’s all I needed, thanks. Goodbye.
+[5] agent: When you’re all set, just say goodbye and I’ll close this out.
+[6] agent: When you’re all set, just say goodbye and I’ll close this out.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-f9c3118f-5fa5-4491-ac76-2d2fe45a38ba

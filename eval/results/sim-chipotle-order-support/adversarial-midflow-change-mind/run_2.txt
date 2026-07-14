@@ -1,0 +1,46 @@
+scenario: User changes their mind in the middle of an order-status conversation
+run: 2
+timestamp: 2026-07-14T08:43:33Z
+conversation_id: sim-d03c272d-f18f-435e-8ca6-d74e8997ccd1
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent handles the mid-conversation topic change without looping or becoming incoherent.
+  rationale: When the user changed from tracking to a wrong-order issue ("never mind on the tracking—I actually need help with a wrong order"), the bot cleanly switched to the issue flow, gathered details, issued the credit, and then correctly canceled the earlier status-check flow without repeating or contradicting itself.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — The assistant gathered the right information, correctly identified and addressed the wrong-order issue, and delivered a clear, specific remedy with all necessary details.
+  repair_quality: 5/5 — When the user shifted from tracking to a wrong-order problem, the assistant smoothly adapted and proceeded with the new goal without friction or confusion.
+  coherence: 5/5 — The assistant consistently tracked the order number, issue type, and final resolution without re-asking for already provided details or reverting to the original tracking intent.
+  tone: 5/5 — The tone is friendly, empathetic, and clear throughout, with natural phrasing appropriate to a customer support interaction.
+  task_completion: PASS — The assistant successfully verified the order, issued the $8 credit with a concrete code and terms, and the user explicitly confirmed that this resolved their need.
+summary: This conversation is a strong, production-quality interaction: the assistant correctly shifted from tracking to a wrong-order flow, gathered relevant details, and provided a concrete credit that met the user’s needs. Its responses were coherent, concise, and well-toned, with no noticeable breakdowns in state tracking or repair behavior.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me where my Chipotle order is? It seems late.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: Oh wait, never mind on the tracking—I actually need help with a wrong order I just got instead. Can you help with that?
+[5] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[7] user: Yeah, the order number is CP456. They mixed up some of the items.
+[8] agent: What best describes the problem?
+[9] user: They gave me the wrong items—my burrito bowl and sides aren’t what I ordered.
+[10] agent: Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it.
+[11] user: My chicken burrito bowl came as a steak bowl with sour cream (I asked for no dairy), and my side of chips was missing. I noticed right away, didn’t eat the bowl, and set it aside.
+[12] agent: I found and verified the order. I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?
+[13] agent: Would you like me to issue the approved future-meal remedy?
+[14] user: Yes, please go ahead and issue the $8 credit here in chat.
+[15] agent: Issued: $8 item credit. Your code is CREDIT-CP456, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[16] agent: Would you like to move on to checking your order’s status and timing now?
+[17] user: No, that’s okay—getting the credit was all I needed. Thanks for the help!
+[18] agent: Got it — I’ll stop checking on your Chipotle order status now.
+[19] agent: Before we wrap up, is there anything else I can help you with today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d03c272d-f18f-435e-8ca6-d74e8997ccd1

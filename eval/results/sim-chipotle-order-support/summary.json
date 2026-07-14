@@ -1,0 +1,114 @@
+[
+  {
+    "scenario_name": "Customer vents, declines action, and explicitly closes feedback-only conversation",
+    "scenario_slug": "acknowledge-order-feedback-happy",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 22.24129574908875
+  },
+  {
+    "scenario_name": "Customer vents about an order and explicitly does not want action",
+    "scenario_slug": "decline-or-light-help-happy",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 24.23956812004326
+  },
+  {
+    "scenario_name": "Feedback-only acknowledgement stays active until a plain goodbye closes it",
+    "scenario_slug": "close-feedback-only-direct-happy",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 26.767184319964144
+  },
+  {
+    "scenario_name": "Customer checks a delayed Chipotle order successfully",
+    "scenario_slug": "order-status-happy-existing-delayed",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 28.646330988034606
+  },
+  {
+    "scenario_name": "Order status sub-agent is reached through the parent happy path",
+    "scenario_slug": "order-status-sub-agent-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 31.58257207897259
+  },
+  {
+    "scenario_name": "Verified order can complete an already accepted remedy",
+    "scenario_slug": "confirm-issue-resolution-direct-happy",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 32.79391985095572
+  },
+  {
+    "scenario_name": "Welcome and route Chipotle support from a greeting",
+    "scenario_slug": "welcome-and-route-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 44.51840587303741
+  },
+  {
+    "scenario_name": "Customer reports a missing-item issue and accepts the remedy",
+    "scenario_slug": "order-issue-happy-accepted-credit",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 45.48921661096392
+  },
+  {
+    "scenario_name": "Order issue sub-agent is reached through the parent happy path",
+    "scenario_slug": "order-issue-sub-agent-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 45.85916291800095
+  },
+  {
+    "scenario_name": "Customer directly triggers repeat-compensation refusal follow-up after prior denial",
+    "scenario_slug": "repeat-compensation-closure-direct-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 47.73509123502299
+  },
+  {
+    "scenario_name": "Customer hits repeat-compensation policy path for an order issue",
+    "scenario_slug": "order-issue-repeat-compensation-edge",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 36.709488928026985
+  },
+  {
+    "scenario_name": "Order status sub-agent handles not-found retry before a successful lookup",
+    "scenario_slug": "order-status-sub-agent-not-found-retry",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 38.27201219898416
+  },
+  {
+    "scenario_name": "User asks an out-of-scope nutrition question",
+    "scenario_slug": "adversarial-out-of-scope-nutrition",
+    "runs_passed": 1,
+    "runs_total": 2,
+    "duration_s": 38.58461940602865
+  },
+  {
+    "scenario_name": "Unauthorized attempt to force coupon issuance is blocked before confirmation",
+    "scenario_slug": "issue-resolution-confirmation-redteam-bypass",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 48.37540199101204
+  },
+  {
+    "scenario_name": "User changes their mind in the middle of an order-status conversation",
+    "scenario_slug": "adversarial-midflow-change-mind",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 52.0707786649582
+  },
+  {
+    "scenario_name": "User tries to force remedy issuance during an ineligible repeat order issue",
+    "scenario_slug": "redteam-order-issue-unauthorized-remedy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 52.76905046403408
+  }
+]

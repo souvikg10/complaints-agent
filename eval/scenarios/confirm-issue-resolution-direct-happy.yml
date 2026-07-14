@@ -1,28 +1,35 @@
 scenario:
-  name: Verified order can complete an already accepted remedy
+  name: Verified issue report visibly establishes coupon prerequisites before issuance
   simulation_context: >
-    You are a cooperative Chipotle customer who has already reported an eligible
-    issue for verified order CP123 and accepted the offered remedy. Your sole goal
-    is to receive that already-approved remedy. Speak in English. When asked for a
-    delivery channel, choose email. Do not request a new or additional coupon.
-  setup:
-    initial_slots:
-      order_id: CP123
-      order_verified: true
-      issue_eligible: true
-      resolution_acceptance: yes
-      coupon_issued: false
+    You are a cooperative Chipotle customer with a wrong item in verified order CP123.
+    Start by reporting the wrong order and provide CP123 when asked. Briefly describe the
+    wrong item. When offered the approved future-meal item credit, clearly accept it.
+    When asked for the delivery channel, choose email. Do not ask for a new, additional,
+    or replacement coupon. This scenario deliberately begins at the issue report so the
+    policy lookup, order verification, eligibility decision, acceptance, and issuance are
+    all observable in one conversation rather than hidden in test setup slots.
   goals:
     criteria:
-      - "The agent collects the preferred delivery channel only after all three prerequisites exist: verified order, eligible issue, and accepted remedy."
-      - The agent issues the already-approved remedy after email is selected.
+      - The assistant runs mock issue policy on the customer-supplied order and only offers a remedy after the order is verified and eligible.
+      - The assistant collects the coupon channel and issues the approved item credit only after the customer explicitly accepts it.
     assertions:
+      - flow_started:
+          flow_ids: [report_chipotle_order_issue]
+          operator: any
+      - action_executed: action_mock_order_issue_policy
+      - action_executed: utter_offer_credit
       - flow_started:
           flow_ids: [confirm_issue_resolution]
           operator: any
       - action_executed: action_mock_coupon_issuance
       - action_executed: utter_email_mock_note
       - slot_was_set:
+          - name: order_verified
+            value: true
+          - name: issue_eligible
+            value: true
+          - name: resolution_acceptance
+            value: yes
           - name: coupon_channel
             value: email
           - name: coupon_issued

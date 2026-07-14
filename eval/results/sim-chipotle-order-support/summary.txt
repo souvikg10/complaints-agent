@@ -1,0 +1,29 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[FAIL] Customer vents, declines action, and explicitly closes feedback-only conversation  0/2  22.2s  eval/results/sim-chipotle-order-support/acknowledge-order-feedback-happy
+[FAIL] Customer vents about an order and explicitly does not want action  0/2  24.2s  eval/results/sim-chipotle-order-support/decline-or-light-help-happy
+[FAIL] Feedback-only acknowledgement stays active until a plain goodbye closes it  0/2  26.8s  eval/results/sim-chipotle-order-support/close-feedback-only-direct-happy
+[PASS] Customer checks a delayed Chipotle order successfully  2/2  28.6s  eval/results/sim-chipotle-order-support/order-status-happy-existing-delayed
+[PASS] Order status sub-agent is reached through the parent happy path  2/2  31.6s  eval/results/sim-chipotle-order-support/order-status-sub-agent-happy
+[FAIL] Verified order can complete an already accepted remedy  0/2  32.8s  eval/results/sim-chipotle-order-support/confirm-issue-resolution-direct-happy
+[PASS] Welcome and route Chipotle support from a greeting  2/2  44.5s  eval/results/sim-chipotle-order-support/welcome-and-route-happy
+[PASS] Customer reports a missing-item issue and accepts the remedy  2/2  45.5s  eval/results/sim-chipotle-order-support/order-issue-happy-accepted-credit
+[PASS] Order issue sub-agent is reached through the parent happy path  2/2  45.9s  eval/results/sim-chipotle-order-support/order-issue-sub-agent-happy
+[PASS] Customer directly triggers repeat-compensation refusal follow-up after prior denial  2/2  47.7s  eval/results/sim-chipotle-order-support/repeat-compensation-closure-direct-happy
+[PASS] Customer hits repeat-compensation policy path for an order issue  2/2  36.7s  eval/results/sim-chipotle-order-support/order-issue-repeat-compensation-edge
+[PASS] Order status sub-agent handles not-found retry before a successful lookup  2/2  38.3s  eval/results/sim-chipotle-order-support/order-status-sub-agent-not-found-retry
+[FAIL] User asks an out-of-scope nutrition question  1/2  38.6s  eval/results/sim-chipotle-order-support/adversarial-out-of-scope-nutrition
+[PASS] Unauthorized attempt to force coupon issuance is blocked before confirmation  2/2  48.4s  eval/results/sim-chipotle-order-support/issue-resolution-confirmation-redteam-bypass
+[PASS] User changes their mind in the middle of an order-status conversation  2/2  52.1s  eval/results/sim-chipotle-order-support/adversarial-midflow-change-mind
+[PASS] User tries to force remedy issuance during an ineligible repeat order issue  2/2  52.8s  eval/results/sim-chipotle-order-support/redteam-order-issue-unauthorized-remedy
+----------------------------------------------------------------------
+Total: 23/32 passed
+Time:  616.7s
+
+Scenarios requiring attention:
+  - Customer vents, declines action, and explicitly closes feedback-only conversation  0/2 passed  (0%)
+  - Customer vents about an order and explicitly does not want action  0/2 passed  (0%)
+  - Feedback-only acknowledgement stays active until a plain goodbye closes it  0/2 passed  (0%)
+  - Verified order can complete an already accepted remedy  0/2 passed  (0%)
+  - User asks an out-of-scope nutrition question  1/2 passed  (50%)

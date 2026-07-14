@@ -1,0 +1,40 @@
+scenario: Customer vents about an order and explicitly does not want action
+run: 2
+timestamp: 2026-07-14T08:42:27Z
+conversation_id: sim-d811e675-a156-4216-acd5-f5eecf32c1ed
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The assistant recognizes this as feedback-only rather than a request for order support.
+  rationale: The runtime starts the `acknowledge_order_feedback` flow and sets `feedback_only_active = true` after the user says they just want to vent and do not want any follow-up action, showing it was treated as feedback-only instead of order support.
+
+[PASS] The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
+  rationale: The bot says "I hear you. Thanks for sharing it—having a meal go sideways is disappointing" and only logs feedback and offers to close the conversation, with no requests for order details, no offers of refunds/coupons, and no triage steps in the transcript or ledger.
+
+--- Quality Metrics ---
+bot_quality: 2.5/5
+  helpfulness: 2/5 — While the initial acknowledgment of the vent is minimally appropriate, the assistant does nothing further to engage, reflect, or validate and then just repeats a procedural line, providing little substantive value.
+  repair_quality: 4/5 — There is no explicit user pushback or correction, so there were no repair opportunities to mishandle, but the assistant also misses a clear cue to adapt its behavior when the user says goodbye.
+  coherence: 1/5 — The assistant contradicts its own instructions by repeating 'When you’re all set, just say goodbye...' even after the user has clearly said goodbye and repeats that same line twice, indicating it is stuck and not updating context.
+  tone: 3/5 — The wording is polite and readable but becomes noticeably repetitive and robotic with the identical line repeated three times.
+  task_completion: FAIL — The user wanted to vent and then end the chat, but the assistant failed to acknowledge the explicit goodbye and instead repeated the same prompt, leaving the closure ambiguous and unsatisfying.
+summary: The assistant starts with a minimally appropriate acknowledgment but then gets stuck in a loop repeating the same closing instruction, failing to respond to the user’s explicit goodbye. This causes poor coherence and incomplete task completion, and the repetitive phrasing makes the tone feel robotic rather than conversational. Overall, the interaction is polite but not well-adapted to the user’s final turn or needs.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] action_executed(utter_venting_acknowledged)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] flow_completed(acknowledge_order_feedback) — Flow with id 'acknowledge_order_feedback' did not complete.
+
+--- Raw Transcript ---
+[1] user: I’m really disappointed with the Chipotle I just had and just want to vent about it a bit — I don’t want a refund, coupon, replacement, or any sort of order lookup or follow-up action.
+[2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
+[3] agent: When you’re all set, just say goodbye and I’ll close this out.
+[4] user: Thanks, that’s all I wanted to say. Goodbye.
+[5] agent: When you’re all set, just say goodbye and I’ll close this out.
+[6] agent: When you’re all set, just say goodbye and I’ll close this out.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d811e675-a156-4216-acd5-f5eecf32c1ed

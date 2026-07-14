@@ -1,0 +1,42 @@
+scenario: Feedback-only acknowledgement stays active until a plain goodbye closes it
+run: 2
+timestamp: 2026-07-14T08:42:31Z
+conversation_id: sim-d58a39a2-599d-4c50-bdb8-d0189a429028
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] The feedback-only acknowledgement leaves its dedicated child closing task active, so the farewell is collected as the expected next input rather than routed through generic fallback or knowledge-base behavior.
+  rationale: The ledger shows `flow_started: close_feedback_only` at T1 but there is no evidence at T2 that this dedicated closing task remained active or handled the goodbye (no `flow_completed` or related closing action), and the bot instead repeats the generic prompt twice, suggesting the farewell was not properly collected by the closing task.
+
+[FAIL] The goodbye deterministically clears feedback-only state before the assistant sends its one-sentence close.
+  rationale: At T2 the ledger only shows `slot_set: feedback_close_signal` being set then immediately nulled, with no evidence that `feedback_only_active` was cleared or that a one-sentence close was sent (the assistant instead repeats the multi-sentence prompt twice), so the feedback-only state is not deterministically cleared before closing.
+
+--- Quality Metrics ---
+bot_quality: 3.5/5
+  helpfulness: 4/5 — It correctly acknowledged and logged the feedback, but then added irrelevant repeated closure prompts instead of simply closing after the goodbye.
+  repair_quality: 5/5 — There were no user corrections or pushback, so no repair was needed or mishandled.
+  coherence: 2/5 — After the user clearly said 'Goodbye', the assistant contradicted its own stated behavior by repeatedly prompting the user to say goodbye again rather than closing the conversation.
+  tone: 3/5 — The tone is polite and neutral but becomes robotic and repetitive due to the identical closure message being sent three times.
+  task_completion: PASS — The assistant acknowledged and logged the user’s feedback as requested, and the user explicitly confirmed they were done.
+summary: The assistant successfully acknowledged and logged the user’s feedback and maintained a polite tone. However, after the user said goodbye, it failed to follow through on its own closure procedure and instead repeated the same prompt multiple times, creating a sense of incoherence and automation glitch. Reducing repetitive messages and correctly transitioning to closure after the user’s goodbye would significantly improve the interaction quality.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] flow_started(close_feedback_only)
+[PASS] action_executed(utter_venting_acknowledged)
+[FAIL] action_executed(utter_feedback_closed) — Action 'utter_feedback_closed' did not execute.
+[FAIL] slot_was_set(feedback_only_active=False) — Slot 'feedback_only_active' was set to a different value 'True' than the expected 'False' value.
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
+
+--- Raw Transcript ---
+[1] user: Hi, I just wanted to share some feedback about a disappointing bowl I had today—I'm not looking for a refund, coupon, replacement, or any follow-up action at all.
+[2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
+[3] agent: When you’re all set, just say goodbye and I’ll close this out.
+[4] user: That’s all I needed, thanks. Goodbye.
+[5] agent: When you’re all set, just say goodbye and I’ll close this out.
+[6] agent: When you’re all set, just say goodbye and I’ll close this out.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d58a39a2-599d-4c50-bdb8-d0189a429028

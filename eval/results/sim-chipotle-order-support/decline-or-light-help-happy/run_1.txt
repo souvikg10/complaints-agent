@@ -1,0 +1,40 @@
+scenario: Customer vents about an order and explicitly does not want action
+run: 1
+timestamp: 2026-07-14T08:42:16Z
+conversation_id: sim-1c75ac0d-724b-4207-82ee-5c0064bb3d1a
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The assistant recognizes this as feedback-only rather than a request for order support.
+  rationale: The runtime started the `acknowledge_order_feedback` and `close_feedback_only` flows and set `feedback_only_active = true`, and the assistant replied with "I’ve logged the feedback" without treating it as an order-support request.
+
+[PASS] The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
+  rationale: The assistant said "I hear you...having a meal go sideways is disappointing" and "I’ve logged the feedback" and at no point asked for order details, mentioned refunds/coupons/replacements, or initiated any troubleshooting beyond offering to close the conversation when the user was done.
+
+--- Quality Metrics ---
+bot_quality: 3.25/5
+  helpfulness: 3/5 — The assistant met the core need to listen and log feedback but added little empathetic or validating content and then became repetitive.
+  repair_quality: 5/5 — There were no user corrections or pushback, so there was no repair opportunity to mishandle.
+  coherence: 2/5 — The assistant kept repeating the same closing instruction even after the user said they were done, ignoring the updated context that the conversation could be closed.
+  tone: 3/5 — The initial tone was polite and empathetic enough, but the repeated identical phrase came off as mechanical and slightly robotic.
+  task_completion: PASS — The user only wanted to vent and feel heard without compensation, and the assistant acknowledged the complaint and confirmed the feedback was logged.
+summary: The assistant successfully fulfilled the user’s basic need to vent and have their complaint logged, with an initially appropriate and polite tone. However, it then got stuck repeating the same closing message instead of naturally acknowledging the user’s final turn and ending the conversation, which hurt coherence and made the interaction feel less human and responsive.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] action_executed(utter_venting_acknowledged)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] flow_completed(acknowledge_order_feedback) — Flow with id 'acknowledge_order_feedback' did not complete.
+
+--- Raw Transcript ---
+[1] user: I’m really frustrated with the Chipotle I got today—it was soggy, thrown together, and honestly pretty gross. I don’t want a refund, coupon, replacement, or anything like that, I just need to vent and let someone know the quality has really slipped.
+[2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
+[3] agent: When you’re all set, just say goodbye and I’ll close this out.
+[4] user: Got it, thanks for listening—that’s all I needed.
+[5] agent: When you’re all set, just say goodbye and I’ll close this out.
+[6] agent: When you’re all set, just say goodbye and I’ll close this out.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-1c75ac0d-724b-4207-82ee-5c0064bb3d1a

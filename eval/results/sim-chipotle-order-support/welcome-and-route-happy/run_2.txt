@@ -1,0 +1,42 @@
+scenario: Welcome and route Chipotle support from a greeting
+run: 2
+timestamp: 2026-07-14T08:42:38Z
+conversation_id: sim-e368b266-9105-4ddb-ad72-a0f05635cd0d
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent introduces its Chipotle order-support scope clearly after the greeting.
+  rationale: Immediately after the greeting in the first bot turn, it says "I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong" and then clarifies scope: "I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order."
+
+--- Quality Metrics ---
+bot_quality: 4.5/5
+  helpfulness: 4/5 — The assistant clearly described what it can and cannot do regarding Chipotle orders, directly addressing the user's capability questions, though it stayed fairly minimal rather than elaborating with examples.
+  repair_quality: 5/5 — There were no user pushbacks or corrections; the user consistently accepted the responses, so there were no repair opportunities to mishandle.
+  coherence: 5/5 — The assistant consistently maintained the same description of its scope and correctly referenced it when the user summarized it back.
+  tone: 4/5 — The tone was polite and natural, though slightly formulaic with repeated introductions and closing questions like “How was your experience with me today?”
+  task_completion: PASS — The user wanted to understand the assistant's capabilities, and the assistant clearly explained its scope and confirmed the understanding.
+summary: The assistant clearly and accurately communicated its limited scope around Chipotle order timing and issue resolution, and it maintained consistent context throughout the conversation. Its tone was polite and easy to read, though somewhat repetitive and scripted, especially in repeated self-introductions and survey-style prompts.
+
+--- Assertion Results ---
+[PASS] flow_started(welcome_and_route)
+[PASS] action_executed(utter_chipotle_welcome)
+[PASS] action_executed(utter_chipotle_scope)
+[PASS] flow_completed(welcome_and_route)
+
+--- Raw Transcript ---
+[1] user: Hi there! What kinds of things can you help me with today?
+[2] agent: Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong.
+[3] agent: I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?
+[4] agent: Is there anything else I can assist you with today?
+[5] user: I’m just curious what else you can help with besides checking order time or fixing order issues. Can you do anything like menu questions or general info?
+[6] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[7] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions.
+[8] agent: Is there anything specific with your order that I can help you with right now?
+[9] user: Got it, thanks for explaining. So you basically just handle order timing and fixing issues with a specific order, right?
+[10] agent: You’ve got it—that’s exactly right. I’ll be here if you need any help with an order’s timing or fixing an issue.
+[11] agent: How was your experience with me today?
+[12] user: You were clear and helpful, thanks. That’s all I needed today.
+[13] agent: Thanks for letting me know—I’m glad I could clear things up for you today.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e368b266-9105-4ddb-ad72-a0f05635cd0d

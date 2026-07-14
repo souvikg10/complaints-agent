@@ -73,7 +73,7 @@ responses:
   utter_venting_acknowledged: [{text: "I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback."}]
   utter_ask_feedback_close_signal: [{text: "When you’re all set, just say goodbye and I’ll close this out."}]
   utter_feedback_closed: [{text: "Understood. Take care."}]
-  utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t help with nutrition, hours, jobs, catering, rewards, payment, or account questions."}]
+  utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions."}]
   utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."}]
 
-actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance]
+actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, validate_feedback_close_signal]

@@ -3,7 +3,7 @@ version: "3.1"
 flows:
   welcome_and_route:
     name: "Welcome and route Chipotle support"
-    description: "Start a new Chipotle order-support conversation only when the customer greets the assistant, asks what it can do, or needs help choosing a support topic. Give the Chipotle welcome and offer order timing or order-problem help. Do not use for an explicit order-status request or an explicit wrong, missing, or food-quality complaint."
+    description: "Start a new Chipotle order-support conversation only when the customer greets the assistant, asks what it can do, or needs help choosing a support topic. Give the Chipotle welcome and offer order timing or order-problem help. Do not use for an explicit order-status request, an explicit wrong, missing, or food-quality complaint, or a customer who is only venting and expressly wants no action."
     steps:
       - action: utter_chipotle_welcome
       - action: utter_chipotle_scope
@@ -66,7 +66,7 @@ flows:
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
-    description: "Help a Chipotle customer who received a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
+    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
     persisted_slots: [order_id, issue_category, issue_details, resolution_acceptance]
     steps:
       - action: utter_issue_empathy
@@ -110,6 +110,7 @@ flows:
       - id: collect_resolution_acceptance
         collect: resolution_acceptance
         description: "Whether the customer clearly accepts the offered future-meal credit or discount: yes or no."
+        force_slot_filling: true
         rejections: [{if: slots.resolution_acceptance = null, utter: utter_ask_resolution_acceptance}]
         next: accepted_resolution
       - id: accepted_resolution
@@ -144,11 +145,13 @@ flows:
 
   confirm_issue_resolution:
     name: "Issue resolution confirmation and coupon delivery"
-    description: "Issue a previously accepted Chipotle future-meal discount coupon or item credit only after mock policy has verified a matching order number, found the issue eligible, and the customer clearly accepted the remedy. Never use for a direct coupon request without verified-order policy context."
-    if: slots.order_verified is True and slots.issue_eligible is True and slots.resolution_acceptance = "yes" and not slots.coupon_issued
+    description: "Child-only issuance task called only after a Chipotle issue report has verified the order, found the issue eligible, and collected an explicit acceptance. It always asks the customer where to receive the approved remedy, then invokes the deterministic mock issuer. It cannot be started directly."
+    if: False
     steps:
       - collect: coupon_channel
         description: "Customer’s preferred mock delivery channel for an approved coupon or item credit: chat or email associated with the order."
+        ask_before_filling: true
+        force_slot_filling: true
         rejections: [{if: slots.coupon_channel = null, utter: utter_ask_coupon_channel}]
       - action: action_mock_coupon_issuance
       - id: coupon_result
@@ -184,7 +187,7 @@ flows:
   acknowledge_order_feedback:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
-    description: "Use when a Chipotle customer is only venting or sharing disappointment and clearly says they do not want compensation, status help, a report, or any action. Acknowledge without collecting details or offering a coupon, then wait for their goodbye."
+    description: "Use before every other support flow when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. This is still Chipotle meal feedback, not an unrelated request. They may be upset about bad, cold, wrong, or disappointing food, but they explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge without collecting an order number, without offering compensation, and keep the feedback-only goodbye child active."
     persisted_slots: [feedback_only_active]
     steps:
       - set_slots: [{feedback_only_active: true}]
@@ -199,14 +202,14 @@ flows:
     steps:
       - collect: feedback_close_signal
         description: "A clear conversational farewell or statement that the customer is done after feedback-only acknowledgement, such as goodbye, bye, that is all, no that is it, or I am all set. Validation is performed exclusively by validate_feedback_close_signal so flow regex behavior cannot reject valid Unicode farewell text."
+        force_slot_filling: true
       - set_slots: [{feedback_only_active: false}]
       - action: utter_feedback_closed
         next: END
 
   decline_or_light_help:
-    name: "Out-of-scope Chipotle support"
-    always_include_in_prompt: true
-    description: "Use for requests outside Chipotle order timing or an order problem, including nutrition, allergens, hours, locations, jobs, catering, rewards, payment, account access, general information, a refund without an issue report, or a human agent. Give the explicit scope response immediately. Do not use for feedback-only venting or a repeat-compensation override request."
+    name: "Answer unrelated Chipotle requests"
+    description: "Use only when the customer asks an unrelated Chipotle question rather than describing an order problem or meal feedback: nutrition, allergens, hours, locations, jobs, catering, rewards, payment, account access, or general information. Also use for a human agent request. Do not use for a customer venting about a disappointing meal who says they want no action; that is feedback-only acknowledgement."
     steps:
       - action: utter_chipotle_light_help_greeting
       - action: utter_out_of_scope

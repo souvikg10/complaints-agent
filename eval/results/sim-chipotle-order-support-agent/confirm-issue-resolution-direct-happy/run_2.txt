@@ -1,24 +1,24 @@
 scenario: Verified issue report visibly establishes coupon prerequisites before issuance
 run: 2
-timestamp: 2026-07-14T08:46:47Z
-conversation_id: sim-cef3a1a7-ef03-4867-895c-fa849b2e1f33
+timestamp: 2026-07-14T08:49:19Z
+conversation_id: sim-d083ae2f-725e-4b59-b168-d6a621fcf0f9
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The assistant runs mock issue policy on the customer-supplied order and only offers a remedy after the order is verified and eligible.
-  rationale: At T4 the ledger shows `action: action_mock_order_issue` with `order_verified = true` and `issue_eligible = true`, and only after that (same turn) the bot says, “I found and verified the order. I can offer an $8 item credit…”, so the remedy is offered only after verification and eligibility.
+  rationale: At T3 the ledger shows `action: action_mock_order_issue_policy` with `order_verified = true` and `issue_eligible = true` before the bot message "I can offer an $8 item credit toward a future meal for the order mix-up," indicating the mock issue policy was run and eligibility confirmed before offering a remedy.
 
 [PASS] The assistant collects the coupon channel and issues the approved item credit only after the customer explicitly accepts it.
-  rationale: At T5 the user explicitly accepts (“Yes, please go ahead and issue the $8 future-meal credit”), and only afterward at T6 does the assistant collect `coupon_channel = email` and invoke `action_mock_coupon_issuance` resulting in `coupon_issued = true`, so the channel is collected and issuance happens after explicit acceptance.
+  rationale: The user explicitly accepts the credit at T4 ("Yes please, I’d like to get that $8 item credit"), then at T5 the assistant asks and receives the coupon channel ("Please send it to the email I used for the order," logged as `slot_set: coupon_channel = email`) and only afterwards runs `action_mock_coupon_issuance` to issue the credit.
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It gathered the needed details, confirmed the order, and provided a clear, specific remediation (credit code, value, validity, and usage conditions).
-  repair_quality: 5/5 — The user never signaled misunderstanding or pushed back, so there were no repair opportunities mishandled.
-  coherence: 5/5 — The assistant consistently tracked the order number, problem description, chosen remedy, and delivery method without re-asking or contradicting itself.
-  tone: 5/5 — The tone was warm, natural, and concise throughout, acknowledging the issue and closing politely with an appropriate feedback question.
-  task_completion: PASS — The assistant verified the order, issued the specified $8 credit with a concrete code and terms, and confirmed completion before closing the interaction.
-summary: This conversation is a strong example of a focused transactional support flow: the assistant efficiently collected required information, verified the order, and delivered a specific remedy with clear details. It maintained context well and used a friendly, natural tone, ending with a simple satisfaction check after completing the user’s request.
+  helpfulness: 5/5 — It efficiently gathered needed info, resolved the problem by issuing a concrete credit code, and clearly explained its value, validity, and usage terms.
+  repair_quality: 5/5 — There were no user corrections or pushback, so no repairs were needed or mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order number, issue type, the chosen remedy, and the user’s preference for email while providing the code in chat as well.
+  tone: 5/5 — The tone is friendly, empathetic, and clear throughout, with natural phrasing and appropriate closing and feedback prompts.
+  task_completion: PASS — The assistant verified the order, issued the $8 credit with a specific code and terms, and confirmed completion before closing with a feedback question.
+summary: The assistant handled a straightforward order issue smoothly, gathering the necessary details and providing a clear, concrete remedy. It maintained context well and used a polite, human-like tone, leading to successful resolution and a natural close to the interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -31,25 +31,23 @@ summary: This conversation is a strong example of a focused transactional suppor
 [PASS] flow_completed(confirm_issue_resolution)
 
 --- Raw Transcript ---
-[1] user: Hi, my Chipotle order was wrong today and I’d like some help fixing it.
+[1] user: Hi, my order was wrong and I got the wrong item delivered. Can you help me fix it?
 [2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: The order number is CP123.
+[4] user: Sure, the order number is CP123.
 [5] agent: What best describes the problem?
-[6] user: I got the wrong entree in my bowl—totally different protein and toppings than what I ordered.
-[7] agent: Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it.
-[8] user: I ordered a chicken burrito bowl with brown rice and veggies, but I got a steak bowl loaded with cheese and sour cream instead. I didn’t eat it because it wasn’t what I wanted.
-[9] agent: I found and verified the order. I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?
-[10] agent: Would you like me to issue the approved future-meal remedy?
-[11] user: Yes, please go ahead and issue the $8 future-meal credit.
-[12] agent: Would you like the code shown here or sent to the email used for the order?
-[13] user: Please send it to the email I used for the order.
-[14] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
-[15] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[16] agent: Is there anything else I can assist you with today?
-[17] user: No, that covers it—thanks for your help.
-[18] agent: You’re very welcome—if you need anything else later, I’ll be here to help.
-[19] agent: How did your support experience go today?
+[6] user: They sent the wrong item—my burrito was supposed to be chicken but it came as steak instead.
+[7] agent: I found and verified the order. I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?
+[8] agent: Would you like me to issue the approved future-meal remedy?
+[9] user: Yes please, I’d like to get that $8 item credit.
+[10] agent: Would you like the code shown here or sent to the email used for the order?
+[11] user: Please send it to the email I used for the order.
+[12] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[13] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[14] agent: Is there anything else I can assist you with today?
+[15] user: No, that covers it. Thanks for the help!
+[16] agent: You’re very welcome—glad I could help. I’ll be here if you need anything else later on.
+[17] agent: How did we do today with your support experience?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-cef3a1a7-ef03-4867-895c-fa849b2e1f33
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d083ae2f-725e-4b59-b168-d6a621fcf0f9

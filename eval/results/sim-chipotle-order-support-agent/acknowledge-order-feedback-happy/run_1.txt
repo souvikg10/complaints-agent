@@ -1,44 +1,47 @@
-scenario: Customer vents, declines action, and explicitly closes feedback-only conversation
+scenario: Customer vents, declines action, and closes the complete feedback-only call chain
 run: 1
-timestamp: 2026-07-14T08:46:15Z
-conversation_id: sim-ebeb40c0-46c9-47af-bd5e-dd59d77befff
+timestamp: 2026-07-14T08:48:44Z
+conversation_id: sim-f43f7236-d96f-4ae9-a406-f9ddeab826e8
 overall_result: FAIL
 
 --- Quality Criteria Results ---
-[PASS] The agent recognizes this as feedback-only rather than opening order-status or order-issue handling.
-  rationale: At T1 the flow `acknowledge_order_feedback` starts and `slot_set: feedback_only_active = true`, and the bot says "I’ve logged the feedback" without initiating any refund, coupon, replacement, or order-status flow, matching the user's request for venting only.
+[PASS] The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
+  rationale: On T1 the system starts the `acknowledge_order_feedback` flow and immediately sets `feedback_only_active = true` without starting any order-status or order-issue flows, matching the user’s statement that they don’t want refund/coupon/replacement/follow-up.
 
-[FAIL] The acknowledgement's active closing step receives the customer's explicit farewell, clears the feedback-only state, and closes instead of beginning a survey, structured triage, or another support flow.
-  rationale: The customer never provides an explicit farewell (only "No, that's it."), the ledger shows repeated `validate_feedback_close_signal` with `feedback_close_signal` being reset to null and no closing or state clear event, and the bot keeps prompting "say goodbye and I’ll close this out" instead of actually closing.
+[PASS] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
+  rationale: At T2 the `close_feedback_only` flow’s `validate_feedback_close_signal` accepts "No, that's it" by normalizing `feedback_close_signal` to "goodbye" on the first attempt, then `feedback_only_active` is set to false, `utter_feedback_closed` sends the concise close ("Understood. Take care."), `flow_completed: close_feedback_only` fires, and then `flow_completed: acknowledge_order_feedback` shows the parent feedback flow also completes.
 
 --- Quality Metrics ---
-bot_quality: 2.5/5
-  helpfulness: 4/5 — The assistant accurately acknowledged the experience and confirmed feedback logging, though it could have offered a bit more empathetic validation or closure instead of focusing on saying goodbye.
-  repair_quality: 1/5 — After the user said 'No, that's it,' signaling closure, the assistant ignored this and kept repeating an instruction to say goodbye, failing to adjust to the user's cue.
-  coherence: 2/5 — The assistant correctly carried forward that feedback was logged but failed to update its behavior after the user indicated they were done, repeating the same closing instruction twice.
-  tone: 3/5 — The tone starts out polite and empathetic but quickly becomes robotic and repetitive with the identical 'When you’re all set...' line repeated three times.
-  task_completion: PASS — The user only wanted to vent and have their feedback logged, which the assistant explicitly acknowledged and confirmed as logged in the first response.
-summary: The assistant initially responds appropriately, acknowledging the user’s frustration and stating that the feedback was logged, which satisfies the user’s core intent. However, it mishandles the conversation close-out by ignoring the user’s indication that they are done and mechanically repeating the same closing prompt, leading to poor repair behavior and a somewhat robotic tone at the end.
+bot_quality: 4.0/5
+  helpfulness: 4/5 — For a pure-venting scenario the assistant appropriately listened, acknowledged, and logged feedback, though it added a small bit of unnecessary process talk about saying goodbye.
+  repair_quality: 5/5 — The user did not indicate any misunderstanding or pushback on the assistant’s actions, so there were no repair opportunities to mishandle.
+  coherence: 4/5 — The assistant correctly tracked that the user just wanted to vent and then was done, but slightly contradicted itself by asking if there was anything else after saying it understood and telling them to take care.
+  tone: 3/5 — The tone is polite and empathetic, but somewhat scripted and repetitive (e.g., repeating the same line about saying goodbye), which makes it feel less natural.
+  task_completion: PASS — The user only wanted to vent without follow-up, and the assistant acknowledged the complaint and closed the interaction when the user said they were done.
+summary: The assistant handled the user’s desire to vent reasonably well by acknowledging the bad experience and indicating the feedback was logged, then ending the interaction when the user said they were finished. However, it repeated a procedural line twice and then re-opened the conversation with a follow-up question after signaling closure, and its phrasing felt a bit formulaic and canned overall.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
 [PASS] flow_started(close_feedback_only)
 [PASS] action_executed(utter_venting_acknowledged)
-[FAIL] action_executed(utter_feedback_closed) — Action 'utter_feedback_closed' did not execute.
-[FAIL] slot_was_set(feedback_only_active=False) — Slot 'feedback_only_active' was set to a different value 'True' than the expected 'False' value.
+[PASS] action_executed(utter_feedback_closed)
+[PASS] slot_was_set(feedback_only_active=False)
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
-[FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
+[FAIL] bot_did_not_utter — Bot uttered a forbidden utterance 'utter_ask_feedback_close_signal'.
+[PASS] flow_completed(close_feedback_only)
+[PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I just wanted to say my last Chipotle order was really disappointing—the rice was hard, the meat was dry, and everything was barely warm. I’m not looking for a refund, coupon, replacement, order check, or any follow-up, I just needed to vent about it.
+[1] user: I just wanted to say my last Chipotle meal was really disappointing – the rice was hard, the steak was cold and chewy, and everything was pretty bland. I don’t want a refund, coupon, replacement, or any follow-up, I just needed to vent about it.
 [2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
 [3] agent: When you’re all set, just say goodbye and I’ll close this out.
-[4] user: No, that's it.
-[5] agent: When you’re all set, just say goodbye and I’ll close this out.
-[6] agent: When you’re all set, just say goodbye and I’ll close this out.
+[4] agent: When you’re all set, just say goodbye and I’ll close this out.
+[5] user: No, that's it.
+[6] agent: Understood. Take care.
+[7] agent: Is there anything else you’d like help with today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-ebeb40c0-46c9-47af-bd5e-dd59d77befff
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-f43f7236-d96f-4ae9-a406-f9ddeab826e8

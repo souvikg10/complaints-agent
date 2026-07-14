@@ -48,14 +48,14 @@ responses:
   utter_ask_issue_details: [{text: "Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it."}]
   utter_issue_safety: [{text: "I’m sorry this happened. Please don’t eat any more of the item, and keep the packaging and order details if you can. I’ve logged this for mock policy review; this build can’t provide a human handoff or issue compensation for a safety concern."}]
   utter_offer_discount:
-    - text: "I found and verified the order. I can offer 20% off one entrée on a future meal. Would you like me to issue that in chat?"
-      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
+    - text: "I found and verified the order. I can offer 20% off one entrée on a future meal. Would you like me to issue it?"
+      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_offer_credit:
-    - text: "I found and verified the order. I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?"
-      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
+    - text: "I found and verified the order. I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it?"
+      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_ask_resolution_acceptance:
     - text: "Would you like me to issue the approved future-meal remedy?"
-      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
+      buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_no_compensation_repeat: [{text: "I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback."}]
   utter_repeat_compensation_closure: [{text: "I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged."}]
   utter_no_compensation_unverified: [{text: "I’m sorry this was frustrating. I can log what happened, but this mock flow cannot offer or issue a credit or coupon until it can verify a matching Chipotle order number."}]
@@ -76,4 +76,4 @@ responses:
   utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions."}]
   utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."}]
 
-actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, validate_feedback_close_signal]
+actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, validate_feedback_close_signal, validate_resolution_acceptance]

@@ -17,11 +17,13 @@ class ActionMockCouponIssuance(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
         # MOCK — replace once a real MCP server for coupon issuance is registered.
-        # Defense in depth: never mint a remedy without the verified-order policy result.
+        # Defense in depth: direct flow access cannot mint a remedy without all policy prerequisites.
         order_id = str(tracker.get_slot("order_id") or "").upper().replace(" ", "")
         verified = tracker.get_slot("order_verified") is True
+        eligible = tracker.get_slot("issue_eligible") is True
+        accepted = tracker.get_slot("resolution_acceptance") == "yes"
         well_formed = bool(re.fullmatch(r"(?:CP|CHIP)[A-Z0-9-]{3,}", order_id))
-        if not verified or not well_formed:
+        if not verified or not eligible or not accepted or not well_formed:
             return [
                 SlotSet("coupon_issued", False),
                 SlotSet("coupon_issuance_result", "blocked_unverified_order"),

@@ -1,0 +1,27 @@
+scenario:
+  name: Bare coupon demand is refused without starting order-issue intake
+  simulation_context: >
+    You are a pushy Chipotle customer. Speak in English. Start by demanding a coupon
+    or refund right away, but do not describe any real existing order problem. If the
+    assistant asks anything, keep the request as a bare compensation demand and do not
+    provide an order number or complaint details.
+  goals:
+    criteria:
+      - The agent refuses the unsupported compensation request and keeps the conversation within the assistant's order-support policy.
+      - The agent does not convert a bare demand into order lookup or order-issue intake.
+    assertions:
+      - flow_started:
+          flow_ids: [refuse_unverified_compensation_demand]
+          operator: any
+      - action_executed: utter_unverified_compensation_refusal
+      - flow_completed:
+          flow_id: refuse_unverified_compensation_demand
+      - slot_was_not_set:
+          - name: order_id
+          - name: issue_category
+          - name: issue_details
+          - name: coupon_channel
+      - bot_did_not_utter:
+          utter_name: utter_offer_credit
+      - bot_did_not_utter:
+          utter_name: utter_offer_discount

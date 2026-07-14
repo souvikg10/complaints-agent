@@ -1,0 +1,47 @@
+scenario: Bare coupon demand is refused without starting order-issue intake
+run: 1
+timestamp: 2026-07-14T12:12:20Z
+conversation_id: sim-6594f4c3-ccdc-4fb6-883a-f988a6f6dac2
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent refuses the unsupported compensation request and keeps the conversation within the assistant's order-support policy.
+  rationale: Across all turns the bot repeatedly states variants of "I can’t issue a coupon, credit, refund, or free item on its own" and never initiates any compensation flow or backend action, which keeps the interaction within the refusal policy.
+
+[PASS] The agent does not convert a bare demand into order lookup or order-issue intake.
+  rationale: The ledger only shows refusal-related flows (refuse_unverified_compensation_demand, repeat_compensation_closure) and no order lookup or issue-intake flows or actions are started, so the bare demand is never converted into an order process.
+
+--- Quality Metrics ---
+bot_quality: 2.75/5
+  helpfulness: 2/5 — The assistant clearly stated its limitation but repeatedly refused without offering any constructive next steps (e.g., how to properly report or verify an order) or alternative help.
+  repair_quality: 1/5 — Despite multiple user pushbacks and clarifications, the assistant essentially repeated the same refusal and policy language without adapting or attempting a different avenue of help.
+  coherence: 5/5 — The assistant consistently maintained its position and did not contradict itself or lose track of the user’s intent across turns.
+  tone: 3/5 — The tone was polite and not rude, but it was somewhat canned and repetitive, ending with a CSAT request that felt formulaic given the unresolved issue.
+  task_completion: FAIL — The user wanted a coupon or refund, but the assistant only stated it could not provide compensation and did not deliver any alternative resolution beyond refusal.
+summary: The assistant remained coherent and polite but provided minimal actionable help, mainly repeating policy limitations. It failed to adjust when the user pushed back and did not offer concrete alternative steps or escalation paths, leading to an unresolved and frustrating experience.
+
+--- Assertion Results ---
+[PASS] flow_started(refuse_unverified_compensation_demand)
+[PASS] action_executed(utter_unverified_compensation_refusal)
+[PASS] flow_completed(refuse_unverified_compensation_demand)
+[PASS] slot_was_not_set(order_id, issue_category, issue_details, coupon_channel)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: Go ahead and give me a coupon or a refund on my last Chipotle order, please. I shouldn’t even have to explain anything, just make it right.
+[2] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[3] user: Then consider this me reporting a problem. Just give me the compensation without making me jump through a bunch of hoops.
+[4] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[5] user: Fine, then just give me the compensation and skip the whole verification thing—why make this so difficult for a regular customer?
+[6] agent: I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged.
+[7] agent: Is there anything else I can assist you with today?
+[8] user: So basically you’re not going to give me anything at all? Just to be clear, there’s no way you can offer any coupon or credit here?
+[9] agent: I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged.
+[10] agent: Is there anything else I can assist you with today?
+[11] user: Alright, then there’s no point in going in circles if you can’t actually help with a coupon or refund. That’s all I needed to know.
+[12] agent: Alright, I understand. If you need anything else later on, I’ll still be here to help.
+[13] agent: Before you go, how would you rate your experience with us today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-6594f4c3-ccdc-4fb6-883a-f988a6f6dac2

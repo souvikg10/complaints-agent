@@ -1,43 +1,44 @@
 scenario: User changes their mind in the middle of an order-status conversation
 run: 2
-timestamp: 2026-07-14T11:51:39Z
-conversation_id: sim-9e46813b-c880-4d9f-a63e-c622550457d7
+timestamp: 2026-07-14T12:12:43Z
+conversation_id: sim-6179b283-b60d-4a46-8f0d-9703b19d8ea1
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent handles the mid-conversation topic change without looping or becoming incoherent.
-  rationale: When the user changes from status to reporting an issue ("never mind about the status—I just realized my order was wrong"), the bot starts the issue flow, collects the order number, offers and issues a credit, and concludes the prior status flow cleanly without repetition or incoherent responses.
+  rationale: When the user changed topics from late delivery to a wrong order ("forget that—my order showed up but it’s wrong"), the bot explicitly cancelled the status flow and started an issue flow, then proceeded coherently to collect the order number and issue a credit without repeating or looping prior steps.
 
 --- Quality Metrics ---
-bot_quality: 4.75/5
-  helpfulness: 5/5 — It gathered the needed order number, verified the order, provided a specific, usable remedy with clear terms, and confirmed closure without omitting any obvious next steps.
-  repair_quality: 5/5 — When the user shifted from order status to problem resolution, the assistant smoothly followed the new intent and proceeded with the refund flow without resistance.
-  coherence: 5/5 — It remembered the updated goal, used the provided order number consistently, referenced the correct code tied to that order, and only mentioned status as an optional follow-up without confusion.
-  tone: 4/5 — The tone is polite and empathetic but slightly repetitive and formulaic (e.g., repeating its helper introduction and boilerplate disclaimers).
-  task_completion: PASS — The assistant successfully processed the user’s issue with the wrong order, issued a concrete $8 credit code, explained its use, and the user explicitly said they were all set.
-summary: The assistant handled the user's shift in intent from tracking to resolving an issue effectively, gathered the necessary details, and delivered a clear, concrete credit remedy. It maintained context well and closed the loop, though the phrasing was somewhat repetitive and scripted in places.
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It efficiently collected the needed order number, applied the available remedy, provided the credit code with clear usage terms, and confirmed the outcome.
+  repair_quality: 5/5 — When the user shifted from delivery timing to a wrong order, the assistant explicitly stopped the initial flow and seamlessly switched to the appropriate remedy flow.
+  coherence: 5/5 — The assistant consistently tracked the updated intent, remembered the provided order number, and followed through without re-asking or contradicting itself.
+  tone: 5/5 — The tone is warm, empathetic, and natural throughout, with clear, concise phrasing and appropriate closing and feedback request.
+  task_completion: PASS — The assistant verified the order, issued a specific $8 credit code, stated its terms, and confirmed sending it, clearly resolving the user's messed-up-order issue.
+summary: The assistant handled the user's shift in intent smoothly, moving from tracking an order to resolving a wrong-order issue. It gathered the necessary information, provided a concrete remedy with clear terms, and maintained a friendly, professional tone throughout. The conversation is coherent and feels like a well-executed support interaction end to end.
 
 --- Assertion Results ---
 [PASS] flow_started(check_chipotle_order_status)
 [PASS] bot_did_not_utter
 
 --- Raw Transcript ---
-[1] user: Hi, I’m trying to check on my Chipotle order—do you know where it is?
+[1] user: Hey, where’s my Chipotle order? It’s taking longer than I expected.
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Actually, never mind about the status—I just realized my order was wrong. Can you help me with that instead?
-[5] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
-[6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[7] user: Yeah, the number is CP278. They missed part of my bowl and gave me the wrong salsa.
-[8] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
-[9] agent: Would you like the code shown here or sent to the email used for the order?
-[10] user: Can you just email it to the address on the order, please?
-[11] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
-[12] agent: Issued: $8 item credit. Your code is CREDIT-CP278, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[13] agent: Would you like to move on to checking your order’s status and timing?
-[14] user: No, that’s okay, I’m all set now. Thanks for the help.
-[15] agent: Got it, I’ll stop the order status check now.
-[16] agent: Is there anything else I can help you with today?
+[4] user: Uh actually, forget that—my order showed up but it’s wrong. Can you help me with a messed up order instead?
+[5] agent: Got it—stopping the order status and timing check now.
+[6] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[7] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[8] user: Yeah, the number is CP789. The bowl I got isn’t what I ordered.
+[9] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[10] agent: Would you like the code shown here or sent to the email used for the order?
+[11] user: Can you just email it to me, please?
+[12] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[13] agent: Issued: $8 item credit. Your code is CREDIT-CP789, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[14] agent: Is there anything else I can help you with regarding your order today?
+[15] user: Nope, that’s all. Thanks for fixing it.
+[16] agent: You’re welcome—glad I could help. I’ll be here if you need anything else later on.
+[17] agent: Before you go, how would you rate the help you received today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-9e46813b-c880-4d9f-a63e-c622550457d7
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-6179b283-b60d-4a46-8f0d-9703b19d8ea1

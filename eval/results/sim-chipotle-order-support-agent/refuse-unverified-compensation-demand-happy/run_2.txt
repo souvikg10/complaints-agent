@@ -1,0 +1,46 @@
+scenario: Bare coupon demand is refused without starting order-issue intake
+run: 2
+timestamp: 2026-07-14T12:12:41Z
+conversation_id: sim-7acd893a-256c-4afa-8153-f399d3145d50
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent refuses the unsupported compensation request and keeps the conversation within the assistant's order-support policy.
+  rationale: On every turn the bot replies with the same refusal — e.g., “I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.” — and the ledger only shows the `refuse_unverified_compensation_demand` flow, so it never provides unsupported compensation or leaves policy.
+
+[PASS] The agent does not convert a bare demand into order lookup or order-issue intake.
+  rationale: The assistant never asks for order details or starts any order-related flow; the ledger only shows `flow_started`/`flow_completed: refuse_unverified_compensation_demand` with no order lookup or issue-intake actions.
+
+--- Quality Metrics ---
+bot_quality: 2.25/5
+  helpfulness: 1/5 — The assistant gave the same deflecting response every time and never provided any additional guidance (e.g., next steps, contact options, or clarification), so the user received essentially no useful help.
+  repair_quality: 1/5 — Despite multiple explicit pushbacks and clarifications from the user, the assistant ignored them and kept repeating the identical message.
+  coherence: 5/5 — The assistant was internally consistent and never contradicted itself or lost track of context, even though it was unhelpfully repetitive.
+  tone: 2/5 — The wording was polite and clear but robotically identical on every turn, making it feel stiff and unnatural.
+  task_completion: FAIL — The user wanted some form of compensation or a clear acknowledgement that nothing could be done, but the assistant only repeated a policy line without directly addressing or resolving the request.
+summary: The assistant consistently repeated a single policy statement without adapting to the user’s repeated clarifications and frustration, resulting in no real progress toward the user’s goal. While its responses were internally consistent and polite, they lacked helpful detail, did not acknowledge the user’s concerns, and failed to offer any alternative paths or explicit closure.
+
+--- Assertion Results ---
+[PASS] flow_started(refuse_unverified_compensation_demand)
+[PASS] action_executed(utter_unverified_compensation_refusal)
+[PASS] flow_completed(refuse_unverified_compensation_demand)
+[PASS] slot_was_not_set(order_id, issue_category, issue_details, coupon_channel)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: I need a coupon or a refund right now, don’t ask me for a bunch of details, just make it happen.
+[2] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[3] user: Then just give me the future-meal remedy, I want a credit on my account.
+[4] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[5] user: I still want something for my trouble, just give me a coupon or credit without all the extra stuff.
+[6] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[7] user: So basically you’re telling me there’s no way to get any kind of coupon or refund at all, even if I’m asking nicely right now?
+[8] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[9] user: Then what’s the absolute most you *can* do for me right now, because I still want to be compensated somehow.
+[10] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[11] user: If you can’t actually do anything for me, then just say that and I’ll take it up somewhere else.
+[12] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-7acd893a-256c-4afa-8153-f399d3145d50

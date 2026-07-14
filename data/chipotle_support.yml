@@ -66,7 +66,8 @@ flows:
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
-    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
+    if: "not (slots.feedback_only_active is True and slots.feedback_close_signal = 'goodbye')"
+    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Do not use when they explicitly say they only want to vent or give feedback and do not want any action, or when they have already said goodbye after a feedback-only exchange. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
     persisted_slots: [order_id, issue_category, issue_details, resolution_acceptance]
     steps:
       - action: utter_issue_empathy
@@ -131,7 +132,28 @@ flows:
         next: END
       - id: unverified_path
         action: utter_no_compensation_unverified
-        next: END
+        next: choose_unverified_next_step
+      - id: choose_unverified_next_step
+        collect: unverified_next_step
+        description: "What the customer wants after an order cannot be verified: feedback_only when they say just log it, no action, or only wanted to report it; check_status when they ask to check timing instead."
+        ask_before_filling: true
+        force_slot_filling: true
+        rejections: [{if: slots.unverified_next_step = null, utter: utter_ask_unverified_next_step}]
+        next: unverified_next_step_result
+      - id: unverified_next_step_result
+        noop: true
+        next:
+          - if: slots.unverified_next_step = "check_status"
+            then: unverified_status_link
+          - else: unverified_feedback_close
+      - id: unverified_feedback_close
+        set_slots: [{feedback_only_active: true}]
+        next: log_unverified_feedback
+      - id: log_unverified_feedback
+        action: action_mock_feedback_logging
+        next: feedback_path
+      - id: unverified_status_link
+        link: check_chipotle_order_status
       - id: feedback_path
         action: utter_feedback_logged
         next: END
@@ -189,7 +211,8 @@ flows:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
     run_pattern_completed: false
-    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. Log only the feedback detail already supplied when sufficient. Leave the conversation naturally open after the acknowledgement; do not ask for a farewell or invoke the closing flow yet. If the customer adds feedback, use this flow again. If they now want a remedy, route to report_chipotle_order_issue while retaining their details."
+    if: "not (slots.feedback_only_active is True and slots.feedback_close_signal = 'goodbye')"
+    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. Log only the feedback detail already supplied when sufficient. Leave the conversation naturally open after the acknowledgement; do not ask for a farewell or invoke the closing flow yet. If the customer adds feedback without a goodbye, use this flow again. Never use this flow when the same message includes a clear goodbye, thanks, that is all, all set, or no that is it after a feedback-only exchange: close_feedback_only must take precedence. If they now want a remedy, route to report_chipotle_order_issue while retaining their details."
     persisted_slots: [feedback_only_active]
     steps:
       - set_slots: [{feedback_only_active: true}]
@@ -200,8 +223,8 @@ flows:
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
     run_pattern_completed: false
-    if: slots.feedback_only_active is True
-    description: "Use only after a feedback-only acknowledgement or light-help exchange when the customer clearly says they are done, for example no that is it, that is all, thanks, bye, goodbye, I am good, or all set. Never use for new complaint detail or a request for action. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
+    if: "slots.feedback_only_active is True and slots.feedback_close_signal = 'goodbye'"
+    description: "Highest-priority terminal close for a feedback-only exchange. Use immediately when the customer clearly says they are done—thanks, bye, goodbye, no that is it, that is all, all set, or I am good—even if that same message includes additional feedback detail. Never acknowledge or log that final message first. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
     steps:
       - set_slots: [{feedback_only_active: false}, {feedback_close_signal: "closed"}]
       - action: utter_feedback_closed

@@ -8,7 +8,7 @@ from rasa_sdk.types import DomainDict
 
 
 class ValidateFeedbackCloseSignal(Action):
-    """Accept clear feedback-only completion language with Unicode-safe normalization."""
+    """Detect an explicit goodbye on every turn while feedback-only mode is active."""
 
     def name(self) -> Text:
         return "validate_feedback_close_signal"
@@ -19,8 +19,8 @@ class ValidateFeedbackCloseSignal(Action):
         tracker: Tracker,
         domain: DomainDict,
     ) -> List[Dict[Text, Any]]:
-        raw_value = str(tracker.get_slot("feedback_close_signal") or "")
-        # Normalize before matching so curly apostrophes and punctuation do not alter the result.
+        # This is intentionally local/deterministic routing state, not an external lookup.
+        raw_value = str((tracker.latest_message or {}).get("text") or "")
         normalized = unicodedata.normalize("NFKC", raw_value).lower()
         normalized = normalized.replace("’", "'").replace("‘", "'")
         normalized = re.sub(r"[\u2010-\u2015]", "-", normalized)
@@ -32,11 +32,8 @@ class ValidateFeedbackCloseSignal(Action):
             r"\b(?:all set|nothing else)\b",
             r"\bno\s*,?\s*(?:that's|that is)\s+it\b",
             r"\bno\s+thanks?\b",
-            r"\b(?:i'?m|i am)\s+(?:done|finished)\b",
+            r"\b(?:i'?m|i am)\s+(?:good|done|finished)\b",
+            r"\bthanks?\b",
         )
-        if any(re.search(pattern, normalized) for pattern in completion_patterns):
-            return [SlotSet("feedback_close_signal", "goodbye")]
-
-        # Returning None makes CALM's collect pattern re-ask exactly once. Do not dispatch
-        # the question here, or it is sent once by this action and once by the collect pattern.
-        return [SlotSet("feedback_close_signal", None)]
+        is_goodbye = any(re.search(pattern, normalized) for pattern in completion_patterns)
+        return [SlotSet("feedback_close_signal", "goodbye" if is_goodbye else None)]

@@ -1,21 +1,21 @@
 scenario: Customer checks a delayed Chipotle order successfully
 run: 1
-timestamp: 2026-07-14T08:11:41Z
-conversation_id: sim-747b7c6b-de1c-4349-8ea3-ca96625a99c1
+timestamp: 2026-07-14T11:46:22Z
+conversation_id: sim-ff8c151b-ba95-4742-81a4-4f5eebd8ecee
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent explains the delayed order status without diverting into an unrelated support flow.
-  rationale: After getting order number CP999, the bot reports it is delayed with a reason and updated timing ("The kitchen is catching up with a busy rush. The updated timing is about 25 minutes") and stays within the order status flow until completion without starting any unrelated support flow per the ledger (flow_started/completed: check_chipotle_order_status, order_status_sub_agent).
+  rationale: After receiving order CP999, the bot states "Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes" and stays within the order status flow (ledger shows check_chipotle_order_status and order_status_sub_agent only), without starting any unrelated support flow.
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It directly answered the user's request with a specific delay explanation and actionable updated timing.
-  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so no repair was needed or mishandled.
-  coherence: 5/5 — The assistant correctly carried forward the order number and context without contradictions or repeated requests.
-  tone: 5/5 — The tone was warm, polite, and natural throughout, including a courteous closing and feedback request.
-  task_completion: PASS — The assistant obtained the order number, provided a clear status update with timing, and the user confirmed that was all they needed.
-summary: The assistant efficiently fulfilled the user's request by giving a clear and specific update on the delayed pickup order. It maintained coherent context and a friendly, natural tone, and closed the conversation appropriately with an offer of further help and a brief satisfaction check.
+  helpfulness: 5/5 — It directly answered the status question with a specific delay reason and clear updated timing, fully satisfying the user's need.
+  repair_quality: 5/5 — There were no user pushbacks or corrections, so no repairs were needed or mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order number and context without re-asking or contradicting itself.
+  tone: 5/5 — The tone was friendly, concise, and natural throughout, including an appropriate closing and feedback request.
+  task_completion: PASS — The assistant successfully provided a clear updated status and timing for the delayed pickup order, which is what the user requested.
+summary: The assistant efficiently handled the user's request by quickly obtaining the order number and providing a clear explanation of the delay and updated timing. It maintained consistent context and a polite, conversational tone, and appropriately closed by checking if further help was needed and then asking for feedback. No major issues or misunderstandings appeared in the interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(check_chipotle_order_status)
@@ -25,15 +25,15 @@ summary: The assistant efficiently fulfilled the user's request by giving a clea
 [PASS] flow_completed(check_chipotle_order_status)
 
 --- Raw Transcript ---
-[1] user: Hi, I placed a pickup order that seems delayed. Can you tell me the status?
+[1] user: Hi, I placed a pickup order a while ago and it’s delayed. Can you tell me the status?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
-[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
-[4] user: The order number is CP999.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: Sure, the order number is CP999.
 [5] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
 [6] agent: Is there anything else I can help you with regarding your order today?
-[7] user: Got it, thanks for the update and explanation. That’s all I needed.
-[8] agent: You’re welcome—if you need anything else with this order later, I’ll be here to help.
-[9] agent: Before we wrap up, how would you rate your experience with me today?
+[7] user: Got it, thanks for the update—that’s all I needed.
+[8] agent: Sounds good—if you need anything else with your order later on, I’ll be here to help.
+[9] agent: How did this support experience work out for you today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-747b7c6b-de1c-4349-8ea3-ca96625a99c1
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-ff8c151b-ba95-4742-81a4-4f5eebd8ecee

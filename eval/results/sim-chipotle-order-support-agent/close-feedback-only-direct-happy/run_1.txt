@@ -1,24 +1,27 @@
-scenario: Feedback-only acknowledgement stays active until a plain goodbye closes it
+scenario: Feedback-only close has one active farewell prompt and ends without generic follow-up
 run: 1
-timestamp: 2026-07-14T08:52:31Z
-conversation_id: sim-1c52ba65-32b0-4133-8e62-ac6963a430e5
-overall_result: PASS
+timestamp: 2026-07-14T11:47:25Z
+conversation_id: sim-a4403aec-2b57-4d82-98a1-4ff3d4228c4c
+overall_result: FAIL
 
 --- Quality Criteria Results ---
-[PASS] The feedback-only acknowledgement leaves its dedicated child closing task active, so the farewell is collected as the expected next input rather than routed through generic fallback or knowledge-base behavior.
-  rationale: After `flow_started: close_feedback_only` at T1 with `feedback_close_signal = null`, the ledger at T2 shows `slot_set: feedback_close_signal = That’s all I needed, thanks. Goodbye` followed by `action: validate_feedback_close_signal`, confirming the farewell was collected by the dedicated closing flow rather than a generic handler.
+[FAIL] The feedback-only acknowledgement starts its child closing task and non-farewell elaboration is treated as invalid close input, not a new topic or generic fallback.
+  rationale: For non-farewell elaboration at T3 and T4 (e.g., “I appreciate you understanding…”, “Also, the rice was under-seasoned…”), the system repeatedly starts the same acknowledge_order_feedback flow and logs feedback instead of treating these as invalid close input within a child closing task, and there is no evidence of a distinct child closing task being started before T5.
 
-[PASS] The goodbye deterministically clears feedback-only state before the assistant sends its one-sentence close.
-  rationale: At T2 the ledger shows `slot_set: feedback_only_active = false` and `flow_completed: close_feedback_only` before `action: utter_feedback_closed` (the one-sentence close), demonstrating the feedback-only state was cleared prior to the closing utterance.
+[FAIL] Each invalid close attempt gets one collect retry from CALM; the custom validator does not independently dispatch a duplicate prompt.
+  rationale: There are no explicit CALM collect retries or custom-validator-driven duplicate prompts shown; instead, each user message T1–T4 restarts acknowledge_order_feedback with action_mock_feedback_logging, so we cannot confirm that invalid close attempts received exactly one CALM retry and that the validator did not dispatch its own duplicate prompt.
+
+[PASS] The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
+  rationale: At T5 the close_feedback_only flow starts, sets feedback_only_active to false then null and feedback_close_signal to closed then null, the bot sends a one-sentence close (“Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.”), and there is no follow-up asking if the user needs more help.
 
 --- Quality Metrics ---
-bot_quality: 3.75/5
-  helpfulness: 4/5 — It correctly acknowledged and said it logged the feedback, matching the user's stated goal, but added slightly unnecessary closure instructions and repetition.
-  repair_quality: 5/5 — There were no user pushbacks or disfluency signals, so there was no need for repair and none was mishandled.
-  coherence: 3/5 — The bot contradicted its own earlier instruction by asking an extra question after telling the user to just say goodbye to close things out.
-  tone: 3/5 — The tone was polite and generally natural but somewhat scripted and repetitive, particularly with the duplicated closure line and the final follow-up question after the goodbye.
-  task_completion: PASS — The bot acknowledged and logged the user's feedback as requested and then properly closed the interaction when the user said goodbye.
-summary: The assistant successfully fulfilled the user's goal by acknowledging and logging the feedback and ending the conversation politely. However, it repeated itself and then contradicted its own closure flow by asking an additional question after the user said goodbye, which slightly undermines coherence and makes the tone feel more robotic and scripted.
+bot_quality: 3.0/5
+  helpfulness: 2/5 — While the acknowledgments respected the user's request to avoid actions, the assistant gave the same generic response to multiple specific pieces of feedback instead of engaging with or summarizing the details, offering minimal substantive value.
+  repair_quality: 5/5 — The user never signaled misunderstanding or pushed back on the assistant’s behavior, so there were no repair opportunities mishandled.
+  coherence: 2/5 — The assistant mechanically repeated the same stock message despite the user adding new, distinct feedback each turn, showing it failed to update its responses with the evolving content of the conversation.
+  tone: 3/5 — The tone was polite and empathetic but somewhat canned and repetitive, with the same phrasing reused in a way that felt formulaic.
+  task_completion: PASS — The user only wanted to share feedback without triggering any action, and the assistant consistently acknowledged the feedback while explicitly not initiating refunds, lookups, or compensation.
+summary: The assistant correctly honored the user's wish to simply share feedback without triggering compensation or order lookup and maintained a polite, empathetic tone. However, it gave the same generic acknowledgment repeatedly and did not engage with the specific details in each user message, leading to low substantive helpfulness and weak conversational coherence.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -28,16 +31,21 @@ summary: The assistant successfully fulfilled the user's goal by acknowledging a
 [PASS] slot_was_set(feedback_only_active=False)
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
 [PASS] flow_completed(close_feedback_only)
 
 --- Raw Transcript ---
-[1] user: Hi, I just want to share some feedback about a disappointing meal I had recently at Chipotle—I’m not looking for a refund, coupon, replacement, or any follow-up action, just want to let you know what happened.
-[2] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback.
-[3] agent: When you’re all set, just say goodbye and I’ll close this out.
-[4] agent: When you’re all set, just say goodbye and I’ll close this out.
-[5] user: That’s all I needed, thanks. Goodbye.
-[6] agent: Understood. Take care.
-[7] agent: Before we wrap up, is there anything else I can assist you with today?
+[1] user: I just wanted to share some feedback about my last Chipotle meal — I don’t want a refund, coupon, replacement, status check, report, or any other action, just to let you know what happened.
+[2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[3] user: The chicken in my bowl was really dry and overcooked, and most of the pieces were small burnt end bits instead of normal chunks.
+[4] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[5] user: I appreciate you understanding; I just hope future batches are cooked a bit juicier and more consistently so it doesn’t feel like I got the bottom of the pan.
+[6] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[7] user: Also, the rice was under-seasoned and a little hard, so the whole bowl ended up kind of bland and not very enjoyable.
+[8] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[9] user: That’s all I needed, thanks. Goodbye.
+[10] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-1c52ba65-32b0-4133-8e62-ac6963a430e5
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-a4403aec-2b57-4d82-98a1-4ff3d4228c4c

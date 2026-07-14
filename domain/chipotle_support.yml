@@ -21,8 +21,13 @@ slots:
   coupon_issued: {type: bool, mappings: [{type: controlled}]}
   coupon_issuance_result: {type: categorical, values: [issued, blocked_unverified_order], mappings: [{type: controlled}]}
   wants_action: {type: categorical, values: [yes, no], mappings: [{type: from_llm}]}
+  unverified_next_step: {type: categorical, values: [feedback_only, check_status], mappings: [{type: from_llm}]}
   feedback_only_active: {type: bool, mappings: [{type: controlled}]}
-  feedback_close_signal: {type: text, mappings: [{type: controlled}]}
+  feedback_close_signal:
+    type: text
+    mappings:
+      - type: controlled
+        run_action_every_turn: validate_feedback_close_signal
   feedback_logged: {type: bool, mappings: [{type: controlled}]}
 
 responses:
@@ -55,7 +60,10 @@ responses:
       buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_no_compensation_repeat: [{text: "I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback."}]
   utter_repeat_compensation_closure: [{text: "I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged."}]
-  utter_no_compensation_unverified: [{text: "I’m sorry this was frustrating. I can log what happened, but this mock flow cannot offer or issue a credit or coupon until it can verify a matching Chipotle order number."}]
+  utter_no_compensation_unverified: [{text: "I’m sorry this was frustrating. This mock flow can’t offer a credit or coupon without a matching order number, but I can still log what happened."}]
+  utter_ask_unverified_next_step:
+    - text: "Would you like me to just log the complaint, or check the order’s timing instead?"
+      buttons: [{title: "Just log it", payload: "/SetSlots(unverified_next_step=feedback_only)"}, {title: "Check order timing", payload: "/SetSlots(unverified_next_step=check_status)"}]
   utter_feedback_logged: [{text: "Thanks for telling me. I’ve logged the feedback in this mock flow so the preparation issue is captured."}]
   utter_refund_limit: [{text: "I understand a refund would feel more fitting. This build can only offer a future-meal discount or item credit when eligible; it can’t process refunds."}]
   utter_resolution_declined: [{text: "No problem—I won’t issue anything. I’ve still recorded the feedback."}]
@@ -72,4 +80,4 @@ responses:
   utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions."}]
   utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."}]
 
-actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, action_mock_feedback_logging, validate_resolution_acceptance]
+actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, action_mock_feedback_logging, validate_resolution_acceptance, validate_feedback_close_signal]

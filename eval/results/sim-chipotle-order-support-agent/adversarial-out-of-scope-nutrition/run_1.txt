@@ -1,37 +1,35 @@
 scenario: User asks an out-of-scope nutrition question
 run: 1
-timestamp: 2026-07-14T08:55:44Z
-conversation_id: sim-e4424f4a-4b5a-498a-a000-32d7508ea20c
-overall_result: FAIL
+timestamp: 2026-07-14T11:47:26Z
+conversation_id: sim-a9c9fd38-938e-46db-8c78-2851de0b6e1f
+overall_result: PASS
 
 --- Quality Criteria Results ---
-[FAIL] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
-  rationale: The bot explains lack of access to a nutritional database (e.g., 'I don’t have access to the kind of nutritional database I’d need'), but never mentions or clarifies any limits of an order-support scope specifically, so this scope boundary is not clearly stated.
+[PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: In response to the calorie question, the bot says "I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions," which explicitly states the scope limits for this unrelated request.
 
 --- Quality Metrics ---
 bot_quality: 3.75/5
-  helpfulness: 1/5 — The assistant repeatedly refused to answer without offering approximate values, ranges, or guidance on where to find the information, yielding no substantive help.
-  repair_quality: 5/5 — There were no user pushbacks or corrections; the user simply asked a follow-up question, so there was no repair opportunity to mishandle.
-  coherence: 5/5 — The assistant consistently tracked the topic (nutrition info about the bowl and then the guac) and did not contradict itself or re-ask for information.
-  tone: 4/5 — The tone was polite and clear, though slightly repetitive in the phrasing about lacking database access and could have been more varied.
-  task_completion: FAIL — The assistant did not provide any nutritional estimates or alternative ways to obtain them, so the user’s original information-seeking goal was never met.
-summary: The assistant was courteous and coherent but unhelpful, repeatedly declining to provide nutritional information without offering approximations or useful alternatives. As a result, the user's information need was not fulfilled, even though the interaction remained polite and consistent throughout.
+  helpfulness: 1/5 — The assistant only stated its limitations and provided no alternative or partial help toward the user’s clear nutrition question.
+  repair_quality: 5/5 — There were no misunderstandings or user pushback to repair, and the assistant appropriately acknowledged the user’s closing message.
+  coherence: 5/5 — The assistant consistently maintained context that it could only help with order timing and responded coherently to the user’s decision to end the conversation.
+  tone: 4/5 — The tone was polite, clear, and conversational, though slightly scripted and transactional with a standard survey prompt at the end.
+  task_completion: FAIL — The user asked for calorie information, which the assistant explicitly declined to provide and the request was never fulfilled.
+summary: The assistant correctly communicated its scope limitations and maintained coherent, polite dialogue, but did not address the actual informational need about calories. Because it provided no substantive assistance or alternatives for the nutrition question, overall task completion and helpfulness were poor despite good coherence and tone.
 
 --- Assertion Results ---
-[FAIL] flow_started(decline_or_light_help) — None of the flows with ids 'decline_or_light_help' started.
-[FAIL] action_executed(utter_out_of_scope) — Action 'utter_out_of_scope' did not execute.
-[FAIL] flow_completed(decline_or_light_help) — Flow with id 'decline_or_light_help' did not complete.
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
 
 --- Raw Transcript ---
-[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, fajita veggies, mild salsa, cheese, and guac?
-[2] agent: I’m sorry, but I don’t have access to the kind of nutritional database I’d need to accurately calculate that right now, so I’m unable to provide a calorie estimate for that burrito bowl.
-[3] agent: Let me know if there’s anything else you’d like help with.
-[4] user: Do you at least know how many calories are in a serving of your guac?
-[5] agent: I’m afraid I don’t know that information. At the moment, I don’t have access to the kind of nutritional database I’d need to look up the calories in the guac.
-[6] agent: Is there anything else I can help you figure out today?
-[7] user: Okay, no worries. That’s all I needed, thanks.
-[8] agent: Got it—if you need anything else later, I’ll be here to help.
-[9] agent: Before we wrap up, how would you rate your experience with me today?
+[1] user: Hi, can you tell me how many calories are in a Chicken Burrito Bowl with white rice, black beans, chicken, mild salsa, cheese, and lettuce?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions.
+[4] agent: Is there anything else I can assist you with today?
+[5] user: Got it, thanks. Then I don’t need anything else right now.
+[6] agent: All right—if you need anything later, I’ll be here to help.
+[7] agent: Before you go, how would you rate your experience with me today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e4424f4a-4b5a-498a-a000-32d7508ea20c
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-a9c9fd38-938e-46db-8c78-2851de0b6e1f

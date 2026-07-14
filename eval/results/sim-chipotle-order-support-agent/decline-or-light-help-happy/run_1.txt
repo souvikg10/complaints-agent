@@ -1,24 +1,24 @@
 scenario: Customer vents about an order and explicitly does not want action
 run: 1
-timestamp: 2026-07-14T12:07:18Z
-conversation_id: sim-26d0c6d5-d6c4-4e65-a261-99f5b8613314
+timestamp: 2026-07-14T12:41:47Z
+conversation_id: sim-20af8ccd-053e-4808-8696-f6fbf8480657
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The assistant recognizes this as feedback-only rather than a request for order support.
-  rationale: The assistant explicitly treats it as feedback-only, e.g., “I won’t start an order lookup or compensation” and “I’ll keep this as feedback only unless you decide you want help with the order,” and the ledger shows the acknowledge_order_feedback flow with feedback_only_active=true and no order-support flow.
+  rationale: In T1 the flow `acknowledge_order_feedback` is started with `feedback_only_active = true`, and the bot says "I won’t start an order lookup or compensation," explicitly treating it as feedback-only rather than order support.
 
 [PASS] The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
-  rationale: The bot acknowledges the user’s experience (e.g., “having a meal go sideways is disappointing,” “Thanks for adding that detail”) and never asks for order details, offers refunds/coupons, or initiates troubleshooting; the ledger shows only feedback logging actions with no order lookup or compensation-related flows.
+  rationale: Across all turns the bot validates the user’s experience (e.g., "having a meal go sideways is disappointing") and, per the ledger, never asks for order details, never initiates any refund/compensation/triage flow, and only logs feedback via `action_mock_feedback_logging`.
 
 --- Quality Metrics ---
-bot_quality: 4.0/5
-  helpfulness: 3/5 — The assistant met the basic need to listen and not take action, but gave minimal, repetitive responses and missed chances to validate more deeply or engage with the specific concerns.
-  repair_quality: 5/5 — There were no user pushbacks or corrections of misunderstanding; the assistant stayed aligned with the stated preference of 'venting only' throughout.
-  coherence: 5/5 — The assistant consistently remembered that the user did not want an order lookup or compensation and maintained that stance across turns.
-  tone: 3/5 — The tone was polite and appropriate but somewhat canned and repetitive, especially with the repeated 'Thanks for adding that detail' phrase.
-  task_completion: PASS — The user only wanted to vent without any action taken, and the assistant consistently acknowledged their feedback without initiating refunds or lookups.
-summary: The assistant fulfilled the user's explicit request to simply vent and not trigger any support actions, maintaining consistent context and alignment. However, its responses were formulaic and repetitive, offering only shallow empathy and not engaging meaningfully with the specific issues the user raised.
+bot_quality: 4.75/5
+  helpfulness: 4/5 — The assistant met the user's stated goal of being heard and not escalating, though it could have added a bit more empathic engagement (e.g., reflecting specifics of the complaint) to be maximally useful for venting.
+  repair_quality: 5/5 — There were no disfluency or misunderstanding signals from the user; the assistant's direction aligned with user intent throughout, so no repair was needed.
+  coherence: 5/5 — The assistant consistently remembered that the user wanted only to vent and reiterated that it would not start an order lookup or compensation, staying aligned with the intent across all turns.
+  tone: 5/5 — The tone was natural, empathetic, and concise, matching the emotional context and staying friendly and readable without sounding robotic.
+  task_completion: PASS — The user only wanted to vent without triggers for refunds or follow-up, and the assistant consistently listened, acknowledged the feedback, and explicitly avoided escalation or compensation steps.
+summary: The assistant handled the venting scenario well, acknowledging the user’s disappointment and clearly respecting their wish not to pursue refunds or follow-up. It maintained coherent context and an empathetic tone throughout, though it could have slightly deepened its engagement with the specific issues mentioned to be maximally supportive. Overall, the user’s limited goal was effectively met.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -29,14 +29,12 @@ summary: The assistant fulfilled the user's explicit request to simply vent and 
 [PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I’m really disappointed with the Chipotle I just had and just want to vent a bit—no refund, coupon, replacement, or order lookup needed at all.
+[1] user: I’m really disappointed with the Chipotle I had today and just want to vent about it a bit—I’m not looking for a refund, coupon, replacement, or any kind of follow-up on my order.
 [2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[3] user: The chicken was super dry, my bowl was barely half full, and the chips were stale—it just felt really low effort compared to what I’m used to from you guys.
+[3] user: Thanks. The main thing is my bowl was really skimpy on portions and the rice was undercooked and crunchy, so it just didn’t feel worth what I paid this time.
 [4] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
-[5] user: I get that things happen, but it’s been hit-or-miss the last few times and it’s making me think twice about going back to Chipotle as often.
-[6] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
-[7] user: That’s all I wanted to say, just hoping the quality gets more consistent again. Thanks for listening.
-[8] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
+[5] user: Yeah, that’s all I wanted—to say it was disappointing and hope it gets better, because I usually like you guys. Thanks for listening.
+[6] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-26d0c6d5-d6c4-4e65-a261-99f5b8613314
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-20af8ccd-053e-4808-8696-f6fbf8480657

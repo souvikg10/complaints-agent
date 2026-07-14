@@ -1,24 +1,24 @@
 scenario: Customer reports a missing-item issue and accepts the remedy
 run: 1
-timestamp: 2026-07-14T12:07:18Z
-conversation_id: sim-e53cd7fe-6584-4860-85e5-f877736c91c7
+timestamp: 2026-07-14T12:40:44Z
+conversation_id: sim-3b7e3cb5-43db-456f-bf22-77c19f2d6a06
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent gathers the order context and issue details before deciding the remedy.
-  rationale: Before deciding the remedy (ledger T3: action_mock_order_issue, suggested_remedy = item_credit), the bot asked for and received the order number (T2: slot_set order_id = CP123) and the issue details (T3: slot_set issue_details = "The side of chips I ordered was never included in the bag at all, so I didn’t get to eat them").
+  rationale: Before presenting the remedy, the bot first asked for the order number (T1→T2, user: “The order number is CP123.”, slot_set: order_id = CP123) and then asked what went wrong and which item was affected (T2→T3, user: “The side of chips I ordered was never included in the bag…” with slot_set: issue_details), after which action_mock_order_issue_policy ran and suggested_remedy was set.
 
 [PASS] The agent issues the accepted remedy after the customer agrees to it.
-  rationale: After the customer agreed to the credit (T4: "Yes, please go ahead and issue the credit.", slot_set resolution_acceptance = yes), the system collected coupon channel preference and then executed action_mock_coupon_issuance (T5) and replied "Issued: $8 item credit. Your code is CREDIT-CP123," indicating the remedy was issued post-acceptance.
+  rationale: After the user explicitly agreed (“Yes, please go ahead and issue the $8 item credit for a future meal.” at T4, slot_set: resolution_acceptance = yes), the system later executed action_mock_coupon_issuance at T5 (coupon_issued = true, coupon_code = CREDIT-CP123) and then the bot displayed the code in chat as requested.
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It collected needed details, confirmed the order, provided a clear remedy, and delivered a specific usable credit code with clear usage conditions.
-  repair_quality: 5/5 — There were no user pushbacks or disfluency signals, so no repairs were needed or mishandled.
-  coherence: 5/5 — The assistant consistently tracked the order number, the missing item, and the user’s preference to show the code in chat without any contradictions or re-asks.
-  tone: 5/5 — The tone was friendly, empathetic, and natural throughout, with clear and concise wording appropriate to a support interaction.
-  task_completion: PASS — The assistant verified the order, issued the requested $8 credit with a concrete code and terms, and confirmed completion before closing.
-summary: This conversation is a clean, successful support flow: the assistant efficiently gathers information, confirms the issue, and delivers a specific remedy that matches the user’s request. It maintains consistent context and a warm, professional tone, then closes with an appropriate satisfaction check. No notable issues or breakdowns appear in the interaction.
+  helpfulness: 5/5 — It gathered needed details, confirmed the remedy, and clearly delivered the credit code and usage terms without omissions or errors.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so there was no need for repair and no mishandled opportunities.
+  coherence: 5/5 — The assistant consistently tracked the order number, issue, chosen remedy, and delivery channel for the code without re-asking or contradicting itself.
+  tone: 5/5 — The tone was warm, empathetic, and natural throughout, appropriate for a customer-service interaction and easy to read.
+  task_completion: PASS — The assistant verified the order, issued the requested $8 credit, presented the code with terms, and confirmed completion before closing.
+summary: This was a smooth, well-structured support interaction in which the assistant efficiently collected the necessary details and delivered the requested credit with clear conditions. It maintained context correctly and used a friendly, natural tone, ending with a standard satisfaction check and polite closeout.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -36,17 +36,17 @@ summary: This conversation is a clean, successful support flow: the assistant ef
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
 [4] user: The order number is CP123.
 [5] agent: Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it.
-[6] user: The side of chips I ordered was never included in the bag at all, so I didn’t get to eat them.
+[6] user: The side of chips I ordered was never included in the bag, so I didn’t get to eat them at all.
 [7] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
 [8] agent: Would you like me to issue the approved future-meal remedy?
-[9] user: Yes, please go ahead and issue the credit.
+[9] user: Yes, please go ahead and issue the $8 item credit for a future meal.
 [10] agent: Would you like the code shown here or sent to the email used for the order?
 [11] user: Please just show the code here in the chat.
 [12] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[13] agent: Is there anything else I can help you with today?
-[14] user: No, that covers it. Thanks for your help!
-[15] agent: You’re very welcome—if you need anything else later on, I’ll be here to help.
-[16] agent: How did we do today—would you mind rating your experience with us?
+[13] agent: Is there anything else I can assist you with today?
+[14] user: No, that’s all I needed. Thanks for your help!
+[15] agent: You’re very welcome—if you ever need anything else, I’ll be here to help.
+[16] agent: How satisfied were you with your experience today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e53cd7fe-6584-4860-85e5-f877736c91c7
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3b7e3cb5-43db-456f-bf22-77c19f2d6a06

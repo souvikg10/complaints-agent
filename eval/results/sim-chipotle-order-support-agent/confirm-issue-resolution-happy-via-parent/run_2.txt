@@ -1,24 +1,24 @@
 scenario: Confirm issue resolution child flow is reached through a verified accepted order issue
 run: 2
-timestamp: 2026-07-14T12:12:38Z
-conversation_id: sim-2eb85cd3-b15d-4d51-bd31-9da030026a14
+timestamp: 2026-07-14T12:41:08Z
+conversation_id: sim-739776dc-2e48-4a2f-aad5-d8fd98f3202e
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
-  rationale: In T3 the user says "Yes, please go ahead and issue the credit" and `slot_set: resolution_acceptance = yes` occurs before `flow_started: confirm_issue_resolution`, showing remedy acceptance was collected prior to starting the confirmation-and-issuance flow.
+  rationale: In T2 the bot offers the credit and sets resolution_acceptance=null, then in T3 after the user says "Yes, please go ahead and issue the $8 item credit." the slot resolution_acceptance is set to yes and only then is flow_started: confirm_issue_resolution, so acceptance is collected before starting the confirmation-and-issuance flow.
 
 [PASS] The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
-  rationale: After acceptance (`slot_set: resolution_acceptance = yes` at T3), the bot asks "Would you like the code shown here or sent to the email used for the order?" (delivery channel), then at T4 `slot_set: coupon_channel = email` and `action: action_mock_coupon_issuance` with `coupon_issued = true` show the remedy was issued.
+  rationale: After acceptance in T3 and starting confirm_issue_resolution with coupon_channel=null, the bot asks "Would you like the code shown here or sent to the email used for the order?" (delivery channel), then in T4 after the user chooses email (slot_set: coupon_channel = email) it runs action_mock_coupon_issuance and later utters the issued coupon details, satisfying both asking for channel and issuing after acceptance of an eligible issue.
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It efficiently gathered the needed order number, provided a clear remedy, issued the credit, and gave concrete details on usage and validity.
-  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so no repair was needed or mishandled.
-  coherence: 5/5 — The assistant correctly tracked the order number, the chosen remedy, and the user’s preference to send the code to email while also displaying it.
-  tone: 5/5 — Tone was warm, empathetic, concise, and natural throughout, including a polite close and feedback request without sounding robotic.
-  task_completion: PASS — The assistant verified the order, issued the promised $8 credit with a specific code and terms, and confirmed completion before closing the conversation.
-summary: This conversation is a strong example of a focused transactional flow: the assistant quickly understands the issue, verifies the order, and delivers a concrete remedy with clear instructions. State tracking and tone are consistently good, and the user’s need is fully met with no confusion or extra friction.
+  helpfulness: 5/5 — It efficiently gathered the needed order info, offered the specific available remedy, executed it, and provided clear details and constraints of the credit.
+  repair_quality: 5/5 — There were no user corrections or pushback, so no repair was needed and the flow proceeded smoothly.
+  coherence: 5/5 — The assistant consistently tracked the order number, remedy choice, delivery method, and resolution without re-asking or contradicting itself.
+  tone: 5/5 — The tone was polite, empathetic, and natural throughout, with clear phrasing and an appropriate closing satisfaction question.
+  task_completion: PASS — The assistant fully processed the missing-item complaint and clearly issued and communicated the $8 credit code with terms of use.
+summary: The assistant handled the missing-item complaint smoothly, gathering the order details, presenting the remedy, and issuing the credit code with clear terms. It maintained consistent state and a friendly, professional tone throughout, cleanly completing the user’s task and closing with a brief satisfaction check.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -37,15 +37,15 @@ summary: This conversation is a strong example of a focused transactional flow: 
 [4] user: The order number is CP123.
 [5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
 [6] agent: Would you like me to issue the approved future-meal remedy?
-[7] user: Yes, please go ahead and issue the credit.
+[7] user: Yes, please go ahead and issue the $8 item credit.
 [8] agent: Would you like the code shown here or sent to the email used for the order?
 [9] user: Please send it to the email I used for the order.
 [10] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
 [11] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
 [12] agent: Is there anything else I can assist you with today?
-[13] user: No, that’s all I needed. Thanks for your help.
-[14] agent: You’re very welcome—if you need anything else later on, I’ll be here to help.
-[15] agent: How was your experience with us today?
+[13] user: No, that’s all I needed. Thanks for your help!
+[14] agent: You’re very welcome—happy to help. I’ll be here if you need anything else in the future.
+[15] agent: How satisfied were you with your support experience today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-2eb85cd3-b15d-4d51-bd31-9da030026a14
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-739776dc-2e48-4a2f-aad5-d8fd98f3202e

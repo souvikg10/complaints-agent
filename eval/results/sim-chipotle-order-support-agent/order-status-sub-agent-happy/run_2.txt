@@ -1,7 +1,7 @@
 scenario: Order status sub-agent is reached through the parent happy path
 run: 2
-timestamp: 2026-07-14T12:11:42Z
-conversation_id: sim-d8fc51dd-5505-4cee-b641-214c4cdf4770
+timestamp: 2026-07-14T12:41:01Z
+conversation_id: sim-d254bee4-281a-44ab-932a-1a2024e14568
 overall_result: PASS
 
 --- Quality Criteria Results ---
@@ -10,12 +10,12 @@ overall_result: PASS
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — It asked for the necessary order number, then provided a specific delay reason and precise updated timing that directly answered the user’s request.
-  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so no repair was needed or mishandled.
-  coherence: 5/5 — The assistant correctly used the provided order number and maintained a consistent understanding of the user’s request throughout.
-  tone: 5/5 — The tone was friendly, concise, and natural, with clear instructions and a polite closing and feedback request.
-  task_completion: PASS — The assistant successfully looked up the order status, gave a clear updated timing, and the user confirmed that was all they needed.
-summary: The assistant efficiently handled a simple order-status query by gathering the needed information and giving a clear, specific update on the delay. It maintained context correctly and used a natural, polite tone, closing with an appropriate offer of further help and a brief feedback prompt.
+  helpfulness: 5/5 — It asked for the minimal needed info (order number), provided a specific delay reason and timeframe, and confirmed the outcome without unnecessary steps.
+  repair_quality: 5/5 — There were no user corrections or pushback, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant correctly used the provided order number and maintained a consistent understanding of the user’s intent throughout.
+  tone: 5/5 — The tone was polite, concise, and natural, closing with an appropriate offer of further help and a brief feedback question.
+  task_completion: PASS — The assistant successfully checked the order number provided and gave a clear updated pickup timing, which is exactly what the user requested.
+summary: The assistant efficiently completed the user’s goal of checking a delayed pickup order by requesting the order number and providing a clear updated time estimate. It stayed coherent, needed no repairs, and used a professional yet friendly tone with a simple closing CSAT-style question. No major issues appear in this short interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(check_chipotle_order_status)
@@ -26,15 +26,15 @@ summary: The assistant efficiently handled a simple order-status query by gather
 [PASS] flow_completed(check_chipotle_order_status)
 
 --- Raw Transcript ---
-[1] user: Hi, I placed a pickup order a bit ago and it’s still not ready. Can you tell me where my order is?
+[1] user: Hi, I’m just checking—where is my pickup order? It seems delayed.
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Sure, the order number is CP999.
+[4] user: Sure, my order number is CP999.
 [5] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
-[6] agent: Is there anything else I can help you with regarding your order today?
+[6] agent: Is there anything else I can assist you with regarding your order today?
 [7] user: Got it, thanks for the update—that’s all I needed.
-[8] agent: Sounds good—if you need anything else later on, I’ll be here to help.
-[9] agent: Before we wrap up, how would you rate your experience with me today?
+[8] agent: I’m glad I could help. I’ll be here if you need anything else.
+[9] agent: How did this support experience work out for you today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d8fc51dd-5505-4cee-b641-214c4cdf4770
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d254bee4-281a-44ab-932a-1a2024e14568

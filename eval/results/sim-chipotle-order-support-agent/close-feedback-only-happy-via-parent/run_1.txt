@@ -1,24 +1,24 @@
 scenario: Close feedback-only child flow is reached through a feedback vent and goodbye
 run: 1
-timestamp: 2026-07-14T12:07:18Z
-conversation_id: sim-e98df88f-af9a-40ee-9bc4-5e4b6accf5fa
+timestamp: 2026-07-14T12:40:45Z
+conversation_id: sim-6304aea6-69df-427b-abcc-7dd6ea7175de
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent keeps the conversation in the feedback-only path rather than collecting order-support details.
-  rationale: The ledger shows the acknowledge_order_feedback flow with feedback_only_active = true, only action_mock_feedback_logging and utter_venting_acknowledged were used, and there are no flows or actions for order lookup, compensation, or other order-support details.
+  rationale: The ledger shows `flow_started: acknowledge_order_feedback` with `feedback_only_active = true` and only `action_mock_feedback_logging` (no order lookup or support flows), and the bot explicitly says “I won’t start an order lookup or compensation.”
 
 [PASS] The child close flow clears the feedback-only state and ends with one terminal close after the explicit goodbye.
-  rationale: After the user says "No, that's it.", validate_feedback_followup_message sets feedback_followup_choice = close, then flow_started: close_feedback_only clears feedback_only_active and related slots, action: utter_feedback_closed is invoked, and flow_completed: close_feedback_only occurs once before flow_completed: acknowledge_order_feedback, indicating a single terminal close after the goodbye.
+  rationale: After the user’s closing message “No, that's it.”, the ledger shows `flow_started: close_feedback_only`, `feedback_only_active = false`, feedback slots cleared, a single `action: utter_feedback_closed`, followed by `flow_completed: close_feedback_only` and then `flow_completed: acknowledge_order_feedback`, indicating one terminal close and cleared state after the explicit goodbye.
 
 --- Quality Metrics ---
-bot_quality: 5.0/5
-  helpfulness: 5/5 — For a venting-only interaction, the assistant provided exactly the needed acknowledgment and respected the user's request for no remedial actions.
-  repair_quality: 5/5 — There were no misunderstandings or corrections from the user, so there was no need for repair and the interaction flowed smoothly.
-  coherence: 5/5 — The assistant consistently remembered the user's desire not to seek compensation or follow-up and did not contradict or forget prior context.
-  tone: 5/5 — The tone was warm, empathetic, concise, and natural, matching the casual, venting nature of the user's message.
-  task_completion: PASS — The user only wanted to vent without any action taken, and the assistant acknowledged the complaint, confirmed no follow-up would occur, and closed the conversation in line with that intent.
-summary: The assistant handled a simple venting interaction well, offering empathy and explicitly respecting the user's wish for no further action. It stayed consistent with the user's stated intent, maintained a natural tone, and closed the conversation appropriately without pushing unwanted resolutions.
+bot_quality: 4.75/5
+  helpfulness: 4/5 — It directly acknowledged the user’s venting and respected the request for no follow-up, though it could have offered a bit more empathy or validation about the specifics of the complaint.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so no repair was needed or mishandled.
+  coherence: 5/5 — The assistant consistently tracked that the user only wanted to vent and not pursue refunds or follow-ups, and it maintained that context through to the end.
+  tone: 5/5 — The tone is warm, concise, and conversational, validating the user’s frustration without sounding robotic or scripted.
+  task_completion: PASS — The user only wanted to vent without any follow-up actions, and the assistant acknowledged the complaint and closed the conversation appropriately.
+summary: The assistant handled this short interaction well, acknowledging the user’s frustration and clearly honoring the request not to initiate any follow-up actions. Its responses were coherent, empathetic, and appropriately brief, though slightly more specific validation of the user’s issues (cold food, small portion, taste) could have made the interaction even more helpful emotionally.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -32,10 +32,10 @@ summary: The assistant handled a simple venting interaction well, offering empat
 [PASS] flow_completed(close_feedback_only)
 
 --- Raw Transcript ---
-[1] user: I just wanted to say my last Chipotle meal was really disappointing – cold rice, soggy veggies, and barely any meat – but I’m not looking for a refund, coupon, replacement, status check, or any follow-up, I just needed to vent.
+[1] user: I just wanted to say I was really disappointed with my Chipotle order today — the food was cold, the portion was tiny, and everything tasted off. I’m not looking for a refund, coupon, replacement, status check, order report, or any follow-up, I just needed to vent about it.
 [2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
 [3] user: No, that's it.
 [4] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e98df88f-af9a-40ee-9bc4-5e4b6accf5fa
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-6304aea6-69df-427b-abcc-7dd6ea7175de

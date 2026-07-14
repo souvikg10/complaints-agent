@@ -1,3 +1,4 @@
+import re
 from typing import Any, Dict, List, Text
 
 from rasa_sdk import Action, Tracker
@@ -16,13 +17,16 @@ class ActionMockOrderIssuePolicy(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
         # MOCK — replace once a real MCP server for order issue policy is registered.
+        # A remedy requires a verified order number, not merely customer-supplied context.
         order_id = str(tracker.get_slot("order_id") or "").upper().replace(" ", "")
         category = str(tracker.get_slot("issue_category") or "other").lower()
         details = str(tracker.get_slot("issue_details") or "").lower()
+        verified = bool(re.fullmatch(r"(?:CP|CHIP)[A-Z0-9-]{3,}", order_id)) and not order_id.endswith(("000", "NOTFOUND", "ABUSE"))
         severe_words = ("allergy", "allergic", "illness", "sick", "foreign object", "glass", "metal")
+
         if any(word in details for word in severe_words):
             remedy, eligible, reason = "feedback_only", False, "safety_review"
-        elif order_id.endswith(("000", "NOTFOUND", "ABUSE")):
+        elif not verified:
             remedy, eligible, reason = "none", False, "unable_to_verify"
         elif order_id.endswith(("777", "REPEAT")):
             remedy, eligible, reason = "none", False, "repeat_compensation"
@@ -33,6 +37,7 @@ class ActionMockOrderIssuePolicy(Action):
         else:
             remedy, eligible, reason = "feedback_only", False, "limited_issue"
         return [
+            SlotSet("order_verified", verified),
             SlotSet("issue_eligible", eligible),
             SlotSet("suggested_remedy", remedy),
             SlotSet("policy_reason", reason),

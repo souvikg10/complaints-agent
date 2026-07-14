@@ -18,14 +18,14 @@
     "scenario_slug": "adversarial-out-of-scope-nutrition",
     "runs_passed": 2,
     "runs_total": 2,
-    "duration_s": 23.893149800016545
+    "duration_s": 26.65685073804343
   },
   {
     "scenario_name": "Customer directly completes coupon delivery after accepting a remedy",
     "scenario_slug": "confirm-issue-resolution-direct-happy",
     "runs_passed": 2,
     "runs_total": 2,
-    "duration_s": 33.13046455598669
+    "duration_s": 33.54417082603322
   },
   {
     "scenario_name": "Customer hits repeat-compensation policy path for an order issue",
@@ -95,7 +95,7 @@
     "scenario_slug": "order-status-sub-agent-happy",
     "runs_passed": 2,
     "runs_total": 2,
-    "duration_s": 41.85034078301396
+    "duration_s": 36.978325809002854
   },
   {
     "scenario_name": "Customer vents about an order and explicitly does not want action",
@@ -109,7 +109,7 @@
     "scenario_slug": "order-issue-sub-agent-happy",
     "runs_passed": 2,
     "runs_total": 2,
-    "duration_s": 44.01914410298923
+    "duration_s": 44.203653742035385
   },
   {
     "scenario_name": "Welcome and route Chipotle support from a greeting",
@@ -123,20 +123,20 @@
     "scenario_slug": "order-status-sub-agent-not-found-retry",
     "runs_passed": 2,
     "runs_total": 2,
-    "duration_s": 42.23661302396795
+    "duration_s": 36.034281441010535
   },
   {
     "scenario_name": "Unauthorized attempt to force coupon issuance is blocked before confirmation",
     "scenario_slug": "issue-resolution-confirmation-redteam-bypass",
     "runs_passed": 2,
     "runs_total": 2,
-    "duration_s": 51.929024514043704
+    "duration_s": 42.13760264299344
   },
   {
-    "scenario_name": "Customer closes a feedback-only conversation with a plain goodbye",
+    "scenario_name": "Feedback-only acknowledgement stays active until a plain goodbye closes it",
     "scenario_slug": "close-feedback-only-direct-happy",
     "runs_passed": 0,
     "runs_total": 2,
-    "duration_s": 17.308120652043726
+    "duration_s": 19.089890962990467
   }
 ]

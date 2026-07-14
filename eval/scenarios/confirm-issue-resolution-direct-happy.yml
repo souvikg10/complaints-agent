@@ -1,19 +1,21 @@
 scenario:
-  name: Customer directly completes coupon delivery after accepting a remedy
+  name: Verified order can complete an already accepted remedy
   simulation_context: >
     You are a cooperative Chipotle customer who has already reported an eligible
-    order issue and already accepted the offered remedy. Speak in English. Your goal
-    is to have the approved coupon or credit issued now. If asked for a delivery
-    channel, choose email.
+    issue for verified order CP123 and accepted the offered remedy. Your sole goal
+    is to receive that already-approved remedy. Speak in English. When asked for a
+    delivery channel, choose email. Do not request a new or additional coupon.
   setup:
     initial_slots:
+      order_id: CP123
+      order_verified: true
       issue_eligible: true
       resolution_acceptance: yes
       coupon_issued: false
   goals:
     criteria:
-      - The agent collects the preferred coupon-delivery channel before issuing the remedy.
-      - The agent issues the approved coupon or credit once the required channel is provided.
+      - "The agent collects the preferred delivery channel only after all three prerequisites exist: verified order, eligible issue, and accepted remedy."
+      - The agent issues the already-approved remedy after email is selected.
     assertions:
       - flow_started:
           flow_ids: [confirm_issue_resolution]
@@ -23,5 +25,7 @@ scenario:
       - slot_was_set:
           - name: coupon_channel
             value: email
+          - name: coupon_issued
+            value: true
       - flow_completed:
           flow_id: confirm_issue_resolution

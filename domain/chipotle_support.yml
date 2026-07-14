@@ -7,6 +7,7 @@ slots:
   order_status: {type: text, mappings: [{type: controlled}]}
   order_eta: {type: text, mappings: [{type: controlled}]}
   order_delay_note: {type: text, mappings: [{type: controlled}]}
+  order_verified: {type: bool, mappings: [{type: controlled}]}
   issue_category: {type: categorical, values: [wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, other], mappings: [{type: from_llm}]}
   issue_details: {type: text, mappings: [{type: from_llm}]}
   issue_eligible: {type: bool, mappings: [{type: controlled}]}
@@ -18,6 +19,7 @@ slots:
   coupon_value: {type: text, mappings: [{type: controlled}]}
   coupon_expiration: {type: text, mappings: [{type: controlled}]}
   coupon_issued: {type: bool, mappings: [{type: controlled}]}
+  coupon_issuance_result: {type: categorical, values: [issued, blocked_unverified_order], mappings: [{type: controlled}]}
   wants_action: {type: categorical, values: [yes, no], mappings: [{type: from_llm}]}
   feedback_only_active: {type: bool, mappings: [{type: controlled}]}
   feedback_close_signal: {type: text, mappings: [{type: from_llm}]}
@@ -30,7 +32,7 @@ responses:
   utter_chipotle_status_greeting: [{text: "Hi—I’m your Chipotle order helper. I’ll check the timing with you."}]
   utter_chipotle_light_help_greeting: [{text: "Hi—I’m your Chipotle order helper. I’ll keep this quick and practical."}]
   utter_safe_boundary_redirect: [{text: "I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order."}]
-  utter_ask_order_id: [{text: "What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check."}]
+  utter_ask_order_id: [{text: "What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123)."}]
   utter_invalid_order_id: [{text: "I need a usable order detail to check it. Try the confirmation number, or the phone or email used for the order—never payment details."}]
   utter_ask_order_mode:
     - text: "Was this pickup or delivery?"
@@ -46,17 +48,17 @@ responses:
   utter_ask_issue_details: [{text: "Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it."}]
   utter_issue_safety: [{text: "I’m sorry this happened. Please don’t eat any more of the item, and keep the packaging and order details if you can. I’ve logged this for mock policy review; this build can’t provide a human handoff or issue compensation for a safety concern."}]
   utter_offer_discount:
-    - text: "I can offer 20% off one entrée on a future meal. Would you like me to issue that in chat?"
+    - text: "I found and verified the order. I can offer 20% off one entrée on a future meal. Would you like me to issue that in chat?"
       buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_offer_credit:
-    - text: "I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?"
+    - text: "I found and verified the order. I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?"
       buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_ask_resolution_acceptance:
     - text: "Would you like me to issue the approved future-meal remedy?"
       buttons: [{title: "Yes, issue it", payload: "/SetSlots(resolution_acceptance=yes,coupon_channel=chat)"}, {title: "No thanks", payload: "/SetSlots(resolution_acceptance=no)"}]
   utter_no_compensation_repeat: [{text: "I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback."}]
   utter_repeat_compensation_closure: [{text: "I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged."}]
-  utter_no_compensation_unverified: [{text: "I’m sorry this was frustrating. Without a matching order detail, this mock policy can’t issue a credit or coupon. I can still log what happened."}]
+  utter_no_compensation_unverified: [{text: "I’m sorry this was frustrating. I can log what happened, but this mock flow cannot offer or issue a credit or coupon until it can verify a matching Chipotle order number."}]
   utter_feedback_logged: [{text: "Thanks for telling me. I’ve logged the feedback in this mock flow so the preparation issue is captured."}]
   utter_refund_limit: [{text: "I understand a refund would feel more fitting. This build can only offer a future-meal discount or item credit when eligible; it can’t process refunds."}]
   utter_resolution_declined: [{text: "No problem—I won’t issue anything. I’ve still recorded the feedback."}]

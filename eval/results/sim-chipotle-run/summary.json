@@ -1,0 +1,51 @@
+[
+  {
+    "scenario_name": "Customer checks a delayed Chipotle order successfully",
+    "scenario_slug": "order-status-happy-existing-delayed",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 34.60953996499302
+  },
+  {
+    "scenario_name": "Customer corrects an unfound order id and then gets status",
+    "scenario_slug": "order-status-not-found-then-found",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 34.596156515937764
+  },
+  {
+    "scenario_name": "Customer directly completes coupon delivery after accepting a remedy",
+    "scenario_slug": "confirm-issue-resolution-direct-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 41.530372569919564
+  },
+  {
+    "scenario_name": "User asks an out-of-scope nutrition question",
+    "scenario_slug": "adversarial-out-of-scope-nutrition",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 42.543027027044445
+  },
+  {
+    "scenario_name": "Customer reports a missing-item issue and accepts the remedy",
+    "scenario_slug": "order-issue-happy-accepted-credit",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 49.435287020984106
+  },
+  {
+    "scenario_name": "Customer hits repeat-compensation policy path for an order issue",
+    "scenario_slug": "order-issue-repeat-compensation-edge",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 49.50604917301098
+  },
+  {
+    "scenario_name": "Welcome and route Chipotle support from a greeting",
+    "scenario_slug": "welcome-and-route-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 55.11518935993081
+  }
+]

@@ -1,0 +1,17 @@
+scenario:
+  name: Welcome and route Chipotle support from a greeting
+  simulation_context: >
+    You are a cooperative Chipotle customer starting with a simple greeting.
+    Speak in English. You only want to know what this assistant can help with,
+    and you do not pivot into an order-status or order-issue request.
+  goals:
+    criteria:
+      - The agent introduces its Chipotle order-support scope clearly after the greeting.
+    assertions:
+      - flow_started:
+          flow_ids: [welcome_and_route]
+          operator: any
+      - action_executed: utter_chipotle_welcome
+      - action_executed: utter_chipotle_scope
+      - flow_completed:
+          flow_id: welcome_and_route

@@ -1,0 +1,23 @@
+scenario:
+  name: Customer checks a delayed Chipotle order successfully
+  simulation_context: >
+    You are a cooperative Chipotle customer checking delayed pickup order CP999.
+    Speak in English. Tell the assistant you want your order status, and when asked
+    provide order number CP999. Your goal is to receive the updated timing and delay
+    explanation, then end the conversation.
+  goals:
+    criteria:
+      - The agent explains the delayed order status without diverting into an unrelated support flow.
+    assertions:
+      - flow_started:
+          flow_ids: [check_chipotle_order_status]
+          operator: any
+      - flow_started:
+          flow_ids: [order_status_sub_agent]
+          operator: any
+      - action_executed: action_mock_order_status
+      - slot_was_set:
+          - name: order_status
+            value: delayed
+      - flow_completed:
+          flow_id: check_chipotle_order_status

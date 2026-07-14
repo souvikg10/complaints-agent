@@ -1,0 +1,17 @@
+scenario:
+  name: Customer only wants to vent and declines action
+  simulation_context: >
+    You are a disappointed Chipotle customer who mostly wants to vent.
+    Speak in English. Start by saying you are frustrated, but you do not want the
+    assistant to take action right now. If asked whether you want help with an
+    available order-related action, say no.
+  goals:
+    criteria:
+      - The agent acknowledges the frustration without forcing the customer into an unsupported action path.
+    assertions:
+      - flow_started:
+          flow_ids: [decline_or_light_help]
+          operator: any
+      - action_executed: utter_venting_acknowledged
+      - flow_completed:
+          flow_id: decline_or_light_help

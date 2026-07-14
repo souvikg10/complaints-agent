@@ -1,0 +1,47 @@
+scenario: User changes their mind in the middle of an order-status conversation
+run: 1
+timestamp: 2026-07-14T07:44:24Z
+conversation_id: sim-bc215cde-8d20-4b08-a13d-a4b177cfc898
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent handles the mid-conversation topic change without looping or becoming incoherent.
+  rationale: When the user changed from order status to a wrong order (“Actually, can you help me with a wrong order instead?”), the bot switched to asking about the issue, offered a credit, completed issuance, and then appropriately closed out the interrupted status flow without repeating itself or giving contradictory responses.
+
+--- Quality Metrics ---
+bot_quality: 4.0/5
+  helpfulness: 4/5 — It provided a concrete remedy (credit with clear terms) and followed through, though it skipped the requested email lookup flow and jumped straight to a remedy without clarifying that lookup step.
+  repair_quality: 4/5 — It adapted from tracking a late order to handling a wrong order when the user said 'actually', but later ignored the user's email-lookup request and instead moved on to troubleshooting options.
+  coherence: 3/5 — The assistant stayed aligned with the new intent (wrong order and remedy) but dropped the thread about looking up by email and never acknowledged or used that slot despite asking for it previously.
+  tone: 5/5 — The tone was consistently polite, empathetic, and natural, with clear and easy-to-read phrasing throughout.
+  task_completion: PASS — The assistant successfully issued and clearly communicated the $8 credit the user requested for the wrong order, and the user confirmed they were all set.
+summary: The assistant effectively helped the user resolve their wrong-order issue by issuing a clear $8 credit and confirming details, and it maintained a friendly, empathetic tone. It successfully shifted from the original late-order topic to the wrong-order problem, but it showed some inconsistency around using the email lookup the user mentioned and slightly muddled that step in the flow.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me where my Chipotle order is? It seems late.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[4] user: Actually, can you help me with a wrong order instead? They messed up what I got.
+[5] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[6] agent: What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check.
+[7] user: I don’t have the order number handy, can you look it up by my email?
+[8] agent: What best describes the problem?
+[9] user: They made the wrong item and also left off a couple of things I paid for.
+[10] agent: I can offer an $8 item credit toward a future meal for the order mix-up. Would you like me to issue it in chat?
+[11] agent: Would you like me to issue the approved future-meal remedy?
+[12] user: Yeah, that works. Please go ahead and issue the credit.
+[13] agent: Would you like the code shown here or sent to the email used for the order?
+[14] user: Please send it to the email on the order, that’s easier for me.
+[15] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[16] agent: Issued: $8 item credit. Your code is CREDIT-YEMAIL, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[17] agent: Would you like to move on to checking your order’s status and timing now?
+[18] user: No, that’s okay, I’m all set now. Thanks for the help.
+[19] agent: Got it — I’ll stop the order status check here.
+[20] agent: Glad I could help today—before we wrap up, is there anything else you’d like assistance with?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-bc215cde-8d20-4b08-a13d-a4b177cfc898

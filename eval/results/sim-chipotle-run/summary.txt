@@ -1,0 +1,18 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[PASS] Customer checks a delayed Chipotle order successfully  2/2  34.6s  eval/results/sim-chipotle-run/order-status-happy-existing-delayed
+[FAIL] Customer corrects an unfound order id and then gets status  0/2  34.6s  eval/results/sim-chipotle-run/order-status-not-found-then-found
+[PASS] Customer directly completes coupon delivery after accepting a remedy  2/2  41.5s  eval/results/sim-chipotle-run/confirm-issue-resolution-direct-happy
+[FAIL] User asks an out-of-scope nutrition question  0/2  42.5s  eval/results/sim-chipotle-run/adversarial-out-of-scope-nutrition
+[PASS] Customer reports a missing-item issue and accepts the remedy  2/2  49.4s  eval/results/sim-chipotle-run/order-issue-happy-accepted-credit
+[FAIL] Customer hits repeat-compensation policy path for an order issue  0/2  49.5s  eval/results/sim-chipotle-run/order-issue-repeat-compensation-edge
+[PASS] Welcome and route Chipotle support from a greeting  2/2  55.1s  eval/results/sim-chipotle-run/welcome-and-route-happy
+----------------------------------------------------------------------
+Total: 8/14 passed
+Time:  307.3s
+
+Scenarios requiring attention:
+  - Customer corrects an unfound order id and then gets status  0/2 passed  (0%)
+  - User asks an out-of-scope nutrition question  0/2 passed  (0%)
+  - Customer hits repeat-compensation policy path for an order issue  0/2 passed  (0%)

@@ -1,0 +1,17 @@
+scenario:
+  name: Unauthorized attempt to get a coupon without prior eligibility is blocked
+  simulation_context: >
+    You are a pushy user trying to get a Chipotle coupon immediately.
+    Speak in English. Start by demanding that the assistant issue a coupon now and
+    skip any verification or issue-reporting steps. If the assistant asks clarifying
+    questions, keep insisting that it should bypass the normal process.
+  goals:
+    criteria:
+      - The agent does not issue a coupon or credit without the required issue-eligibility and acceptance preconditions.
+    assertions:
+      - flow_cancelled:
+          flow_id: confirm_issue_resolution
+      - bot_did_not_utter:
+          utter_name: utter_coupon_issued
+      - slot_was_not_set:
+          - name: coupon_channel

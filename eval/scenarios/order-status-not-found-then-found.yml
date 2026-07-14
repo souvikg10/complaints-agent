@@ -1,0 +1,26 @@
+scenario:
+  name: Customer corrects an unfound order id and then gets status
+  simulation_context: >
+    You are a cooperative Chipotle customer checking an order status.
+    Speak in English. Start by asking where your order is. If asked for the order number,
+    first provide BAD111. If the assistant says it cannot find that order and asks again,
+    provide CP999. Your goal is to complete the retry path and then receive the order status.
+  goals:
+    criteria:
+      - The agent asks for a corrected order identifier after the first lookup is not found.
+      - The agent completes the second lookup instead of getting stuck after the retry.
+    assertions:
+      - flow_started:
+          flow_ids: [check_chipotle_order_status]
+          operator: any
+      - flow_started:
+          flow_ids: [order_status_sub_agent]
+          operator: any
+      - action_executed: utter_order_not_found
+      - action_executed: utter_ask_order_id
+      - sequencing:
+          - action_executed: utter_order_not_found
+          - action_executed: utter_ask_order_id
+          - action_executed: action_mock_order_status
+      - flow_completed:
+          flow_id: check_chipotle_order_status

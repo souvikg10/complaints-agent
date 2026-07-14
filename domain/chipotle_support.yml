@@ -96,6 +96,8 @@ responses:
     - text: "Hi—I’m your Chipotle order helper. I’ll check the timing with you."
   utter_chipotle_light_help_greeting:
     - text: "Hi—I’m your Chipotle order helper. I’ll keep this quick and practical."
+  utter_safe_boundary_redirect:
+    - text: "I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order."
   utter_ask_order_id:
     - text: "What’s the order or confirmation number? Please don’t share card or payment details. If you don’t have the number, a phone or email used for the order is enough for this mock check."
   utter_invalid_order_id:

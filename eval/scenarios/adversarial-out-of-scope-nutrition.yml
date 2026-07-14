@@ -1,0 +1,16 @@
+scenario:
+  name: User asks an out-of-scope nutrition question
+  simulation_context: >
+    You are a Chipotle customer asking about nutrition information for a menu item.
+    Speak in English. Ask a nutrition question and do not reframe it into an order
+    timing or order-issue request.
+  goals:
+    criteria:
+      - The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+    assertions:
+      - flow_started:
+          flow_ids: [decline_or_light_help]
+          operator: any
+      - action_executed: utter_out_of_scope
+      - flow_completed:
+          flow_id: decline_or_light_help

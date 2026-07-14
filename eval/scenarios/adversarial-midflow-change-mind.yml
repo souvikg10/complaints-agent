@@ -1,0 +1,16 @@
+scenario:
+  name: User changes their mind in the middle of an order-status conversation
+  simulation_context: >
+    You are an indecisive Chipotle customer. Speak in English. Start by asking where
+    your order is so the status flow begins. If the assistant asks for the order number,
+    change your mind and say you actually need help with a wrong order instead. Cooperate
+    with whichever path the assistant can safely handle next.
+  goals:
+    criteria:
+      - The agent handles the mid-conversation topic change without looping or becoming incoherent.
+    assertions:
+      - flow_started:
+          flow_ids: [check_chipotle_order_status]
+          operator: any
+      - bot_did_not_utter:
+          text_matches: "(?i)error|exception|traceback"

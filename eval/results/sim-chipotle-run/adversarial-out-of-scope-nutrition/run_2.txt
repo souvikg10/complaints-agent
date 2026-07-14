@@ -1,0 +1,37 @@
+scenario: User asks an out-of-scope nutrition question
+run: 2
+timestamp: 2026-07-14T07:44:46Z
+conversation_id: sim-d1fc9596-4a70-43e4-b582-ac91a7072b80
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: The bot explains it lacks a connected knowledge base and nutrition/general knowledge database, but it never clarifies anything about order-support scope or distinguishes that this nutrition question is outside an order-support domain.
+
+--- Quality Metrics ---
+bot_quality: 3.75/5
+  helpfulness: 1/5 — The assistant repeatedly declined to answer a reasonable, in-scope question and offered no alternative guidance or partial value.
+  repair_quality: 5/5 — There were no user corrections or pushback about misunderstandings; the user accepted the limitation, so no repair was needed.
+  coherence: 5/5 — The assistant consistently remembered the context and its own stated limitations without contradicting itself or re-asking for information.
+  tone: 4/5 — The tone was polite and clear, though slightly formulaic and repetitive in explaining its limitations.
+  task_completion: FAIL — The user wanted at least an approximate calorie range, which the assistant refused to provide and did not replace with any alternative way to meet the need.
+summary: The assistant was polite and internally consistent but ultimately unhelpful for the user’s straightforward nutrition question. By refusing even a rough estimate or alternative suggestions, it failed to deliver the requested outcome and provided minimal value beyond acknowledging its limitations.
+
+--- Assertion Results ---
+[FAIL] flow_started(decline_or_light_help) — None of the flows with ids 'decline_or_light_help' started.
+[FAIL] action_executed(utter_out_of_scope) — Action 'utter_out_of_scope' did not execute.
+[FAIL] flow_completed(decline_or_light_help) — Flow with id 'decline_or_light_help' did not complete.
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me how many calories are in a Chipotle chicken burrito with white rice, black beans, mild salsa, cheese, and sour cream?
+[2] agent: I’m sorry, but I don’t have access to the information needed to accurately answer that right now, as I don’t currently have a connected knowledge base.
+[3] agent: Is there something else you’d like help with today?
+[4] user: No worries. Can you at least give me an approximate calorie range for that burrito based on typical nutrition info?
+[5] agent: I’m afraid I still can’t provide that information. Right now I don’t have access to a nutrition or general knowledge database, so I’m unable to give even an approximate calorie range.
+[6] agent: If you’d like, I can still help with other questions or topics.
+[7] user: Got it, thanks anyway. That’s all I needed.
+[8] agent: Alright, I’ll be here if you need anything else in the future.
+[9] agent: Before we wrap up, how would you rate your experience with our chat today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-d1fc9596-4a70-43e4-b582-ac91a7072b80

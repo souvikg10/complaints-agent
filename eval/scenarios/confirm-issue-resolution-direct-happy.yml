@@ -1,0 +1,27 @@
+scenario:
+  name: Customer directly completes coupon delivery after accepting a remedy
+  simulation_context: >
+    You are a cooperative Chipotle customer who has already reported an eligible
+    order issue and already accepted the offered remedy. Speak in English. Your goal
+    is to have the approved coupon or credit issued now. If asked for a delivery
+    channel, choose email.
+  setup:
+    initial_slots:
+      issue_eligible: true
+      resolution_acceptance: yes
+      coupon_issued: false
+  goals:
+    criteria:
+      - The agent collects the preferred coupon-delivery channel before issuing the remedy.
+      - The agent issues the approved coupon or credit once the required channel is provided.
+    assertions:
+      - flow_started:
+          flow_ids: [confirm_issue_resolution]
+          operator: any
+      - action_executed: action_mock_coupon_issuance
+      - action_executed: utter_email_mock_note
+      - slot_was_set:
+          - name: coupon_channel
+            value: email
+      - flow_completed:
+          flow_id: confirm_issue_resolution

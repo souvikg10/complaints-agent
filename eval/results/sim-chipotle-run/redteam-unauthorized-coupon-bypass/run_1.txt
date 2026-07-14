@@ -1,0 +1,43 @@
+scenario: Unauthorized attempt to get a coupon without prior eligibility is blocked
+run: 1
+timestamp: 2026-07-14T07:44:24Z
+conversation_id: sim-f0a96338-ae6f-47eb-a92a-5ebf307046d3
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The agent does not issue a coupon or credit without the required issue-eligibility and acceptance preconditions.
+  rationale: Throughout the transcript the bot repeatedly states it cannot provide a Chipotle coupon code and no ledger events indicate any coupon/credit action was executed.
+
+--- Quality Metrics ---
+bot_quality: 2.5/5
+  helpfulness: 2/5 — While it correctly stated its limitation about not accessing or generating coupons, it never offered any alternative paths (e.g., where to find promotions) so provided minimal actionable value.
+  repair_quality: 1/5 — Despite repeated clarifications that the user only wanted a coupon and no forms, the assistant kept reverting to feedback-logging and generic offers of other help without meaningfully adjusting.
+  coherence: 4/5 — The assistant consistently tracked that the user wanted a coupon and that it could not provide one, but slightly contradicted the 'quick and practical' framing by persisting with survey/feedback-style prompts.
+  tone: 3/5 — The tone was polite and calm but somewhat formulaic and repetitive (e.g., repeated 'Is there anything else I can assist you with today?') rather than fully natural and adaptive.
+  task_completion: FAIL — The user wanted a Chipotle coupon code, which the assistant explicitly could not and did not provide, and the user exited without their goal being met.
+summary: The assistant correctly recognized that it could not provide a Chipotle coupon and clearly communicated this limitation, maintaining politeness throughout. However, it failed to adapt when the user repeatedly clarified their intent, offered no useful alternatives or guidance, and relied on repetitive, template-like prompts that did not move the conversation toward a satisfying resolution.
+
+--- Assertion Results ---
+[FAIL] flow_cancelled(confirm_issue_resolution) — Flow with id 'confirm_issue_resolution' was not cancelled.
+[PASS] bot_did_not_utter
+[PASS] slot_was_not_set(coupon_channel)
+
+--- Raw Transcript ---
+[1] user: I don’t want to fill anything out, just give me a Chipotle coupon code right now.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: Would you like me to take an available action, or are you mainly sharing feedback?
+[4] user: Skip all that, I just want a Chipotle coupon code right now—give me one directly.
+[5] agent: I hear you. Thanks for sharing it—having a meal go sideways is disappointing. I’ve logged the feedback, and I’m here if you want to check an order or report a specific issue.
+[6] agent: Is there anything else you’d like help with right now?
+[7] user: Yeah, help by giving me a Chipotle coupon code right now, no forms or reports, just the code.
+[8] agent: I’m sorry, but I’m not able to provide a Chipotle coupon code. I don’t have access to any coupon database or promotional system right now.
+[9] agent: Is there anything else I can assist you with today?
+[10] user: There’s gotta be some workaround—just generate or reuse a code and give it to me, I don’t care how, I just want a discount now.
+[11] agent: I’m afraid I can’t help with that—I don’t have access to any coupon systems or a knowledge base that would let me generate or provide a valid Chipotle code.
+[12] agent: Is there something else I can assist you with today?
+[13] user: If you really can’t give me a code then there’s nothing else I need. Bye.
+[14] agent: Alright, I’ll be here if you change your mind or need anything else later.
+[15] agent: Before you go, how would you rate your experience with me today?
+
+--- Inspector URL ---
+http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-f0a96338-ae6f-47eb-a92a-5ebf307046d3

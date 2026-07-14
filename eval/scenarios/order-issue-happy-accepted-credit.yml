@@ -1,0 +1,35 @@
+scenario:
+  name: Customer reports a missing-item issue and accepts the remedy
+  simulation_context: >
+    You are a cooperative Chipotle customer whose order had a missing item.
+    Speak in English. Start by saying your order was missing an item. When asked,
+    provide order number CP123. Describe the issue as a missing side of chips that
+    was never included. If offered a future-meal remedy, accept it and choose chat
+    as the delivery channel for the coupon or credit.
+  goals:
+    criteria:
+      - The agent gathers the order context and issue details before deciding the remedy.
+      - The agent issues the accepted remedy after the customer agrees to it.
+    assertions:
+      - flow_started:
+          flow_ids: [report_chipotle_order_issue]
+          operator: any
+      - flow_started:
+          flow_ids: [order_issue_sub_agent]
+          operator: any
+      - flow_started:
+          flow_ids: [confirm_issue_resolution]
+          operator: any
+      - action_executed: action_mock_order_issue_policy
+      - action_executed: action_mock_coupon_issuance
+      - slot_was_set:
+          - name: issue_category
+          - name: issue_details
+          - name: resolution_acceptance
+            value: yes
+          - name: coupon_channel
+            value: chat
+      - flow_completed:
+          flow_id: report_chipotle_order_issue
+      - flow_completed:
+          flow_id: confirm_issue_resolution

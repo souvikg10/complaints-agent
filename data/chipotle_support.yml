@@ -3,10 +3,19 @@ version: "3.1"
 flows:
   welcome_and_route:
     name: "Welcome and route Chipotle support"
-    description: "Start a new Chipotle order-support conversation when the customer greets the assistant, asks what it can do, or needs help choosing a support topic. Give the Chipotle welcome and offer order timing or order-problem help. Do not use for an explicit order-status request, an explicit wrong, missing, or food-quality complaint, or a customer who is only venting and expressly wants no action."
+    description: "Start a new Chipotle order-support conversation when the customer greets the assistant, asks what it can do, or needs help choosing a support topic. Give the Chipotle welcome and offer order timing or order-problem help. Do not use for an explicit order-status request, an explicit wrong, missing, or food-quality complaint, a bare coupon/refund/credit demand with no described order problem, or a customer who is only venting and expressly wants no action."
     steps:
       - action: utter_chipotle_welcome
       - action: utter_chipotle_scope
+        next: END
+
+  refuse_unverified_compensation_demand:
+    name: "Refuse a bare coupon, credit, or refund demand"
+    always_include_in_prompt: true
+    run_pattern_completed: false
+    description: "Use when a customer demands, requests, or insists on a Chipotle coupon, discount, credit, replacement, refund, free food, or compensation but has not described a real problem with an existing order. Examples include 'I want a coupon right now', 'give me a discount', or repeated demands after being told no. This is a refusal and scope path, not order-issue intake: do not start report_chipotle_order_issue, do not collect an order number, do not offer to investigate, and do not offer a coupon or credit. State that this support helper cannot issue compensation without a reported order problem and end."
+    steps:
+      - action: utter_unverified_compensation_refusal
         next: END
 
   check_chipotle_order_status:
@@ -66,7 +75,7 @@ flows:
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
-    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
+    description: "Help a Chipotle customer who describes a real problem with a specific existing order: wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Do not use for a bare request or demand for a coupon, discount, credit, replacement, refund, or free food when no actual order problem has been described; use the compensation-demand refusal instead. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
     persisted_slots: [order_id, issue_category, issue_details, resolution_acceptance]
     steps:
       - action: utter_issue_empathy

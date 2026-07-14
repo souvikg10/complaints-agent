@@ -1,24 +1,24 @@
 scenario: Order status sub-agent handles not-found retry before a successful lookup
 run: 1
-timestamp: 2026-07-14T11:54:27Z
-conversation_id: sim-e99e349c-0744-48e7-9503-ef4b0a91a4fa
+timestamp: 2026-07-14T12:08:21Z
+conversation_id: sim-34f15b03-aa7a-42ba-9251-bba2f55288a8
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent asks for a corrected order identifier after the first lookup is not found.
-  rationale: After the first lookup returns not_found at T2, the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and then asks again "What’s the order or confirmation number?", explicitly requesting a corrected order identifier.
+  rationale: After the first lookup fails (order_lookup_result = not_found at T2), the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and then re-asks "What’s the order or confirmation number?" which requests a corrected order identifier.
 
 [PASS] The agent completes the second lookup instead of stopping after the failed first lookup.
-  rationale: At T3 after the user provides CP999, the ledger shows flow_started: order_status_sub_agent, action: action_mock_order_status with order_lookup_result = found, and flow_completed: order_status_sub_agent, and the bot responds with the delayed status and ETA, indicating the second lookup was completed.
+  rationale: At T3, after the user provides CP999, the ledger shows flow_started: order_status_sub_agent, action: action_mock_order_status, and flow_completed: order_status_sub_agent, and the bot reports the delayed status for order CP999, indicating the second lookup was completed.
 
 --- Quality Metrics ---
 bot_quality: 4.75/5
-  helpfulness: 5/5 — Once given a valid order number, the assistant directly answered with specific, actionable status and timing information and then closed the loop appropriately.
-  repair_quality: 5/5 — When the user corrected the order number with 'actually', the assistant smoothly adjusted and proceeded using the new information without confusion or friction.
-  coherence: 5/5 — The assistant consistently tracked the user’s goal and updated order number, did not contradict itself, and did not re-ask for already-corrected information.
-  tone: 4/5 — The tone is polite and natural overall, though it repeats the same informational disclaimer verbatim and uses mildly formulaic phrasing in places.
-  task_completion: PASS — The assistant successfully looked up the corrected order number and provided a clear status update and timing, which is exactly what the user asked for.
-summary: This conversation is a concise, successful order-status interaction: after collecting the needed identifier, the assistant provides a clear delay update and estimated timing. It handles the user’s correction smoothly and maintains consistent context. The main minor weakness is slightly repetitive, template-like phrasing, especially in the repeated disclaimer and closing survey prompt.
+  helpfulness: 5/5 — Once given a valid order number, the assistant gave a precise, actionable update on the order delay and next steps.
+  repair_quality: 5/5 — When the first order number failed, the assistant prompted the user to re-check and then smoothly proceeded with the corrected number without confusion.
+  coherence: 5/5 — The assistant consistently tracked the goal (order status) and correctly shifted from CP000 to CP999 without re-asking unnecessary questions or contradicting itself.
+  tone: 4/5 — The tone is polite and clear throughout, though slightly formulaic and repetitive in the initial order-number prompt and closing survey request.
+  task_completion: PASS — The assistant successfully located the order using the corrected number and provided a clear status update and timing, which is exactly what the user requested.
+summary: This conversation is a strong example of a focused transactional flow: the assistant quickly collects the necessary information, handles an initial lookup failure gracefully, and then provides a clear status update and timing for the order. The interaction remains polite and coherent, though some of the phrasing is a bit template-like rather than fully natural. Overall, the user’s need is met efficiently with minimal friction.
 
 --- Assertion Results ---
 [PASS] flow_started(order_status_sub_agent)
@@ -30,15 +30,15 @@ summary: This conversation is a concise, successful order-status interaction: af
 [1] user: Hi, where is my Chipotle order?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Sure, the order number is CP000.
+[4] user: The order number is CP000.
 [5] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
 [6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[7] user: Let me double-check, the order number is actually CP999.
+[7] user: Let me double-check, it should be CP999.
 [8] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
 [9] agent: Is there anything else I can help you with regarding your order today?
 [10] user: Got it, thanks for the update—that’s all I needed.
 [11] agent: You’re welcome—if you need anything else later, I’ll be here to help.
-[12] agent: How did this support experience work out for you today?
+[12] agent: How was your experience with our help today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e99e349c-0744-48e7-9503-ef4b0a91a4fa
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-34f15b03-aa7a-42ba-9251-bba2f55288a8

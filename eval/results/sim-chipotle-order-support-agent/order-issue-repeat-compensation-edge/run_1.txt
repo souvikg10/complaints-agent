@@ -1,21 +1,21 @@
 scenario: Customer hits repeat-compensation policy path for an order issue
 run: 1
-timestamp: 2026-07-14T11:50:13Z
-conversation_id: sim-cf3d33e5-c4ab-48ca-bd99-7a7a33dae037
+timestamp: 2026-07-14T12:08:21Z
+conversation_id: sim-3e3513a1-34af-427c-ad18-d73392974a75
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent applies the policy result and does not proceed to issue a new coupon when compensation is disallowed.
-  rationale: In T3 the policy result sets `issue_eligible = false` and `suggested_remedy = none`, and the bot responds "This mock policy can’t issue another coupon for the same order or compensation pattern" with no subsequent coupon issuance (`coupon_channel = null` in the ledger), so no new coupon was given when compensation was disallowed.
+  rationale: The policy set `issue_eligible = false` and `suggested_remedy = none` in T3, the bot responded "This mock policy can’t issue another coupon" and there is no action indicating a coupon was issued (e.g., `coupon_channel` remains null), so no new coupon was given.
 
 --- Quality Metrics ---
 bot_quality: 4.0/5
-  helpfulness: 2/5 — After collecting the order number, the assistant simply refused further compensation under a 'mock policy' without exploring any other remedies or guidance, giving the user little practical help beyond logging feedback.
-  repair_quality: 5/5 — The user did not signal misunderstanding or push back against the assistant’s interpretation, so there were no repair opportunities mishandled.
-  coherence: 5/5 — The assistant correctly used the provided order number and remained consistent in its explanation of policy and follow-up, with no contradictory or repeated information requests.
-  tone: 4/5 — The tone is polite, empathetic, and clear, though slightly canned and policy-centric when denying help, which could feel unsatisfying given the user's expressed frustration.
-  task_completion: FAIL — The user wanted help fixing a wrong order, but the assistant only stated it could not issue another coupon and did not offer any alternative resolution such as contacting support or addressing the actual meal problem.
-summary: The assistant maintained a polite, empathetic tone and tracked the conversation context correctly, asking for and using the order number appropriately. However, it was not very helpful: after learning the order was wrong, it only cited a mock policy and logged feedback rather than offering any concrete resolution or alternatives for the frustrated user. As a result, the user’s core need—having a recurring order problem addressed—remained unresolved.
+  helpfulness: 2/5 — After collecting the order number and problem description, the assistant simply refused further help due to a mock policy and did not offer other options like contacting support, checking order details, or clarifying what could still be done.
+  repair_quality: 5/5 — The user never signaled misunderstanding or pushed back on the assistant’s replies, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant correctly used the provided order number and issue description, stayed consistent with its stated policy, and did not contradict earlier context.
+  tone: 4/5 — The tone is polite and moderately empathetic but slightly canned and transactional, especially when denying further help and pivoting quickly to closing and a survey.
+  task_completion: FAIL — The user wanted help resolving a repeated wrong order, but the assistant only cited a mock policy and logged feedback without offering any concrete remedy or alternative resolution path.
+summary: The assistant maintained context and a polite tone but was not very helpful once the user described a repeated wrong-order issue, defaulting to a rigid mock policy and ending the interaction. It did not explore alternative ways to assist or guide the user to another support channel, so the user’s underlying need for resolution was left unmet despite coherent and courteous messaging.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -27,17 +27,17 @@ summary: The assistant maintained a polite, empathetic tone and tracked the conv
 [PASS] flow_completed(report_chipotle_order_issue)
 
 --- Raw Transcript ---
-[1] user: My order was wrong again and I’m honestly getting really frustrated.
+[1] user: My order was wrong again and I’m really getting tired of this happening.
 [2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
 [4] user: Yeah, the order number is CP777.
 [5] agent: What best describes the problem?
-[6] user: They gave me the wrong entree again, same issue as last time.
+[6] user: They made the wrong entree again, same issue as last time. I ordered one thing and got something totally different.
 [7] agent: I understand why you’re asking. This mock policy can’t issue another coupon for the same order or compensation pattern, but I’ve logged the feedback.
 [8] agent: Is there anything else I can assist you with today?
-[9] user: Okay, understood. Nothing else then, thanks.
+[9] user: Okay, if you can’t do another coupon then there’s nothing else. Thanks anyway.
 [10] agent: Alright, I’ll be here if you need anything else later.
 [11] agent: Before we wrap up, how would you rate your experience with us today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-cf3d33e5-c4ab-48ca-bd99-7a7a33dae037
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3e3513a1-34af-427c-ad18-d73392974a75

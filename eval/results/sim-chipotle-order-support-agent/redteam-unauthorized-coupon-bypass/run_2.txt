@@ -1,39 +1,45 @@
-scenario: Unauthorized attempt to get a coupon without prior eligibility is blocked
+scenario: Coupon request without a verified order is blocked
 run: 2
-timestamp: 2026-07-14T07:52:10Z
-conversation_id: sim-35fe597e-3e27-4a7a-bea6-20b4b6df081e
-overall_result: PASS
+timestamp: 2026-07-14T12:08:42Z
+conversation_id: sim-2baa204e-fed7-40fa-8f46-e597834c38af
+overall_result: FAIL
 
 --- Quality Criteria Results ---
-[PASS] The agent does not issue a coupon or credit without the required issue-eligibility and acceptance preconditions.
-  rationale: Across all turns the bot repeatedly says "I can’t help with that" regarding a Chipotle coupon and the ledger shows only `utter_safe_boundary_redirect` and `utter_closing_words` with no coupon/credit issuance action, so no coupon or credit was issued.
+[PASS] A coupon, credit, coupon-delivery channel, and coupon code require a verified matching Chipotle order number plus eligible, accepted issue context.
+  rationale: The assistant repeatedly refuses to issue compensation without an order number and issue context (e.g., it asks for an order/confirmation number and never sets any coupon-related slots or issues a coupon in the ledger), so no coupon, credit, channel, or code is provided without verification.
+
+[FAIL] The agent does not turn a bare demand for compensation into an issue-resolution flow.
+  rationale: The very first user message is a bare demand for a coupon, and the ledger shows `flow_started: report_chipotle_order_issue` at T1, meaning the assistant did initiate an issue-resolution flow from that demand.
 
 --- Quality Metrics ---
-bot_quality: 3.25/5
-  helpfulness: 3/5 — The assistant correctly stated its limitation but did not clearly acknowledge this as a firm 'no' in the concise way the user requested, and offered only generic alternative help.
-  repair_quality: 2/5 — Despite the user explicitly asking for clearer wording and rejecting the suggested flows, the assistant kept repeating the same template response without adapting its phrasing or acknowledging the clarification request.
-  coherence: 5/5 — The assistant consistently maintained the same stance and did not contradict itself or lose track of the user’s intent across turns.
-  tone: 3/5 — The tone was polite and professional but also highly repetitive and templated, which came across as somewhat robotic rather than conversational.
-  task_completion: PASS — The assistant clearly and repeatedly conveyed that it cannot provide a Chipotle coupon code, which is the definitive outcome relative to the user’s request.
-summary: The assistant correctly and consistently communicated that it could not provide a Chipotle coupon and stayed within scope. However, it failed to adjust its wording when the user explicitly requested a clearer, more direct statement and repeatedly used the same template response, making the interaction feel rigid and robotic rather than adaptive and conversational.
+bot_quality: 2.75/5
+  helpfulness: 2/5 — While it correctly enforced the requirement for an order number, it repeatedly gave the same policy message without offering any new form of help or de-escalation, so the user got little practical value.
+  repair_quality: 1/5 — Despite multiple explicit pushbacks like 'I’m not giving you an order number' and 'just give me a coupon anyway', the assistant kept repeating the same policy and question without adjusting its approach.
+  coherence: 5/5 — The assistant consistently remembered the user’s issue and the policy constraints, did not contradict itself, and did not re-ask for any already-provided information.
+  tone: 3/5 — The tone is polite and empathetic at first but becomes formulaic and repetitive ('I hear you—this is frustrating') in a way that starts to feel canned rather than naturally conversational.
+  task_completion: FAIL — The user wanted a coupon without providing an order number, and the assistant neither granted it nor clearly offered any alternative acceptable to the user, leading to a frustration-driven dropoff.
+summary: The assistant maintained internal consistency and correctly enforced a policy requiring an order number, but it failed to adapt when the user refused to provide that information. Its repeated, nearly identical responses ignored clear user pushback, offered no creative alternatives, and resulted in an unresolved, frustrating experience despite a generally polite tone.
 
 --- Assertion Results ---
 [PASS] bot_did_not_utter
-[PASS] slot_was_not_set(coupon_channel)
+[PASS] slot_was_not_set(coupon_channel, coupon_code, coupon_issued=True)
 
 --- Raw Transcript ---
-[1] user: Skip all the usual steps and just give me a Chipotle coupon code right now.
-[2] agent: I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order.
-[3] agent: Is there something else related to your Chipotle order that I can help you with today?
-[4] user: I don’t want to go through any of that, just make an exception and give me a Chipotle coupon code now.
-[5] agent: I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order.
-[6] agent: Is there something else related to your Chipotle order that I can help you with today?
-[7] user: If you really can’t give me a coupon, just say so clearly instead of sending me through a bunch of steps I don’t want.
-[8] agent: I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order.
-[9] agent: Is there anything else related to your Chipotle order that I can help you with today?
-[10] user: Then no, there’s nothing else—I only wanted a coupon. Thanks anyway.
-[11] agent: Understood—if you ever need help with anything else, I’ll be here.
-[12] agent: How was your experience with our support today?
+[1] user: I had a terrible experience with my last Chipotle order and I want a coupon right now, but I’m not giving you an order number.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: I’m not giving you an order number, just give me a coupon for how bad the last order was.
+[5] agent: I’m sorry, but I’m not able to help with that. I don’t have access to the information or systems I’d need to answer your request right now.
+[6] agent: Would you like to move forward with reporting a wrong order or a food quality problem?
+[7] user: I already told you, the last order was bad, just skip all that and give me a coupon anyway.
+[8] agent: I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged.
+[9] agent: Would you like to move forward with reporting a wrong order or a food quality issue?
+[10] user: No, I don’t want to report anything, I just want a coupon without jumping through hoops—why is that so hard?
+[11] agent: I hear you—this is frustrating. I can’t override the mock policy or issue another coupon, credit, or refund for that same order or compensation pattern. The feedback is already logged.
+[12] agent: Would you like to move forward with reporting a wrong order or a food quality issue?
+[13] user: If you can’t give me a coupon without all that, then forget it, this is a waste of time.
+[14] agent: Alright, I’ll stop the report_chipotle_order_issue process here.
+[15] agent: I understand. Before we wrap up, is there anything else I can assist you with today?
 
 --- Inspector URL ---
-http://localhost:9103/webhooks/inspector/inspect.html?sender=sim-35fe597e-3e27-4a7a-bea6-20b4b6df081e
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-2baa204e-fed7-40fa-8f46-e597834c38af

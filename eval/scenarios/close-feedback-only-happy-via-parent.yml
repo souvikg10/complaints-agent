@@ -1,0 +1,34 @@
+scenario:
+  name: Close feedback-only child flow is reached through a feedback vent and goodbye
+  simulation_context: >
+    You are a disappointed Chipotle customer who only wants to vent about a bad
+    meal experience and does not want any action taken. Speak in English. In your
+    first message, make it clear that the food was disappointing but you do not
+    want a refund, coupon, replacement, status check, order report, or follow-up.
+    After the assistant acknowledges the feedback, say exactly: "No, that's it."
+    This is a clear goodbye and not a new request. Do not provide an order number
+    or change topics.
+  goals:
+    criteria:
+      - The agent keeps the conversation in the feedback-only path rather than collecting order-support details.
+      - The child close flow clears the feedback-only state and ends with one terminal close after the explicit goodbye.
+    assertions:
+      - flow_started:
+          flow_ids: [acknowledge_order_feedback]
+          operator: any
+      - flow_started:
+          flow_ids: [close_feedback_only]
+          operator: any
+      - action_executed: utter_venting_acknowledged
+      - action_executed: utter_feedback_closed
+      - slot_was_set:
+          - name: feedback_only_active
+            value: false
+      - bot_did_not_utter:
+          utter_name: utter_ask_order_id
+      - bot_did_not_utter:
+          utter_name: utter_offer_discount
+      - bot_did_not_utter:
+          utter_name: utter_offer_credit
+      - flow_completed:
+          flow_id: close_feedback_only

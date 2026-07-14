@@ -1,0 +1,42 @@
+scenario:
+  name: Confirm issue resolution child flow is reached through a verified accepted order issue
+  simulation_context: >
+    You are a cooperative Chipotle customer whose order had a missing item.
+    Speak in English. Start by reporting that your order was missing chips.
+    When asked for the order information, provide CP123. If the assistant offers
+    an approved remedy, accept it and choose email as the delivery channel when
+    asked. Your goal is to complete the verified issue-report path all the way
+    through coupon delivery.
+  goals:
+    criteria:
+      - The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
+      - The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
+    assertions:
+      - flow_started:
+          flow_ids: [report_chipotle_order_issue]
+          operator: any
+      - flow_started:
+          flow_ids: [order_issue_sub_agent]
+          operator: any
+      - flow_started:
+          flow_ids: [confirm_issue_resolution]
+          operator: any
+      - action_executed: action_mock_order_issue_policy
+      - action_executed: action_mock_coupon_issuance
+      - slot_was_set:
+          - name: resolution_acceptance
+            value: yes
+          - name: coupon_channel
+            value: email
+          - name: coupon_issued
+            value: true
+      - sequencing:
+          - flow_started: report_chipotle_order_issue
+          - flow_started: order_issue_sub_agent
+          - action_executed: action_mock_order_issue_policy
+          - slot_was_set: resolution_acceptance
+          - flow_started: confirm_issue_resolution
+          - slot_was_set: coupon_channel
+          - action_executed: action_mock_coupon_issuance
+      - flow_completed:
+          flow_id: confirm_issue_resolution

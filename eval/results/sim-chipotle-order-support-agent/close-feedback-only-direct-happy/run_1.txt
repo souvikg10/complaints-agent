@@ -1,51 +1,49 @@
 scenario: Feedback-only close has one active farewell prompt and ends without generic follow-up
 run: 1
-timestamp: 2026-07-14T11:47:25Z
-conversation_id: sim-a4403aec-2b57-4d82-98a1-4ff3d4228c4c
+timestamp: 2026-07-14T11:50:13Z
+conversation_id: sim-091fc5c6-372f-4159-83b7-cb4463ef0420
 overall_result: FAIL
 
 --- Quality Criteria Results ---
 [FAIL] The feedback-only acknowledgement starts its child closing task and non-farewell elaboration is treated as invalid close input, not a new topic or generic fallback.
-  rationale: For non-farewell elaboration at T3 and T4 (e.g., “I appreciate you understanding…”, “Also, the rice was under-seasoned…”), the system repeatedly starts the same acknowledge_order_feedback flow and logs feedback instead of treating these as invalid close input within a child closing task, and there is no evidence of a distinct child closing task being started before T5.
+  rationale: For T2 and T3, the user’s elaborations are treated as fresh starts of the same acknowledge_order_feedback flow (`flow_started: acknowledge_order_feedback` each time) rather than being handled explicitly as invalid close input for a child closing task, and there is no evidence of a distinct closing task being started at all.
 
 [FAIL] Each invalid close attempt gets one collect retry from CALM; the custom validator does not independently dispatch a duplicate prompt.
-  rationale: There are no explicit CALM collect retries or custom-validator-driven duplicate prompts shown; instead, each user message T1–T4 restarts acknowledge_order_feedback with action_mock_feedback_logging, so we cannot confirm that invalid close attempts received exactly one CALM retry and that the validator did not dispatch its own duplicate prompt.
+  rationale: The ledger shows identical behavior (new `flow_started: acknowledge_order_feedback` and the same `utter_venting_acknowledged` response) on T1–T3 without any indication of a single CALM collect-retry pattern or of separation between CALM and a custom validator, so we cannot confirm one-and-only-one retry per invalid close nor that the validator avoided dispatching duplicates.
 
-[PASS] The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
-  rationale: At T5 the close_feedback_only flow starts, sets feedback_only_active to false then null and feedback_close_signal to closed then null, the bot sends a one-sentence close (“Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.”), and there is no follow-up asking if the user needs more help.
+[FAIL] The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
+  rationale: At T4 the bot again runs `flow_started: acknowledge_order_feedback` with `slot_set: feedback_only_active = true` and sends the same multi-sentence `utter_venting_acknowledged` instead of a distinct one-sentence close, and there is no evidence that feedback_only_active is cleared or that a special goodbye-without-asking-for-more-help pattern is used.
 
 --- Quality Metrics ---
 bot_quality: 3.0/5
-  helpfulness: 2/5 — While the acknowledgments respected the user's request to avoid actions, the assistant gave the same generic response to multiple specific pieces of feedback instead of engaging with or summarizing the details, offering minimal substantive value.
-  repair_quality: 5/5 — The user never signaled misunderstanding or pushed back on the assistant’s behavior, so there were no repair opportunities mishandled.
-  coherence: 2/5 — The assistant mechanically repeated the same stock message despite the user adding new, distinct feedback each turn, showing it failed to update its responses with the evolving content of the conversation.
-  tone: 3/5 — The tone was polite and empathetic but somewhat canned and repetitive, with the same phrasing reused in a way that felt formulaic.
-  task_completion: PASS — The user only wanted to share feedback without triggering any action, and the assistant consistently acknowledged the feedback while explicitly not initiating refunds, lookups, or compensation.
-summary: The assistant correctly honored the user's wish to simply share feedback without triggering compensation or order lookup and maintained a polite, empathetic tone. However, it gave the same generic acknowledgment repeatedly and did not engage with the specific details in each user message, leading to low substantive helpfulness and weak conversational coherence.
+  helpfulness: 1/5 — The assistant gave the same generic, non-specific response each time and never addressed the actual content of the user's feedback about portion size, undercooked rice, or off-tasting guac.
+  repair_quality: 5/5 — There were no explicit user disfluencies or corrections (the user never said the assistant was wrong or off-track), so there was no repair opportunity to mishandle.
+  coherence: 4/5 — The assistant consistently maintained the initial constraint of not initiating refunds or order lookups, but failed to incorporate any new details from later turns into its responses.
+  tone: 2/5 — While the wording itself was polite and empathetic, it was repeated verbatim every turn, making the interaction feel robotic and formulaic.
+  task_completion: FAIL — The user wanted to share specific feedback about the disappointing meal, but the assistant only repeated a generic acknowledgment and never engaged with or reflected the concrete details the user shared.
+summary: The assistant remained polite and consistently honored the user's request not to pursue compensation, but it failed to respond meaningfully to the specific feedback the user shared. Every reply was an identical generic acknowledgment, which came across as robotic and unengaged rather than as a genuine conversation about the issues with the meal.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
-[PASS] flow_started(close_feedback_only)
+[FAIL] flow_started(close_feedback_only) — None of the flows with ids 'close_feedback_only' started.
 [PASS] action_executed(utter_venting_acknowledged)
-[PASS] action_executed(utter_feedback_closed)
-[PASS] slot_was_set(feedback_only_active=False)
+[FAIL] action_executed(utter_feedback_closed) — Action 'utter_feedback_closed' did not execute.
+[FAIL] slot_was_set(feedback_only_active=False) — Slot 'feedback_only_active' was set to a different value 'True' than the expected 'False' value.
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
-[PASS] flow_completed(close_feedback_only)
+[FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
 
 --- Raw Transcript ---
-[1] user: I just wanted to share some feedback about my last Chipotle meal — I don’t want a refund, coupon, replacement, status check, report, or any other action, just to let you know what happened.
+[1] user: Hi, I just want to share some feedback about a disappointing meal—I'm not looking for a refund, coupon, replacement, order status check, or any other action.
 [2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[3] user: The chicken in my bowl was really dry and overcooked, and most of the pieces were small burnt end bits instead of normal chunks.
+[3] user: I ordered a burrito bowl tonight and the portions were really small, plus the rice was undercooked and kind of crunchy.
 [4] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[5] user: I appreciate you understanding; I just hope future batches are cooked a bit juicier and more consistently so it doesn’t feel like I got the bottom of the pan.
+[5] user: I also noticed the guac tasted a bit off, almost sour, which isn’t usually the case at this location.
 [6] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[7] user: Also, the rice was under-seasoned and a little hard, so the whole bowl ended up kind of bland and not very enjoyable.
+[7] user: That’s all I needed, thanks. Goodbye.
 [8] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[9] user: That’s all I needed, thanks. Goodbye.
-[10] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-a4403aec-2b57-4d82-98a1-4ff3d4228c4c
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-091fc5c6-372f-4159-83b7-cb4463ef0420

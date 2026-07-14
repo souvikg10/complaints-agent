@@ -1,24 +1,24 @@
 scenario: Order status sub-agent handles not-found retry before a successful lookup
 run: 2
-timestamp: 2026-07-14T11:46:44Z
-conversation_id: sim-3a15f937-2e16-4ece-a43f-54c65f9a3bc6
+timestamp: 2026-07-14T11:50:33Z
+conversation_id: sim-097ed36b-0850-4c83-9208-c4f04f763b0d
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent asks for a corrected order identifier after the first lookup is not found.
-  rationale: After failing to find CP000, the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more." followed by "What’s the order or confirmation number?", explicitly asking the user to provide a corrected order identifier.
+  rationale: After the first lookup result `order_lookup_result = not_found` at T2, the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and then asks again "What’s the order or confirmation number?" explicitly prompting for a corrected identifier.
 
 [PASS] The agent completes the second lookup instead of stopping after the failed first lookup.
-  rationale: For the second ID CP999, the ledger shows `flow_started: order_status_sub_agent`, `action: action_mock_order_status`, and `flow_completed: order_status_sub_agent`, and the bot reports "Order CP999 is delayed...", indicating the second lookup was completed after the first failed.
+  rationale: At T3, after the user provides CP999, the ledger shows `flow_started: order_status_sub_agent`, `action: action_mock_order_status`, and `flow_completed: order_status_sub_agent` with populated order slots, and the bot responds with the delayed status and ETA, indicating the second lookup was completed.
 
 --- Quality Metrics ---
 bot_quality: 4.75/5
-  helpfulness: 5/5 — Once given a valid order number, the assistant clearly stated the order status, cause of delay, and a concrete updated timing window.
-  repair_quality: 5/5 — The user never indicated misunderstanding or disagreement, so there were no repair opportunities to mishandle.
-  coherence: 5/5 — The assistant consistently tracked the changing order numbers and responded appropriately without re-asking for already provided details.
-  tone: 4/5 — The tone is polite and natural overall, though slightly formulaic with repeated disclaimers and closing prompts.
-  task_completion: PASS — The assistant successfully identified the correct order, provided an updated delay estimate, and the user confirmed that was all they needed.
-summary: This was a focused, successful interaction where the assistant obtained the needed identifier, reported the order delay with specific timing, and closed the loop cleanly. It maintained context correctly and used a polite, service-oriented tone, with only mild repetitiveness in phrasing and disclaimers.
+  helpfulness: 5/5 — Once given a valid order number, the assistant provided a concrete status, cause of delay, and clear guidance on what the user should do.
+  repair_quality: 5/5 — When the user corrected the order number, the assistant smoothly adjusted and gave the correct order status without friction or confusion.
+  coherence: 5/5 — The assistant consistently tracked the user’s intent and updated order number without contradictions or unnecessary re-asking beyond the initial, legitimate clarification request.
+  tone: 4/5 — The tone is polite, clear, and friendly, though slightly formulaic and repetitive in the order-number prompt.
+  task_completion: PASS — The user wanted to know the status of their Chipotle order, and the assistant clearly provided an updated delay estimate and instructions to wait ~25 minutes.
+summary: This conversation effectively resolved the user’s need by giving a specific, actionable update on their delayed order. The assistant maintained context, adapted correctly when the order number was corrected, and used a polite, service-oriented tone, with only minor repetitiveness in phrasing.
 
 --- Assertion Results ---
 [PASS] flow_started(order_status_sub_agent)
@@ -27,18 +27,18 @@ summary: This was a focused, successful interaction where the assistant obtained
 [PASS] flow_completed(check_chipotle_order_status)
 
 --- Raw Transcript ---
-[1] user: Hi, where’s my Chipotle order?
+[1] user: Hi, where is my Chipotle order right now?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
 [4] user: Sure, the order number is CP000.
 [5] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
 [6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[7] user: Let’s try CP999 instead.
+[7] user: Let me double-check—sorry, it’s actually CP999.
 [8] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
-[9] agent: Is there anything else I can help you with regarding your order today?
-[10] user: Got it, thanks—that’s all I needed.
-[11] agent: You’re welcome—glad I could help. If you need anything else later, I’ll be here.
-[12] agent: How did I do in helping you today?
+[9] agent: Is there anything else you’d like help with regarding your order today?
+[10] user: Got it, thanks for the update—that’s all I needed.
+[11] agent: You’re welcome—if anything else comes up with your order, I’ll be here to help.
+[12] agent: How did this support experience work out for you today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3a15f937-2e16-4ece-a43f-54c65f9a3bc6
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-097ed36b-0850-4c83-9208-c4f04f763b0d

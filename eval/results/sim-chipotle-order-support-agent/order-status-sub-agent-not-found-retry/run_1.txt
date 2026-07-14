@@ -1,24 +1,24 @@
 scenario: Order status sub-agent handles not-found retry before a successful lookup
 run: 1
-timestamp: 2026-07-14T11:46:23Z
-conversation_id: sim-3355360b-0b9e-4fe7-9454-637b02140b44
+timestamp: 2026-07-14T11:50:13Z
+conversation_id: sim-1ab67e10-574d-44ce-b312-0c0e470ca302
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent asks for a corrected order identifier after the first lookup is not found.
-  rationale: After the first lookup result is not_found at T2, the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more." and then asks again "What’s the order or confirmation number?", explicitly requesting a corrected order identifier.
+  rationale: After failing to find CP000, the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and then repeats "What’s the order or confirmation number?", explicitly asking for a corrected order identifier.
 
 [PASS] The agent completes the second lookup instead of stopping after the failed first lookup.
-  rationale: At T3 the ledger shows a new order_id = CP999 and action_mock_order_status with order_lookup_result = found, followed by flow_completed: order_status_sub_agent and the bot message "Order CP999 is delayed...", confirming the second lookup was completed.
+  rationale: When the user provides CP999, the ledger shows `flow_started: order_status_sub_agent`, `action: action_mock_order_status`, and `flow_completed: order_status_sub_agent`, and the bot reports the delayed status, indicating the second lookup was completed.
 
 --- Quality Metrics ---
-bot_quality: 5.0/5
-  helpfulness: 5/5 — It directly answered the user's core question by explaining the delay and giving a specific updated wait time and guidance.
-  repair_quality: 5/5 — There were no user pushbacks or corrections; the assistant’s one re-ask followed logically from not finding the first order number rather than ignoring a disfluency signal.
-  coherence: 5/5 — The assistant maintained context about the task and smoothly moved from failing to find CP000 to correctly handling CP999 without contradictions or unnecessary re-asks beyond the needed second lookup.
-  tone: 5/5 — The tone was polite, concise, and natural throughout, with clear prompts and a friendly closing that felt appropriate for the support scenario.
-  task_completion: PASS — The assistant successfully looked up the provided valid order number and clearly communicated the updated status and timing, which the user accepted as all they needed.
-summary: The assistant effectively handled the order-status inquiry, asking for the necessary confirmation number and then providing a clear, specific update once a valid number was given. It remained coherent and polite throughout and completed the user’s task without confusion or contradiction. The closing feedback question was also appropriately phrased and did not interfere with task completion.
+bot_quality: 4.75/5
+  helpfulness: 4/5 — The assistant successfully gathered the order number and then provided a clear, specific delay update with an actionable time window, though it gave no additional options (e.g., alternatives or compensation) that might be expected in a support setting.
+  repair_quality: 5/5 — There were no user pushbacks or corrections about misunderstandings; once given a valid order number, the assistant proceeded appropriately without any need for repair.
+  coherence: 5/5 — The assistant correctly used the updated order number CP999 after failing to find CP000 and maintained consistent context through to closing.
+  tone: 5/5 — The tone was friendly, concise, and natural throughout, with clear instructions and a polite closing plus feedback request.
+  task_completion: PASS — The user wanted an order-status update and received a clear delay estimate and timing window for order CP999, which they confirmed was all they needed.
+summary: The assistant efficiently handled the user’s request for an order update by collecting the necessary information and providing a clear delay estimate. It maintained consistent context and used a polite, natural tone throughout. Minor room for improvement lies in offering additional support options once a delay is identified.
 
 --- Assertion Results ---
 [PASS] flow_started(order_status_sub_agent)
@@ -30,15 +30,15 @@ summary: The assistant effectively handled the order-status inquiry, asking for 
 [1] user: Hi, where’s my order?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Sure, the order number is CP000.
+[4] user: It should be under order number CP000.
 [5] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
 [6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[7] user: Okay, let’s try CP999.
+[7] user: Let’s try CP999 instead.
 [8] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
-[9] agent: Is there anything else I can help you with regarding your order today?
-[10] user: No, that’s all I needed, thanks.
-[11] agent: You’re welcome—if anything else comes up with your order, I’ll be here to help.
-[12] agent: How did I do in helping you today?
+[9] agent: Is there anything else you’d like help with today?
+[10] user: Got it, thanks for the update—that’s all I needed.
+[11] agent: You’re welcome—if you need anything else later, I’ll be here to help.
+[12] agent: How did this support experience work out for you today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3355360b-0b9e-4fe7-9454-637b02140b44
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-1ab67e10-574d-44ce-b312-0c0e470ca302

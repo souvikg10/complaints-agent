@@ -66,8 +66,7 @@ flows:
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
-    if: "not (slots.feedback_only_active is True and slots.feedback_close_signal = 'goodbye')"
-    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Do not use when they explicitly say they only want to vent or give feedback and do not want any action, or when they have already said goodbye after a feedback-only exchange. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
+    description: "Help a Chipotle customer who wants help with a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily or changes from order-status help to an order issue. Do not use when they explicitly say they only want to vent or give feedback and do not want any action. Respond warmly, collect the Chipotle confirmation number and issue, then use mock policy. A coupon or credit is available only after the order number is verified."
     persisted_slots: [order_id, issue_category, issue_details, resolution_acceptance]
     steps:
       - action: utter_issue_empathy
@@ -211,28 +210,60 @@ flows:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
     run_pattern_completed: false
-    if: "not (slots.feedback_only_active is True and slots.feedback_close_signal = 'goodbye')"
-    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. Log only the feedback detail already supplied when sufficient. Leave the conversation naturally open after the acknowledgement; do not ask for a farewell or invoke the closing flow yet. If the customer adds feedback without a goodbye, use this flow again. Never use this flow when the same message includes a clear goodbye, thanks, that is all, all set, or no that is it after a feedback-only exchange: close_feedback_only must take precedence. If they now want a remedy, route to report_chipotle_order_issue while retaining their details."
+    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. This flow stays active after its acknowledgement so its own follow-up collection, not flow routing, handles a later goodbye. Do not use if the customer asks for a remedy."
     persisted_slots: [feedback_only_active]
     steps:
       - set_slots: [{feedback_only_active: true}]
       - action: action_mock_feedback_logging
-      - action: utter_venting_acknowledged
+      - collect: feedback_followup_choice
+        description: "The customer’s next choice after a feedback-only acknowledgement: close when they clearly say thanks, bye, goodbye, that is all, all set, or they are done; needs_action when they now request a coupon, credit, replacement, refund, order lookup, or other help; continue_feedback when they add more complaint detail but still do not want action."
+        utter: utter_venting_acknowledged
+        ask_before_filling: true
+        force_slot_filling: true
+        rejections: [{if: slots.feedback_followup_choice = null, utter: utter_venting_acknowledged}]
+        next: feedback_followup_route
+      - id: feedback_followup_route
+        noop: true
+        next:
+          - if: slots.feedback_followup_choice = "close"
+            then: feedback_terminal_close
+          - if: slots.feedback_followup_choice = "needs_action"
+            then: feedback_issue_link
+          - else: feedback_continue
+      - id: feedback_terminal_close
+        call: close_feedback_only
         next: END
+      - id: feedback_issue_link
+        link: report_chipotle_order_issue
+      - id: feedback_continue
+        action: action_mock_feedback_logging
+        next: clear_feedback_followup_choice
+      - id: clear_feedback_followup_choice
+        set_slots: [{feedback_followup_choice: null}]
+        next: await_feedback_followup
+      - id: await_feedback_followup
+        collect: feedback_followup_choice
+        description: "The customer’s next choice after additional feedback: close for an explicit goodbye or thanks; needs_action if they now ask for help; continue_feedback if they add more detail but still want no action."
+        utter: utter_feedback_continued
+        ask_before_filling: true
+        force_slot_filling: true
+        rejections: [{if: slots.feedback_followup_choice = null, utter: utter_feedback_continued}]
+        next: feedback_followup_route
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
-    run_pattern_completed: false
-    if: "slots.feedback_only_active is True and slots.feedback_close_signal = 'goodbye'"
-    description: "Highest-priority terminal close for a feedback-only exchange. Use immediately when the customer clearly says they are done—thanks, bye, goodbye, no that is it, that is all, all set, or I am good—even if that same message includes additional feedback detail. Never acknowledge or log that final message first. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
+    description: "Child-only terminal close called after the active feedback-only flow collects an explicit close choice. It cannot be selected by the router. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
+    if: False
     steps:
-      - set_slots: [{feedback_only_active: false}, {feedback_close_signal: "closed"}]
+      - set_slots: [{feedback_only_active: false}, {feedback_followup_choice: null}]
       - action: utter_feedback_closed
         next: END
 
   decline_or_light_help:
     name: "Answer unrelated Chipotle requests"
-    description: "Use only when the customer asks an unrelated Chipotle question rather than describing an order problem or meal feedback: nutrition, allergens, hours, locations, jobs, catering, rewards, payment, account access, or general information. Also use for a human agent request. Do not use for a customer venting about a disappointing meal who says they want no action; that is feedback-only acknowledgement."
+    always_include_in_prompt: true
+    run_pattern_completed: false
+    description: "Use this dedicated scope response for every nutrition, calories, ingredients, allergens, dietary, store-hours, location, jobs, catering, rewards, payment, account-access, or general Chipotle-information question. This takes priority over generic knowledge-base or cannot-answer responses: do not claim a missing nutrition database and do not answer the question. Say this support helper only handles existing order timing and wrong, missing, or poor-quality order problems. Also use for a human-agent request. Do not use for a customer venting about a disappointing meal who says they want no action; that is feedback-only acknowledgement."
     steps:
       - action: utter_chipotle_light_help_greeting
       - action: utter_out_of_scope

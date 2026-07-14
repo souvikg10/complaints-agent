@@ -3,7 +3,7 @@ version: "3.1"
 flows:
   welcome_and_route:
     name: "Welcome and route Chipotle support"
-    description: "Welcome a new Chipotle customer support conversation. Use for greetings, opening messages, or when a customer needs help choosing between checking pickup or delivery order timing and reporting a wrong, missing, or poor-quality order. If the opening already states a request, greet briefly and route without making the customer repeat it."
+    description: "Start a new Chipotle order-support conversation only when the customer greets the assistant, asks what it can do, or needs help choosing a support topic. Give the Chipotle welcome and offer order timing or order-problem help. Do not use for an explicit order-status request or an explicit wrong, missing, or food-quality complaint; those requests should start their dedicated flow directly so the customer does not have to repeat them."
     steps:
       - action: utter_chipotle_welcome
       - action: utter_chipotle_scope
@@ -47,6 +47,9 @@ flows:
         collect: order_id
         description: "Corrected Chipotle confirmation number or phone/email used for the order after one lookup was not found. Never provide payment details."
         utter: utter_ask_order_id
+        rejections:
+          - if: slots.order_id = null
+            utter: utter_invalid_order_id
         next: retry_status
       - id: retry_status
         call: order_status_sub_agent
@@ -69,19 +72,26 @@ flows:
 
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
-    description: "Help a Chipotle customer who received a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Respond warmly to frustration, collect context, and use the mock policy to offer an appropriate future-meal remedy."
+    description: "Help a Chipotle customer who received a wrong order, missing item, incorrect customization or ingredient, cold, stale, poor-tasting food, damaged packaging, or another food quality problem. Use even if the customer opens angrily. Respond warmly, collect safe order context and the issue, then use the mock policy to offer an appropriate future-meal remedy."
     persisted_slots:
       - order_id
       - issue_category
       - issue_details
+      - resolution_acceptance
     steps:
       - action: utter_issue_empathy
       - collect: order_id
         description: "Chipotle order or confirmation number, or approximate safe order context such as phone/email used for the order. Do not collect payment details."
+        rejections:
+          - if: slots.order_id = null
+            utter: utter_invalid_order_id
       - collect: issue_category
         description: "Category of the Chipotle order problem: wrong_order, missing_item, incorrect_customization, food_quality, cold_food, damaged_packaging, or other."
       - collect: issue_details
         description: "Plain-language description of what went wrong, affected items, and whether the customer ate or discarded food if relevant."
+        rejections:
+          - if: slots.issue_details = null
+            utter: utter_ask_issue_details
       - call: order_issue_sub_agent
       - id: issue_policy_result
         noop: true
@@ -118,9 +128,11 @@ flows:
         noop: true
         next:
           - if: slots.resolution_acceptance = "yes"
-            then:
-              - link: confirm_issue_resolution
+            then: issue_accepted_remedy
           - else: declined_resolution
+      - id: issue_accepted_remedy
+        call: confirm_issue_resolution
+        next: END
       - id: declined_resolution
         action: utter_resolution_declined
         next: END
@@ -144,8 +156,8 @@ flows:
 
   confirm_issue_resolution:
     name: "Issue resolution confirmation and coupon delivery"
-    description: "Issue a previously accepted Chipotle future-meal discount coupon or item credit after a reported order problem. Use only after the order-issue flow has offered a remedy and the customer has clearly accepted it."
-    if: slots.issue_eligible is True and slots.resolution_acceptance = "yes"
+    description: "Issue a previously accepted Chipotle future-meal discount coupon or item credit after a reported order problem. Use only after the order-issue flow has offered a remedy and the customer has clearly accepted it, including a follow-up request to issue that accepted remedy."
+    if: slots.issue_eligible is True and slots.resolution_acceptance = "yes" and not slots.coupon_issued
     steps:
       - collect: coupon_channel
         description: "Customer’s preferred mock delivery channel for an approved coupon or item credit: chat or email associated with the order."

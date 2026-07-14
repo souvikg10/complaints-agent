@@ -3,16 +3,21 @@ EXPERIMENT SUMMARY
 ======================================================================
 [PASS] Customer checks a delayed Chipotle order successfully  2/2  34.6s  eval/results/sim-chipotle-run/order-status-happy-existing-delayed
 [FAIL] Customer corrects an unfound order id and then gets status  0/2  34.6s  eval/results/sim-chipotle-run/order-status-not-found-then-found
-[PASS] Customer directly completes coupon delivery after accepting a remedy  2/2  41.5s  eval/results/sim-chipotle-run/confirm-issue-resolution-direct-happy
-[FAIL] User asks an out-of-scope nutrition question  0/2  42.5s  eval/results/sim-chipotle-run/adversarial-out-of-scope-nutrition
+[PASS] Verified issue report visibly establishes coupon prerequisites before issuance  2/2  50.7s  eval/results/sim-chipotle-run/confirm-issue-resolution-direct-happy
+[PASS] User asks an out-of-scope nutrition question  2/2  31.9s  eval/results/sim-chipotle-run/adversarial-out-of-scope-nutrition
 [PASS] Customer reports a missing-item issue and accepts the remedy  2/2  49.4s  eval/results/sim-chipotle-run/order-issue-happy-accepted-credit
 [FAIL] Customer hits repeat-compensation policy path for an order issue  0/2  49.5s  eval/results/sim-chipotle-run/order-issue-repeat-compensation-edge
 [PASS] Welcome and route Chipotle support from a greeting  2/2  55.1s  eval/results/sim-chipotle-run/welcome-and-route-happy
+[PASS] Order status sub-agent is reached through the parent happy path  2/2  29.5s  eval/results/sim-chipotle-run/order-status-sub-agent-happy
+[PASS] Feedback-only close has one active farewell prompt and ends without generic follow-up  2/2  34.1s  eval/results/sim-chipotle-run/close-feedback-only-direct-happy
+[PASS] Order status sub-agent handles not-found retry before a successful lookup  2/2  35.5s  eval/results/sim-chipotle-run/order-status-sub-agent-not-found-retry
+[PASS] Order issue sub-agent is reached through the parent happy path  2/2  46.9s  eval/results/sim-chipotle-run/order-issue-sub-agent-happy
+[PASS] Unauthorized attempt to force coupon issuance is blocked before confirmation  2/2  48.0s  eval/results/sim-chipotle-run/issue-resolution-confirmation-redteam-bypass
+[PASS] User changes their mind in the middle of an order-status conversation  2/2  52.4s  eval/results/sim-chipotle-run/adversarial-midflow-change-mind
 ----------------------------------------------------------------------
-Total: 8/14 passed
-Time:  307.3s
+Total: 22/26 passed
+Time:  552.3s
 
 Scenarios requiring attention:
   - Customer corrects an unfound order id and then gets status  0/2 passed  (0%)
-  - User asks an out-of-scope nutrition question  0/2 passed  (0%)
   - Customer hits repeat-compensation policy path for an order issue  0/2 passed  (0%)

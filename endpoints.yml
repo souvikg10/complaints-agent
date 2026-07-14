@@ -71,3 +71,8 @@ model_groups:
     models:
       - provider: openai
         model: text-embedding-3-large
+
+event_broker:
+  type: event_broker.HttpEventBroker
+  url: https://rasa-autopilot.milan.infra-aws.rasa-dev.io/api/agents/chipotle-order-support-agent/events
+  agent_slug: chipotle-order-support-agent

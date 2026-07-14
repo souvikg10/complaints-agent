@@ -1,0 +1,40 @@
+scenario: Order status sub-agent is reached through the parent happy path
+run: 1
+timestamp: 2026-07-14T11:56:37Z
+conversation_id: sim-69818d63-432c-4047-8ad1-7aa3b247d967
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent performs the status lookup after collecting the order identifier.
+  rationale: At T2, after the user provides order number "CP999" and `slot_set: order_id = CP999`, the system starts `flow_started: order_status_sub_agent` and runs `action: action_mock_order_status`, which performs the status lookup before responding with the order status.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It directly answered the user's question with a concrete status (delayed) and a specific updated pickup timeframe, which is exactly the needed information.
+  repair_quality: 5/5 — There were no user disfluencies or corrections, so there was no need for repair and nothing mishandled.
+  coherence: 5/5 — The assistant correctly used the provided order number once and stayed consistent about the order and its status throughout the conversation.
+  tone: 5/5 — The tone was clear, polite, and natural, with concise explanations and a reasonable closing satisfaction question.
+  task_completion: PASS — The assistant successfully looked up the order status, provided a clear updated timing, and the user explicitly confirmed that was all they needed.
+summary: The assistant efficiently resolved the user's request by obtaining the order number, checking the status, and providing a clear updated pickup window. It maintained context correctly and used a friendly, professional tone, ending with an appropriate follow-up question without impeding task completion.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] flow_started(order_status_sub_agent)
+[PASS] action_executed(action_mock_order_status)
+[PASS] slot_was_set(order_status='delayed')
+[PASS] sequencing
+[PASS] flow_completed(check_chipotle_order_status)
+
+--- Raw Transcript ---
+[1] user: Hi, I placed a pickup order a little while ago—can you tell me where my order is in the process?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: Sure, the order number is CP999.
+[5] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
+[6] agent: Is there anything else I can help you with regarding your order today?
+[7] user: Got it, thanks for the update—that’s all I needed.
+[8] agent: I’m glad I could help—if you need anything else later, I’ll be here.
+[9] agent: How did I do helping you with your order today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-69818d63-432c-4047-8ad1-7aa3b247d967

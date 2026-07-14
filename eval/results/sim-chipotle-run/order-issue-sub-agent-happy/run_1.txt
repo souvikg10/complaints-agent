@@ -1,0 +1,50 @@
+scenario: Order issue sub-agent is reached through the parent happy path
+run: 1
+timestamp: 2026-07-14T11:56:37Z
+conversation_id: sim-b4d5bf46-c82e-4dd8-bbe0-1c6d1326aa08
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
+  rationale: From T1 the system infers and stores the issue as missing_item (`slot_set: issue_category = missing_item`) and later, after collecting the order number at T2, still has and builds on this issue context when asking for and recording detailed issue information at T3 (`slot_set: issue_details = The bag of chips ... was completely missing`).
+
+[PASS] Once the report has enough context, the order-issue sub-agent runs the mock policy check and offers the eligible resolution path.
+  rationale: After the user provides order id and issue details, the ledger shows `flow_started: order_issue_sub_agent` and `action: action_mock_order_issue_policy` with `issue_eligible = true` and `suggested_remedy = item_credit` at T3, followed by the bot offering an $8 item credit: "The available remedy is an $8 item credit toward a future meal for the order mix-up."
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It gathered needed details, confirmed the order, clearly stated the available remedy, and delivered a specific, usable credit code with conditions.
+  repair_quality: 5/5 — The user never indicated misunderstanding or pushed back, so there were no repair opportunities to mishandle.
+  coherence: 5/5 — The assistant consistently tracked the order number, problem description, remedy choice, and delivery method without contradiction or re-asking.
+  tone: 5/5 — The tone was warm, empathetic, concise, and natural throughout, appropriate for a simple support interaction.
+  task_completion: PASS — The assistant verified the order, applied the $8 credit, surfaced a concrete code with terms, and confirmed completion before closing.
+summary: This conversation is a clean example of task-focused support: the assistant efficiently collected necessary information, resolved the issue with a concrete credit, and explained the remedy clearly. It maintained consistent context and a friendly, natural tone from start to finish, with no signs of misunderstanding or friction.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] slot_was_set(order_id, issue_category, issue_details, resolution_acceptance='yes')
+[PASS] sequencing
+[PASS] flow_completed(report_chipotle_order_issue)
+
+--- Raw Transcript ---
+[1] user: Hi, my order was missing the chips that were supposed to come with it.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: Sure, the order number is CP123.
+[5] agent: Tell me what went wrong and which item was affected. If relevant, let me know whether you ate or discarded it.
+[6] user: The bag of chips that was supposed to come with my meal was completely missing from the order. I didn’t get any chips at all.
+[7] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[8] agent: Would you like me to issue the approved future-meal remedy?
+[9] user: Yes, please go ahead and issue the $8 item credit for a future meal.
+[10] agent: Would you like the code shown here or sent to the email used for the order?
+[11] user: Just show the code here in the chat, please.
+[12] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[13] agent: Is there anything else I can help you with today?
+[14] user: No, that’s everything. Thanks for your help!
+[15] agent: You’re very welcome—if you need anything else later on, I’ll be here to help.
+[16] agent: How did we do today—how would you rate your experience?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-b4d5bf46-c82e-4dd8-bbe0-1c6d1326aa08

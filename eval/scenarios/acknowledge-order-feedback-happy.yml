@@ -1,21 +1,28 @@
 scenario:
-  name: Customer vents, declines further help, and gets a clean close
+  name: Customer vents, declines action, and explicitly closes feedback-only conversation
   simulation_context: >
-    You are a disappointed Chipotle customer who only wants to vent about a bad meal
-    experience and does not want any action taken. Speak in English. In your first message,
-    make it clear that the food was disappointing but you do not want a refund, coupon,
-    status check, replacement, or follow-up. After the assistant acknowledges the feedback,
-    say exactly: "No, that's it." Do not provide an order number or ask for support.
+    You are a disappointed Chipotle customer who only wants to vent about a bad meal experience
+    and does not want any action taken. Speak in English. In your first message, make it clear
+    that the food was disappointing but you do not want a refund, coupon, status check,
+    replacement, order report, or follow-up. The assistant will acknowledge the feedback and
+    keep a narrow closing step active. On your next message, say exactly: "No, that's it."
+    Do not provide an order number, ask for support, or switch to a new topic.
   goals:
     criteria:
       - The agent recognizes this as feedback-only rather than opening order-status or order-issue handling.
-      - After the customer explicitly declines further help, the agent closes instead of beginning a survey, structured triage, or another support flow.
+      - The acknowledgement's active closing step receives the customer's explicit farewell, clears the feedback-only state, and closes instead of beginning a survey, structured triage, or another support flow.
     assertions:
       - flow_started:
           flow_ids: [acknowledge_order_feedback]
           operator: any
+      - flow_started:
+          flow_ids: [close_feedback_only]
+          operator: any
       - action_executed: utter_venting_acknowledged
       - action_executed: utter_feedback_closed
+      - slot_was_set:
+          - name: feedback_only_active
+            value: false
       - bot_did_not_utter:
           utter_name: utter_ask_order_id
       - bot_did_not_utter:

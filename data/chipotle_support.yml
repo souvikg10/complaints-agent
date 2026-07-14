@@ -175,19 +175,24 @@ flows:
   acknowledge_order_feedback:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
-    description: "Use when a Chipotle customer is only venting or sharing disappointment about an order and clearly says they do not want compensation, a status check, a report, or any other action. Acknowledge the frustration and thank them for the feedback without collecting order details, opening issue triage, offering a coupon, asking a survey question, asking whether they need anything else, or forcing a resolution. Do not use for a customer who asks to fix an order problem or wants any action."
+    description: "Use when a Chipotle customer is only venting or sharing disappointment about an order and clearly says they do not want compensation, a status check, a report, or any other action. Acknowledge the frustration and thank them for the feedback without collecting order details, opening issue triage, offering a coupon, asking a survey question, or forcing a resolution. Keep this short feedback-only conversation active only to receive the customer’s final goodbye, which is closed deterministically by the child flow. Do not use for a customer who asks to fix an order problem or wants any action."
     persisted_slots: [feedback_only_active]
     steps:
       - set_slots: [{feedback_only_active: true}]
       - action: utter_venting_acknowledged
+      - call: close_feedback_only
         next: END
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
-    always_include_in_prompt: true
-    description: "This is the required next flow when feedback_only_active is true and the customer sends a plain conversational closing after feedback was acknowledged. Trigger for messages such as ‘That’s all I needed, thanks. Goodbye’, ‘No, that’s it’, ‘I’m all set’, ‘nothing else’, ‘thanks, bye’, ‘goodbye’, or any clear statement that they are done. The message need not mention Chipotle or support. Close warmly in one short sentence, reset the feedback-only state, and end. Never route that closing to general support, out-of-scope help, a survey, a follow-up question, order triage, or compensation."
-    if: slots.feedback_only_active is True
+    description: "Child-only closing task used immediately after feedback-only acknowledgement. It keeps the feedback conversation active while awaiting a plain closing such as ‘That’s all I needed, thanks. Goodbye’, ‘No, that’s it’, ‘I’m all set’, ‘nothing else’, ‘thanks, bye’, or ‘goodbye’. Because it is an active collect step, a clear goodbye is handled as the expected closing input rather than requiring the LLM to retrieve and start a competing standalone flow. Reset feedback-only state and close warmly in one sentence."
+    if: False
     steps:
+      - collect: feedback_close_signal
+        description: "A clear conversational farewell or statement that the customer is done after feedback-only acknowledgement, such as goodbye, bye, that is all, no that is it, or I am all set."
+        rejections:
+          - if: not (slots.feedback_close_signal matches "(?i).*\\b(goodbye|bye|all set|that.s all|that is all|that.s it|that is it|nothing else|no thanks)\\b.*")
+            utter: utter_ask_feedback_close_signal
       - set_slots: [{feedback_only_active: false}]
       - action: utter_feedback_closed
         next: END
@@ -195,7 +200,7 @@ flows:
   decline_or_light_help:
     name: "Out-of-scope Chipotle support"
     always_include_in_prompt: true
-    description: "Use for requests outside Chipotle order timing or an order problem, including nutrition or ingredients, calories, allergens, store hours or locations, jobs, catering, rewards, payment, account access, general Chipotle information, a refund request without an order issue report, or a human agent. Start this flow directly instead of answering from a knowledge base. Give the explicit order-support scope message immediately; do not collect information before doing so. Do not use for a customer only venting with no requested action; use Acknowledge feedback with no requested action. Do not use for a simple thanks, goodbye, ‘that is all’, or other closing after feedback_only_active has been set; use Close feedback-only conversation after goodbye. Do not use when the customer says a prior repeat-compensation refusal should be overridden; use Repeat-compensation refusal follow-up for that specific request."
+    description: "Use for requests outside Chipotle order timing or an order problem, including nutrition or ingredients, calories, allergens, store hours or locations, jobs, catering, rewards, payment, account access, general Chipotle information, a refund request without an order issue report, or a human agent. Start this flow directly instead of answering from a knowledge base. Give the explicit order-support scope message immediately; do not collect information before doing so. Do not use for a customer only venting with no requested action; use Acknowledge feedback with no requested action. Do not use when the active feedback-only closing task is waiting for a goodbye. Do not use when the customer says a prior repeat-compensation refusal should be overridden; use Repeat-compensation refusal follow-up for that specific request."
     steps:
       - action: utter_chipotle_light_help_greeting
       - action: utter_out_of_scope

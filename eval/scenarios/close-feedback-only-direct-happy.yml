@@ -1,23 +1,25 @@
 scenario:
-  name: Customer closes a feedback-only conversation with a plain goodbye
+  name: Feedback-only acknowledgement stays active until a plain goodbye closes it
   simulation_context: >
-    You are a calm Chipotle customer whose feedback was already acknowledged in an earlier turn.
-    The setup slot means the assistant is in feedback-only closing state; it does not mean you
-    need to repeat the complaint or request help. On your only message, say exactly:
-    "That’s all I needed, thanks. Goodbye." Do not ask a question, mention an order, request
-    compensation, or introduce any new support topic. The expected behavior is a brief final
-    closing, not a survey, a scope explanation, or another attempt to help.
-  setup:
-    initial_slots:
-      feedback_only_active: true
+    You are a calm Chipotle customer who only wants to share feedback about a disappointing meal.
+    On your first message, make clear that you do not want a refund, coupon, replacement, status
+    check, report, or any other action. After the assistant acknowledges the feedback and tells
+    you that a goodbye will close the conversation, say exactly: "That’s all I needed, thanks.
+    Goodbye." Do not introduce a new question, order number, compensation request, or support
+    topic. This scenario deliberately exercises the active feedback-only closing step rather
+    than injecting a slot and expecting the LLM to retrieve a separate standalone goodbye flow.
   goals:
     criteria:
-      - With feedback-only closing state active, a plain goodbye is routed to the dedicated close flow rather than generic support or fallback behavior.
-      - The assistant gives only the brief closing response and clears the feedback-only state, so the conversation cannot reopen itself.
+      - The feedback-only acknowledgement leaves its dedicated child closing task active, so the farewell is collected as the expected next input rather than routed through generic fallback or knowledge-base behavior.
+      - The goodbye deterministically clears feedback-only state before the assistant sends its one-sentence close.
     assertions:
+      - flow_started:
+          flow_ids: [acknowledge_order_feedback]
+          operator: any
       - flow_started:
           flow_ids: [close_feedback_only]
           operator: any
+      - action_executed: utter_venting_acknowledged
       - action_executed: utter_feedback_closed
       - slot_was_set:
           - name: feedback_only_active

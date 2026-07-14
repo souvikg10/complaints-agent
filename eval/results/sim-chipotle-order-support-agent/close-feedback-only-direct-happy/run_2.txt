@@ -1,32 +1,37 @@
-scenario: Customer directly closes a feedback-only conversation
+scenario: Customer closes a feedback-only conversation with a plain goodbye
 run: 2
-timestamp: 2026-07-14T08:17:01Z
-conversation_id: sim-77023b30-dd06-4fb3-ab59-da5244ac62e5
+timestamp: 2026-07-14T08:19:42Z
+conversation_id: sim-10f7a71f-dbbf-42c6-9341-40832531a0e7
 overall_result: FAIL
 
 --- Quality Criteria Results ---
-[FAIL] The agent closes the feedback-only conversation without reopening support or collecting new details.
-  rationale: After the user said "That’s all I needed, thanks for your help. Goodbye.", the bot responded "before we wrap up, is there anything else I can assist you with?", which attempts to reopen support instead of simply closing the conversation.
+[FAIL] With feedback-only closing state active, a plain goodbye is routed to the dedicated close flow rather than generic support or fallback behavior.
+  rationale: The ledger shows only `action: utter_no_knowledge_base` for the user's goodbye and the bot responds with a generic no-knowledge and assistance offer, with no evidence of a dedicated close flow being invoked.
+
+[FAIL] The assistant gives only the brief closing response and clears the feedback-only state, so the conversation cannot reopen itself.
+  rationale: The assistant does not give a brief closing response but instead says it lacks a knowledge base and asks, "is there anything else I can assist you with today?", indicating it is not closing and allowing the conversation to continue.
 
 --- Quality Metrics ---
-bot_quality: 3.0/5
-  helpfulness: 1/5 — The user did not ask a new question, but the assistant produced an unhelpful and incorrect deflection about lacking a knowledge base, adding no value to the closing exchange.
-  repair_quality: 5/5 — There were no user signals of misunderstanding or pushback in this short exchange, so there were no repair opportunities to evaluate.
-  coherence: 2/5 — The assistant’s claim about not having access to a knowledge base conflicts with its prior apparent ability to help and is incoherent with the user’s clear intent to end the conversation.
-  tone: 4/5 — Tone is generally polite and conversational, but the initial 'I’m afraid I don’t have the answer' is contextually odd and slightly awkward given there was no question asked.
-  task_completion: FAIL — The user was ending the conversation, but the assistant introduced an irrelevant statement about lacking a knowledge base instead of cleanly closing, so the user's simple goal of a smooth exit was not properly fulfilled.
-summary: The assistant remained polite and conversational but mishandled the user’s clear closing signal. It introduced an irrelevant and self-contradictory statement about lacking a knowledge base instead of simply acknowledging the goodbye and ending the interaction, resulting in low helpfulness and coherence in this final turn.
+bot_quality: 2.75/5
+  helpfulness: 1/5 — Instead of acknowledging the goodbye, the assistant gave an unrelated inability-to-answer message, providing no useful content for the user’s actual intent.
+  repair_quality: 5/5 — There were no user corrections or pushback, so there was no opportunity for repair.
+  coherence: 2/5 — The assistant’s claim of not having an answer is incoherent with the user’s simple farewell intent and implies a non-existent unanswered question.
+  tone: 3/5 — The wording is polite but somewhat formulaic and mismatched to the user’s closing message.
+  task_completion: FAIL — The user was saying goodbye and did not receive an appropriate closing response, only an irrelevant statement about lacking a knowledge base.
+summary: The assistant responded irrelevantly to a simple goodbye, referencing an unavailable knowledge base even though no question was asked, so it failed to complete the user’s intended interaction. While the tone remained polite, the reply was unhelpful and contextually incoherent for a conversation closing remark.
 
 --- Assertion Results ---
 [FAIL] flow_started(close_feedback_only) — None of the flows with ids 'close_feedback_only' started.
 [FAIL] action_executed(utter_feedback_closed) — Action 'utter_feedback_closed' did not execute.
 [FAIL] slot_was_set(feedback_only_active=False) — Slot 'feedback_only_active' was set to a different value 'True' than the expected 'False' value.
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
 [FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
 
 --- Raw Transcript ---
-[1] user: That’s all I needed, thanks for your help. Goodbye.
+[1] user: That’s all I needed, thanks. Goodbye.
 [2] agent: I’m afraid I don’t have the answer to that right now, as I currently don’t have access to a knowledge base.
-[3] agent: You’re welcome—before we wrap up, is there anything else I can assist you with?
+[3] agent: Before you go, is there anything else I can assist you with today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-77023b30-dd06-4fb3-ab59-da5244ac62e5
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-10f7a71f-dbbf-42c6-9341-40832531a0e7

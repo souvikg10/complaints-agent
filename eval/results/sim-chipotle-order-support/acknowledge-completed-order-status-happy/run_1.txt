@@ -1,0 +1,41 @@
+scenario: Customer briefly acknowledges a completed order status answer and the assistant closes
+run: 1
+timestamp: 2026-07-15T14:40:46Z
+conversation_id: sim-2fa247ed-7720-4e18-a83e-c1bec6d81165
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent gives the status update before using the acknowledgement-only closing flow.
+  rationale: The status update is given at T2 via `action: action_mock_order_status` and `action: utter_order_delayed`, and only afterwards, at T3, does the `acknowledge_completed_order_status` flow start and run `utter_status_closed` as the acknowledgement-only closing flow.
+
+[PASS] The agent responds to the brief post-answer acknowledgement with a short close and does not reopen status lookup.
+  rationale: After the user’s brief acknowledgement at T3 ("Okay, thanks for the update."), the bot only executes the `acknowledge_completed_order_status` flow with `utter_status_closed` ("You’re welcome—glad I could confirm the timing.") and does not start or restart any status lookup flow in the ledger.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It directly addressed the user’s request by identifying the order as delayed and giving a specific updated wait time and guidance.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so no repair was needed or missed.
+  coherence: 5/5 — The assistant correctly used the provided order number and maintained consistent context through the brief exchange.
+  tone: 5/5 — The tone was clear, polite, and natural, with concise and context-appropriate language throughout.
+  task_completion: PASS — The assistant obtained the order number and provided a clear status update and revised timing for the Chipotle order.
+summary: The assistant successfully fulfilled the user’s need by obtaining the order number and providing a clear explanation of the delay and updated ETA. It maintained context, responded succinctly, and used a polite, natural tone, resulting in a smooth and effective interaction with no evident issues.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] flow_started(order_status_sub_agent)
+[PASS] action_executed(action_mock_order_status)
+[PASS] flow_started(acknowledge_completed_order_status)
+[PASS] sequencing
+[PASS] flow_completed(acknowledge_completed_order_status)
+
+--- Raw Transcript ---
+[1] user: Hi, where’s my Chipotle order? It seems to be taking longer than expected.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: The order number is CP999.
+[5] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
+[6] user: Okay, thanks for the update.
+[7] agent: You’re welcome—glad I could confirm the timing.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-2fa247ed-7720-4e18-a83e-c1bec6d81165

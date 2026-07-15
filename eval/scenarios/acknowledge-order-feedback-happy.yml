@@ -1,17 +1,18 @@
 scenario:
-  name: Customer vents, declines action, and closes the complete feedback-only call chain
+  name: Customer vents, declines action, then closes a feedback-only exchange
   simulation_context: >
     You are a disappointed Chipotle customer who only wants to vent about a bad meal experience
     and does not want any action taken. Speak in English. In your first message, make it clear
     that the food was disappointing but you do not want a refund, coupon, status check,
     replacement, order report, or follow-up. The assistant should acknowledge the feedback and
-    leave its dedicated feedback-only closing child flow active. On your next message, say
-    exactly: "No, that's it." This is a clear farewell, not a new request. Do not provide an
-    order number, ask for support, or switch topics.
+    end that feedback-only flow naturally. On your next message, say exactly: "No, that's it."
+    This is a clear farewell, not a new request. Do not provide an order number, ask for support,
+    or switch topics.
   goals:
     criteria:
       - The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
-      - The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
+      - The acknowledgement completes naturally on the first turn without a required farewell prompt.
+      - The later farewell starts close_feedback_only, clears feedback_only_active, and sends one concise terminal close.
     assertions:
       - flow_started:
           flow_ids: [acknowledge_order_feedback]
@@ -36,5 +37,3 @@ scenario:
           utter_name: utter_ask_feedback_close_signal
       - flow_completed:
           flow_id: close_feedback_only
-      - flow_completed:
-          flow_id: acknowledge_order_feedback

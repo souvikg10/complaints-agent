@@ -231,12 +231,29 @@ flows:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
     run_pattern_completed: false
-    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. If enough issue detail was already supplied, log it with the mock feedback logger; otherwise simply acknowledge it without claiming a formal record. Offer at most one optional next step in the acknowledgement. End naturally without asking for a farewell. If the customer later adds feedback, use this flow again; if they ask for a remedy, use the order-issue flow."
+    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. On the first feedback-only message, acknowledge the experience without collecting an order number and without starting compensation or lookup; if enough issue detail was supplied, log it with the mock feedback logger. When feedback_only_active is already true and the customer adds more complaint detail, use the lighter continuation acknowledgement instead of repeating the initial boilerplate. End naturally without requiring a farewell. If the customer later asks for a remedy, use the order-issue flow."
     persisted_slots: [feedback_only_active]
     steps:
-      - set_slots: [{feedback_only_active: true}]
-      - action: action_mock_feedback_logging
-      - action: utter_venting_acknowledged
+      - id: feedback_state
+        noop: true
+        next:
+          - if: slots.feedback_only_active is true
+            then: continued_feedback
+          - else: first_feedback
+      - id: first_feedback
+        set_slots: [{feedback_only_active: true}]
+        next: log_first_feedback
+      - id: log_first_feedback
+        action: action_mock_feedback_logging
+        next: acknowledge_first_feedback
+      - id: acknowledge_first_feedback
+        action: utter_venting_acknowledged
+        next: END
+      - id: continued_feedback
+        action: action_mock_feedback_logging
+        next: acknowledge_continued_feedback
+      - id: acknowledge_continued_feedback
+        action: utter_feedback_continued
         next: END
 
   close_feedback_only:

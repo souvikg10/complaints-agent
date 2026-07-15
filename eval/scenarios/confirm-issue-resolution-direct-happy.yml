@@ -1,5 +1,5 @@
 scenario:
-  name: Verified issue report visibly establishes coupon prerequisites before issuance
+  name: Parent issue-report path establishes prerequisites before child issuance
   simulation_context: >
     You are a cooperative Chipotle customer with a wrong item in verified order CP123.
     Start by reporting the wrong order and provide CP123 when asked. Briefly describe the
@@ -7,7 +7,8 @@ scenario:
     When asked for the delivery channel, choose email. Do not ask for a new, additional,
     or replacement coupon. This scenario deliberately begins at the issue report so the
     policy lookup, order verification, eligibility decision, acceptance, and issuance are
-    all observable in one conversation rather than hidden in test setup slots.
+    all observable in one conversation rather than treating the child-only issuance flow
+    as a direct entry point.
   goals:
     criteria:
       - The assistant runs mock issue policy on the customer-supplied order and only offers a remedy after the order is verified and eligible.

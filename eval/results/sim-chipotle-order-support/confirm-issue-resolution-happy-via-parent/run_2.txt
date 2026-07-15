@@ -1,0 +1,49 @@
+scenario: Confirm issue resolution child flow is reached through a verified accepted order issue
+run: 2
+timestamp: 2026-07-15T14:41:11Z
+conversation_id: sim-37df4d9c-d7f6-4782-9009-e54c853764c2
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
+  rationale: At T3 the user says "Yes, please go ahead and issue the credit," setting resolution_acceptance = yes before flow_started: confirm_issue_resolution, so acceptance is collected prior to the confirmation-and-issuance child flow.
+
+[PASS] The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
+  rationale: After resolution_acceptance = yes at T3, the bot asks "Would you like the code shown here or sent to the email used for the order?" and at T4, after coupon_channel = email, calls action_mock_coupon_issuance and then utter_coupon_issued, satisfying both asking for channel and issuing the remedy after acceptance.
+
+--- Quality Metrics ---
+bot_quality: 4.75/5
+  helpfulness: 5/5 — Every step directly advanced the refund/credit task, culminating in a specific, clearly usable credit code and usage instructions.
+  repair_quality: 5/5 — The user never indicated misunderstanding or pushed back, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order number, remedy choice, and delivery method without re-asking or contradicting itself.
+  tone: 4/5 — The tone is polite, empathetic, and clear, though one closing line (“glad I could confirm the timing”) is slightly off from the actual action of issuing credit.
+  task_completion: PASS — The assistant successfully verified the order, issued the $8 credit with a concrete code and terms, and the user explicitly confirmed that this resolved their need.
+summary: The assistant efficiently handled the missing-item report, verified the order, and issued a clear, actionable credit code that satisfied the user. It maintained context well and used a friendly, service-oriented tone, with only a minor wording mismatch in the closing turn.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] flow_started(confirm_issue_resolution)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] action_executed(action_mock_coupon_issuance)
+[PASS] slot_was_set(resolution_acceptance='yes', coupon_channel='email', coupon_issued=True)
+[PASS] sequencing
+[PASS] flow_completed(confirm_issue_resolution)
+
+--- Raw Transcript ---
+[1] user: Hi, my Chipotle order showed up missing the chips I paid for.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: The order number is CP123.
+[5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[6] agent: Would you like me to issue the approved future-meal remedy?
+[7] user: Yes, please go ahead and issue the credit.
+[8] agent: Would you like the code shown here or sent to the email used for the order?
+[9] user: Please send it to the email used for the order.
+[10] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[11] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[12] user: Got it, thank you—that’s all I needed.
+[13] agent: You’re welcome—glad I could confirm the timing.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-37df4d9c-d7f6-4782-9009-e54c853764c2

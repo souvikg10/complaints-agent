@@ -1,0 +1,28 @@
+scenario:
+  name: Customer briefly acknowledges a completed order status answer and the assistant closes
+  simulation_context: >
+    You are a cooperative Chipotle customer checking order status. Speak in English.
+    First ask where your order is. When asked for the order number, provide CP999.
+    After the assistant gives the delayed status update, reply briefly with thanks or
+    okay to close the conversation. Do not ask a new question or report a different issue.
+  goals:
+    criteria:
+      - The agent gives the status update before using the acknowledgement-only closing flow.
+      - The agent responds to the brief post-answer acknowledgement with a short close and does not reopen status lookup.
+    assertions:
+      - flow_started:
+          flow_ids: [check_chipotle_order_status]
+          operator: any
+      - flow_started:
+          flow_ids: [order_status_sub_agent]
+          operator: any
+      - action_executed: action_mock_order_status
+      - flow_started:
+          flow_ids: [acknowledge_completed_order_status]
+          operator: any
+      - sequencing:
+          - flow_started: check_chipotle_order_status
+          - action_executed: action_mock_order_status
+          - flow_started: acknowledge_completed_order_status
+      - flow_completed:
+          flow_id: acknowledge_completed_order_status

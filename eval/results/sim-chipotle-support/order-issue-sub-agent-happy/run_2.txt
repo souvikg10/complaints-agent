@@ -1,24 +1,24 @@
 scenario: Order issue sub-agent is reached through the parent happy path
 run: 2
-timestamp: 2026-07-15T13:04:34Z
-conversation_id: sim-d0b0d9d3-7bff-45d6-9197-aa4452e0d272
+timestamp: 2026-07-15T14:38:11Z
+conversation_id: sim-4afbe397-e431-4205-8c79-86755ba916b1
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
-  rationale: At T1 the system sets `issue_details = Hi, my order was missing the chips that were supposed to come with it` and `issue_category = missing_item`, and there is no later overwrite or loss of this information while it collects `order_id` and proceeds with the flow through T4.
+  rationale: At T1 the system sets `issue_details = Hi, my order was missing the chips that were supposed to come with it` and `issue_category = missing_item`, and these slots remain set while it later collects and processes `order_id = CP123`, showing the initial issue information is preserved during context collection.
 
 [PASS] Once the report has enough context, the order-issue sub-agent runs the mock policy check and offers the eligible resolution path.
-  rationale: After receiving the order number at T2, the ledger shows `flow_started: order_issue_sub_agent`, then `action: action_mock_order_issue_policy` with `order_verified = true`, `issue_eligible = true`, and `suggested_remedy = item_credit`, followed by `flow_completed: order_issue_sub_agent` and the bot message offering an `$8 item credit` as the remedy.
+  rationale: After receiving the order number at T2, the `order_issue_sub_agent` starts and runs `action_mock_order_issue_policy` (setting `order_verified = true`, `issue_eligible = true`, and `suggested_remedy = item_credit`), then completes and triggers `utter_offer_credit` in the transcript as “The available remedy is an $8 item credit toward a future meal for the order mix-up,” which offers the eligible resolution path.
 
 --- Quality Metrics ---
-bot_quality: 3.75/5
-  helpfulness: 4/5 — The assistant efficiently collected the needed info, applied the correct remedy, and provided a usable credit code, but the final irrelevant refusal message added slight confusion after the issue was already resolved.
-  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so there was no opportunity for repair to be tested or mishandled.
-  coherence: 2/5 — While the assistant maintained context for the order and remedy, it abruptly contradicted the resolved state by saying it couldn’t provide an answer after the user had already confirmed they were done.
-  tone: 4/5 — The tone was polite, empathetic, and clear throughout, with only the final generic refusal sounding slightly robotic and out of place.
-  task_completion: PASS — The assistant successfully verified the order and issued a concrete $8 credit code with details of use before the conversation ended.
-summary: The assistant handled the main task well: it verified the order, explained the remedy, and issued a clear $8 credit code the user could use. Tone and helpfulness were solid overall, but the last message was incoherent with the prior context and slightly undermined the smooth conclusion of an otherwise successful interaction.
+bot_quality: 4.0/5
+  helpfulness: 4/5 — The assistant efficiently handled the missing-item complaint and provided a concrete remedy with clear usage details, though the final irrelevant statement about lacking a knowledge base was confusing and unhelpful.
+  repair_quality: 5/5 — The user never indicated misunderstanding or pushed back, so there were no repair opportunities and the flow proceeded smoothly.
+  coherence: 3/5 — The assistant maintained context around the order and credit issuance, but then produced an incoherent statement about not having access to a knowledge base right after the user said they were satisfied.
+  tone: 4/5 — The tone was polite, empathetic, and clear throughout, though the abrupt meta-comment about not having a knowledge base felt slightly out of place in an otherwise natural conversation.
+  task_completion: PASS — The assistant successfully verified the order, issued, and clearly presented the requested $8 credit code before the conversation ended, and later odd statements did not alter that completed outcome.
+summary: The assistant effectively resolved the user’s missing-item issue by verifying the order and issuing a clear $8 credit code, with appropriate explanatory details and courteous tone. However, after the user expressed satisfaction and closure, the assistant added an unrelated remark about lacking a knowledge base, which slightly hurt coherence and usefulness at the end of the interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -35,13 +35,13 @@ summary: The assistant handled the main task well: it verified the order, explai
 [4] user: The order number is CP123.
 [5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
 [6] agent: Would you like me to issue the approved future-meal remedy?
-[7] user: Yes, please go ahead and issue the $8 item credit.
+[7] user: Yes please, that would be great.
 [8] agent: Would you like the code shown here or sent to the email used for the order?
-[9] user: Shown here in the chat is fine, thanks.
+[9] user: Just show it here in the chat, please.
 [10] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[11] user: Got it, thank you for the help—that’s all I needed.
-[12] agent: I’m sorry, but I don’t have access to any additional information or a knowledge base right now, so I’m not able to provide an answer.
-[13] agent: Is there anything else I can help you with today?
+[11] user: Perfect, thanks for helping me with that—that’s all I needed.
+[12] agent: I’m actually not able to provide that information right now—I don’t have access to a knowledge base at this time.
+[13] agent: Got it—before we wrap up, is there anything else I can assist you with today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d0b0d9d3-7bff-45d6-9197-aa4452e0d272
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-4afbe397-e431-4205-8c79-86755ba916b1

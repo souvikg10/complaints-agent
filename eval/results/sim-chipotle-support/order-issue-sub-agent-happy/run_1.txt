@@ -1,24 +1,24 @@
 scenario: Order issue sub-agent is reached through the parent happy path
 run: 1
-timestamp: 2026-07-15T13:04:12Z
-conversation_id: sim-649af330-6cba-45b7-ae41-cf8fb150971c
+timestamp: 2026-07-15T14:37:48Z
+conversation_id: sim-92fe5a3c-0c97-4c06-99a0-ad6cccfb9bbc
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
-  rationale: At T1 the system sets `issue_details = Hi, my order was missing the chips that were supposed to come with it` and `issue_category = missing_item`, and these slots remain present through later turns while the bot requests and processes the order number, showing the issue information is preserved during context collection.
+  rationale: At T1 the system sets issue_details = "my order was missing the chips that were supposed to come with it" and issue_category = missing_item and there is no later overwrite or loss of these slots while order_id is collected at T2, indicating the issue information is preserved during context gathering.
 
 [PASS] Once the report has enough context, the order-issue sub-agent runs the mock policy check and offers the eligible resolution path.
-  rationale: At T2, after receiving the order number, `flow_started: order_issue_sub_agent` and `action: action_mock_order_issue_policy` run, setting `order_verified = true`, `issue_eligible = true`, and `suggested_remedy = item_credit`, followed by `flow_completed: order_issue_sub_agent` and the bot message: “The available remedy is an $8 item credit toward a future meal for the order mix-up,” which offers the eligible resolution path.
+  rationale: After receiving the order number at T2, flow_started: order_issue_sub_agent runs action_mock_order_issue_policy, sets order_verified = true, issue_eligible = true, suggested_remedy = item_credit, then flow_completed: order_issue_sub_agent and the bot tells the user "The available remedy is an $8 item credit toward a future meal," offering the eligible resolution path.
 
 --- Quality Metrics ---
 bot_quality: 4.0/5
-  helpfulness: 4/5 — The assistant efficiently gathered the order number, provided a clear remedy, and delivered the credit code with terms, though the final irrelevant deflection slightly detracted from the interaction.
-  repair_quality: 5/5 — There were no user pushbacks or corrections, so no repair opportunities were missed.
-  coherence: 3/5 — The assistant tracked the order and remedy correctly but then produced an incoherent apology about lacking a knowledge base after the user had already said their issue was resolved.
-  tone: 4/5 — The tone was polite, empathetic, and conversational throughout, with only a slightly odd, out-of-place apology message at the end.
-  task_completion: PASS — The assistant successfully looked up the order, issued the $8 credit, and provided the code as requested.
-summary: The assistant handled the core task well: it verified the order, offered an appropriate remedy, and provided the requested credit code with clear usage instructions. However, after the user explicitly said they were done, the assistant oddly apologized about not having a knowledge base, which broke coherence and slightly undermined the otherwise smooth, helpful interaction. Overall, the conversation was effective but marred by that one out-of-context closing turn.
+  helpfulness: 4/5 — The assistant fully resolved the missing-item issue with a specific remedy and clear instructions, though the final 'I don’t have that information' message was unnecessary and slightly confusing given no new question was asked.
+  repair_quality: 5/5 — The user never signaled confusion or disagreement, so there were no repair opportunities mishandled.
+  coherence: 3/5 — The assistant tracked the order, credit flow, and user preferences correctly but then incoherently claimed lack of information right after the user said the issue was resolved, contradicting the established context of having just provided the needed info.
+  tone: 4/5 — The tone is polite, empathetic, and clear throughout, but the abrupt 'I don’t have that information' line feels slightly out of place and formulaic in context.
+  task_completion: PASS — The bot successfully verified the order, issued the requested $8 credit with a concrete code and terms, and the user confirmed that was all they needed.
+summary: The assistant effectively handled the core task: it verified the order, issued an $8 credit, and clearly presented the code and usage terms, which matched what the user wanted. Its tone was generally friendly and service-oriented, but the final message about lacking information was contextually incoherent and slightly confusing given the issue was already resolved, reflecting a minor coherence and helpfulness blemish in an otherwise solid interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -32,14 +32,16 @@ summary: The assistant handled the core task well: it verified the order, offere
 [1] user: Hi, my order was missing the chips that were supposed to come with it.
 [2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Sure, the order number is CP123.
+[4] user: The order number is CP123.
 [5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
-[6] agent: Would you like the code shown here or sent to the email used for the order?
-[7] user: Thanks, I’ll take the credit code shown here in the chat.
-[8] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[9] user: Got it, thank you—that’s all I needed.
-[10] agent: I’m sorry, but I don’t have access to the information needed to answer that right now, as I don’t have a connected knowledge base available.
-[11] agent: You’re welcome! Before we wrap up, is there anything else I can help you with today?
+[6] agent: Would you like me to issue the approved future-meal remedy?
+[7] user: Yes, please go ahead and issue the $8 credit.
+[8] agent: Would you like the code shown here or sent to the email used for the order?
+[9] user: Just shown here in the chat is fine, thanks.
+[10] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[11] user: Got it, thanks for your help—that’s all I needed.
+[12] agent: I’m sorry, but I don’t have that information available right now—I don’t currently have access to a knowledge base.
+[13] agent: You’re very welcome—before we wrap up, is there anything else I can assist you with today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-649af330-6cba-45b7-ae41-cf8fb150971c
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-92fe5a3c-0c97-4c06-99a0-ad6cccfb9bbc

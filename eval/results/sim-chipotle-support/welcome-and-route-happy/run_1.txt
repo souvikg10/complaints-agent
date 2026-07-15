@@ -1,0 +1,45 @@
+scenario: Welcome and route Chipotle support from a greeting
+run: 1
+timestamp: 2026-07-15T14:35:42Z
+conversation_id: sim-32777709-ca3f-4264-b636-b37ce4f5321d
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent introduces its Chipotle order-support scope clearly after the greeting.
+  rationale: In the first bot turn the agent greets and immediately states, "I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong" and then clarifies, "I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order," which clearly introduces its Chipotle order-support scope after the greeting.
+
+--- Quality Metrics ---
+bot_quality: 3.25/5
+  helpfulness: 3/5 — The assistant initially gave a clear, accurate description of its capabilities but later gave an unhelpful 'no knowledge base' response when directly asked to restate that scope, instead of reiterating or confirming its earlier explanation.
+  repair_quality: 5/5 — There were no user pushbacks or corrections about misunderstandings; the user accepted the scope explanations, so there were no repair opportunities to mishandle.
+  coherence: 2/5 — After repeatedly stating its scope, the assistant contradicted itself by claiming it lacked the information needed to answer whether it could only help with order time or existing order problems, showing poor tracking of prior context about its own capabilities.
+  tone: 3/5 — The tone is polite and functional but somewhat repetitive and boilerplate (e.g., reintroducing itself and using stock phrases), which feels a bit robotic though still readable.
+  task_completion: PASS — The user only wanted to understand the assistant's capability scope, and the assistant clearly conveyed that its abilities are limited to order timing and resolving order problems, which the user explicitly confirmed as sufficient.
+summary: The assistant successfully conveyed that it is limited to order timing and issue resolution, which is what the user wanted to clarify. However, it became inconsistent about that scope and gave an unnecessary 'no knowledge base' deflection rather than reiterating its own clearly stated limits. The tone is polite but repetitive, and coherence around its capability description is the main weakness.
+
+--- Assertion Results ---
+[PASS] flow_started(welcome_and_route)
+[PASS] action_executed(utter_chipotle_welcome)
+[PASS] action_executed(utter_chipotle_scope)
+[PASS] flow_completed(welcome_and_route)
+
+--- Raw Transcript ---
+[1] user: Hi there! What kinds of things can you help me with today?
+[2] agent: Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong.
+[3] agent: I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?
+[4] agent: Is there anything else I can assist you with today?
+[5] user: Got it, thanks. Besides order issues, are there other things you can help me with, like menu questions or general info?
+[6] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[7] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[8] user: Got it, thanks for explaining. So you can’t help with menu or nutrition questions at all, right?
+[9] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[10] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[11] user: Okay, understood. Just so I’m clear, the only things you can help with are checking my order time or fixing a problem with an existing order, right?
+[12] agent: I’m sorry, but I don’t have the information needed to answer that right now—I don’t have access to a knowledge base at this time.
+[13] agent: Is there anything else I can help you sort out today?
+[14] user: No worries, that answers what I needed to know about what you can do. Thanks for your help!
+[15] agent: You’re welcome—if you ever need help with an order in the future, I’ll be here.
+[16] agent: How was your experience with me today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-32777709-ca3f-4264-b636-b37ce4f5321d

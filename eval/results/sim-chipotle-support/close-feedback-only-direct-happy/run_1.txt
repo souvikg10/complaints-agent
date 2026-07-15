@@ -1,0 +1,47 @@
+scenario: Feedback-only close has one active farewell prompt and ends without generic follow-up
+run: 1
+timestamp: 2026-07-15T14:36:45Z
+conversation_id: sim-72a15fe4-a5e4-49de-be37-4163c73870bc
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The feedback-only acknowledgement keeps the closing task active when the customer adds more feedback without a farewell, rather than starting a new support flow or generic fallback.
+  rationale: Across T1–T3 the user continues sharing feedback without a farewell and each time the same acknowledge_order_feedback flow runs (with feedback_only_active = true and no other support flow started), and the bot responds with the same feedback-only acknowledgement rather than launching a new support flow or fallback.
+
+[FAIL] The final explicit goodbye clears feedback-only state, sends one warm terminal close, and does not ask for more help.
+  rationale: At T4 the goodbye triggers close_feedback_only and clears feedback_only_active, but the bot sends two messages, with the second saying "Before we wrap up, is there anything else I can help you with today?", which both adds an extra close and explicitly asks for more help, violating the criterion.
+
+--- Quality Metrics ---
+bot_quality: 3.25/5
+  helpfulness: 3/5 — The assistant did meet the core need of listening and not initiating actions, but it added little substantive engagement with the specific details of the feedback and repeated the same generic message.
+  repair_quality: 5/5 — The user never indicated misunderstanding or pushed back on the assistant’s behavior, so there were no repair opportunities to mishandle.
+  coherence: 2/5 — The assistant repeatedly reused the same canned response without incorporating new details (e.g., guac being bland) and ended by asking if there was anything else after the user had explicitly said goodbye.
+  tone: 3/5 — The wording is polite and empathetic but notably repetitive and canned, which feels less natural and conversational than it could be.
+  task_completion: PASS — The user only wanted to share feedback and be heard without triggering any actions, and the assistant consistently acknowledged the feedback and explicitly declined to start any lookup or compensation.
+summary: The assistant successfully honored the user’s stated intent to simply share feedback without triggering any actions and maintained a polite, empathetic tone. However, it responded with nearly identical generic acknowledgments, failed to reflect the evolving specifics of the complaint, and awkwardly asked if there was anything else after the user had already closed the conversation.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] flow_started(close_feedback_only)
+[PASS] action_executed(utter_venting_acknowledged)
+[PASS] action_executed(utter_feedback_closed)
+[PASS] slot_was_set(feedback_only_active=False)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] bot_did_not_utter — Bot uttered a forbidden utterance 'utter_ask_continue_conversation'.
+[PASS] bot_did_not_utter
+[PASS] flow_completed(close_feedback_only)
+
+--- Raw Transcript ---
+[1] user: Hi, I just wanted to share some feedback about a disappointing meal I had at Chipotle recently, and I’m not looking for a refund, coupon, replacement, status check, report, or any other action.
+[2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[3] user: My burrito bowl came out really watery, the rice was undercooked, and the chicken was barely warm, which was surprising because it was right at the lunch rush.
+[4] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[5] user: I appreciate you just listening—the guac also tasted bland this time, which isn’t what I’m used to from your locations.
+[6] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[7] user: That’s all I needed, thanks. Goodbye.
+[8] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
+[9] agent: Before we wrap up, is there anything else I can help you with today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-72a15fe4-a5e4-49de-be37-4163c73870bc

@@ -1,0 +1,49 @@
+scenario: Feedback-only close has one active farewell prompt and ends without generic follow-up
+run: 2
+timestamp: 2026-07-15T14:37:06Z
+conversation_id: sim-c33a23b9-1779-4598-9f6b-bca036e70c40
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The feedback-only acknowledgement keeps the closing task active when the customer adds more feedback without a farewell, rather than starting a new support flow or generic fallback.
+  rationale: Across the intermediate feedback turns (e.g., user messages about dry chicken, small portions, off guac, stale chips), the assistant repeatedly responds with the same feedback-only acknowledgement and the ledger shows `feedback_only_active = true` with no new support flows started, indicating the closing/feedback context remained active rather than switching to a new flow or fallback.
+
+[FAIL] The final explicit goodbye clears feedback-only state, sends one warm terminal close, and does not ask for more help.
+  rationale: Although the final user message includes "Goodbye" and the ledger shows `close_feedback_only` with `feedback_only_active` cleared and an `utter_feedback_closed` terminal message ("Got it — thanks for letting us know. Hope your next Chipotle order hits the spot."), the bot then sends a second message: "Before you go, is there anything else I can help with today?", which both adds a second close and explicitly asks for more help, violating the criterion.
+
+--- Quality Metrics ---
+bot_quality: 3.25/5
+  helpfulness: 2/5 — While the assistant did honor the user's desire not to trigger actions, it gave only generic acknowledgments and missed the explicit request to remind future customers to speak up in-store, offering very little substantive or tailored content.
+  repair_quality: 5/5 — There were no user corrections about misunderstanding or pushback on the assistant’s responses, so no repair opportunities were missed.
+  coherence: 3/5 — The assistant correctly remembered not to initiate compensation, but it repeatedly reused the same canned response and failed to adapt to the user’s evolving, more specific request about advising future customers.
+  tone: 3/5 — The tone is polite and empathetic but quite repetitive and formulaic, making it feel somewhat robotic rather than naturally conversational.
+  task_completion: PASS — The user only wanted to share feedback without triggering any actions, and the assistant consistently acknowledged the feedback and confirmed it would not initiate refunds or lookups.
+summary: The assistant reliably acknowledged the user's feedback and respected the constraint of not initiating any compensation-related actions. However, its responses were repetitive, lacked substantive guidance—especially when the user asked for advice for future customers—and did not adapt to the increasingly detailed feedback, resulting in low overall conversational richness despite a polite tone.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] flow_started(close_feedback_only)
+[PASS] action_executed(utter_venting_acknowledged)
+[PASS] action_executed(utter_feedback_closed)
+[PASS] slot_was_set(feedback_only_active=False)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] bot_did_not_utter — Bot uttered a forbidden utterance 'utter_ask_continue_conversation'.
+[PASS] bot_did_not_utter
+[PASS] flow_completed(close_feedback_only)
+
+--- Raw Transcript ---
+[1] user: Hi, I just want to share some feedback about a disappointing Chipotle meal I had recently, and I’m not looking for a refund, coupon, replacement, status check, report, or any other action.
+[2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[3] user: The chicken in my bowl was really dry and barely warm, and the portion of rice and fajita veggies was a lot smaller than usual, so it just didn’t feel worth what I paid.
+[4] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[5] user: Also, the guac tasted a bit off and mushier than normal, which kind of threw off the whole bowl—can you remind future customers like me if we should say something right away in-store when that happens?
+[6] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[7] user: Thanks for acknowledging that, and yes, just to repeat, I’m not looking for a refund, coupon, replacement, status check, report, or any other follow-up action—just sharing feedback that my chips were also stale and overly salty this time, which made the whole meal more disappointing.
+[8] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[9] user: One more thing I noticed was that the salsa tasted mostly like vinegar and didn’t have the usual fresh tomato flavor I’m used to from Chipotle. That’s all I needed, thanks. Goodbye.
+[10] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
+[11] agent: Before you go, is there anything else I can help with today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-c33a23b9-1779-4598-9f6b-bca036e70c40

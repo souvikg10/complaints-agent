@@ -1,0 +1,38 @@
+scenario: Customer checks a delayed Chipotle order successfully
+run: 2
+timestamp: 2026-07-15T14:36:01Z
+conversation_id: sim-a5188948-6c9a-49d7-87b9-6dbe2144be0e
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] The agent explains the delayed order status without diverting into an unrelated support flow.
+  rationale: After correctly explaining the delay ("Order CP999 is delayed..."), the bot later responds to the user’s confirmation with an unrelated fallback about lacking a knowledge base ("I’m sorry, but I don’t have access to the information I’d need to answer that right now"), which diverts from the order-status explanation flow.
+
+--- Quality Metrics ---
+bot_quality: 3.75/5
+  helpfulness: 4/5 — The assistant gave a clear, specific status update and timing window for the delayed order, though the later generic disclaimer about lacking access was unnecessary and slightly confusing.
+  repair_quality: 5/5 — There were no user disfluencies or corrections; the user accepted the answer without pushback, so there was no repair opportunity to mishandle.
+  coherence: 2/5 — After correctly reporting the order status, the assistant contradicted itself by later claiming it lacked access to needed information, creating internal inconsistency about its capabilities in this context.
+  tone: 4/5 — The tone is polite and conversational overall, but the sudden generic capability disclaimer feels slightly out of place after having already answered successfully.
+  task_completion: PASS — The assistant successfully checked and communicated the order status and delay timing, which is what the user requested.
+summary: The assistant effectively handled the core task of checking the order and providing a clear delay estimate, and maintained a polite, readable tone. However, it later undercut its earlier behavior by claiming it lacked access to necessary information, which harms coherence and could confuse the user even though the main request was already satisfied.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] flow_started(order_status_sub_agent)
+[PASS] action_executed(action_mock_order_status)
+[PASS] slot_was_set(order_status='delayed')
+[PASS] flow_completed(check_chipotle_order_status)
+
+--- Raw Transcript ---
+[1] user: Hi, I placed a pickup order a while ago and it’s still not ready. Can you check the status for me?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: The order number is CP999.
+[5] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
+[6] user: Got it, thanks for the update—that’s all I needed.
+[7] agent: I’m sorry, but I don’t have access to the information I’d need to answer that right now. At this time, I don’t have a connected knowledge base to check further details.
+[8] agent: Glad I could help with that update—do you need any other assistance with your order today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-a5188948-6c9a-49d7-87b9-6dbe2144be0e

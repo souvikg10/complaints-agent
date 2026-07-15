@@ -74,6 +74,15 @@ flows:
       - action: action_mock_order_status
         next: END
 
+  acknowledge_completed_order_status:
+    name: "Acknowledge a completed order-status answer"
+    always_include_in_prompt: true
+    run_pattern_completed: false
+    description: "Use when the customer says thanks, okay, got it, bye, or another brief closing acknowledgement immediately after the assistant has already answered a Chipotle order timing or delayed-status lookup. Give one short, warm acknowledgement and end. Do not start knowledge search, say that no knowledge base is connected, ask a new question, or reopen order lookup. Do not use if the customer asks a new order question or reports an order problem."
+    steps:
+      - action: utter_status_closed
+        next: END
+
   report_chipotle_order_issue:
     name: "Report wrong order or food quality issue"
     run_pattern_completed: false
@@ -232,6 +241,7 @@ flows:
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
+    run_pattern_completed: false
     description: "Use only when feedback_only_active is true and the customer clearly says they are done after a feedback-only or light-help acknowledgement, such as 'no, that's it', 'that's all', 'thanks', 'bye', or 'I'm good'. Send exactly one warm terminal goodbye, clear the feedback-only state, and end with no question, suggested action, or follow-up. Do not use if the customer adds issue details or asks for any action."
     if: slots.feedback_only_active is true
     steps:

@@ -1,21 +1,21 @@
 scenario: User asks an out-of-scope nutrition question
 run: 2
-timestamp: 2026-07-15T13:04:29Z
-conversation_id: sim-13593bbf-3fd0-447b-9f87-b32d64b901d1
+timestamp: 2026-07-15T14:36:58Z
+conversation_id: sim-6cb89b9d-e7c1-4853-9c23-44433788d4f3
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
-  rationale: In the second bot message, it explicitly states it is focused on “Chipotle order timing and problems with an order” and that it “can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions,” clearly defining its limited scope in response to the nutrition request.
+  rationale: In response to the unrelated nutrition question, the bot explicitly says it is focused only on Chipotle order timing and problems and that it cannot help with 'nutrition, allergen, or ingredient questions,' clearly stating the limits of its scope.
 
 --- Quality Metrics ---
-bot_quality: 3.75/5
-  helpfulness: 1/5 — It only deflected and stated scope limitations without offering any substantive nutritional help or alternatives relevant to the question.
-  repair_quality: 5/5 — There were no user pushbacks or corrections to repair, as the user accepted the limitation and withdrew the request.
-  coherence: 5/5 — The assistant consistently stuck to its stated scope and did not contradict itself or lose track of the brief context.
-  tone: 4/5 — The tone was polite, clear, and professional, though somewhat formulaic with repeated explanations of its limitations.
-  task_completion: FAIL — The assistant never provided the requested calorie information and the user explicitly decided to look elsewhere instead.
-summary: The assistant clearly communicated its scope limitations and maintained consistent, polite tone, but provided no substantive help with the user's nutrition query. As a result, the user’s goal was not met and they chose to seek the information elsewhere.
+bot_quality: 3.5/5
+  helpfulness: 1/5 — The assistant only stated its limitations and performed no substantive task (neither nutrition info nor delivery timing was actually provided).
+  repair_quality: 4/5 — When the user switched from nutrition to delivery, and later withdrew, the assistant adjusted appropriately each time, though it didn’t add any extra help or alternatives on the final withdrawal.
+  coherence: 5/5 — The assistant consistently tracked that it is a Chipotle order helper, stayed within that scope, and correctly shifted from nutrition refusal to delivery support and then to stopping when the user said never mind.
+  tone: 4/5 — The tone is clear, polite, and concise, though slightly formulaic and repetitive in its scripted disclaimers.
+  task_completion: FAIL — The user’s original goal was nutrition information, which the assistant explicitly refused and never provided, and the secondary delivery-timing goal was also not completed before the user withdrew.
+summary: The assistant is coherent and maintains a polite, clear tone while staying within its declared scope. However, it provides no substantive help on the user’s actual needs—first declining nutrition information and then not completing the delivery-timing task—so overall task completion and helpfulness are poor despite decent handling of user intent shifts.
 
 --- Assertion Results ---
 [PASS] flow_started(decline_or_light_help)
@@ -23,12 +23,14 @@ summary: The assistant clearly communicated its scope limitations and maintained
 [PASS] flow_completed(decline_or_light_help)
 
 --- Raw Transcript ---
-[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, fajita veggies, mild salsa, cheese, and sour cream?
+[1] user: Hi, could you tell me how many calories are in a chicken burrito bowl with white rice, black beans, mild salsa, cheese, and lettuce?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
 [3] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
-[4] user: Got it, thanks. I’ll check nutrition info somewhere else then—nothing else I need.
-[5] agent: I’m sorry, but I don’t have access to the information needed to answer that right now, as I don’t have a nutrition or general knowledge database available.
-[6] agent: Is there anything else I can assist you with today?
+[4] user: Okay, then I have a delivery question—can you tell me what time my order will arrive?
+[5] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[7] user: Actually, never mind on the delivery. I really just wanted nutrition info, so I’ll check that somewhere else. Thanks anyway.
+[8] agent: Got it—stopping order status and timing here.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-13593bbf-3fd0-447b-9f87-b32d64b901d1
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-6cb89b9d-e7c1-4853-9c23-44433788d4f3

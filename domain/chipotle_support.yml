@@ -43,6 +43,7 @@ responses:
       buttons: [{title: "Pickup", payload: "/SetSlots(order_mode=pickup)"}, {title: "Delivery", payload: "/SetSlots(order_mode=delivery)"}]
   utter_order_ready: [{text: "Good news—order {order_id} is {order_status}. Your timing is {order_eta}."}]
   utter_order_delayed: [{text: "Order {order_id} is delayed. {order_delay_note} The updated timing is {order_eta}; please wait for that window before heading over."}]
+  utter_status_closed: [{text: "You’re welcome—glad I could confirm the timing."}]
   utter_order_not_found: [{text: "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more."}]
   utter_order_not_found_fallback: [{text: "I still can’t match it in this mock lookup, so I can’t confirm its timing. I don’t want to suggest the order doesn’t exist; please check the confirmation details. I can also help if there was a problem with what you received."}]
   utter_issue_empathy: [{text: "Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier."}]

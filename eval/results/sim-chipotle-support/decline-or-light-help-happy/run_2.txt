@@ -1,0 +1,40 @@
+scenario: Customer asks an unrelated Chipotle store-hours question
+run: 2
+timestamp: 2026-07-15T14:36:59Z
+conversation_id: sim-88db3e3e-1b37-42fc-a322-f5f2fe3d32a9
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The assistant recognizes the store-hours question as outside this order-support helper's scope.
+  rationale: In response to the hours question, the assistant says it is focused on order timing/problems and "can’t help with hours" which explicitly treats store hours as out of scope.
+
+[PASS] The assistant clearly redirects to existing order timing or order-problem help without inventing store-hours information.
+  rationale: The assistant states it can help with "pickup or delivery timing" and "wrong, missing, or poor-quality order" and explicitly says it doesn’t have access to information about hours, without providing any fabricated closing time.
+
+--- Quality Metrics ---
+bot_quality: 3.75/5
+  helpfulness: 2/5 — The assistant only stated its limitations and that it lacked the information, without offering any workaround (e.g., suggesting the website, app, or search), and it repeated this deflection unnecessarily.
+  repair_quality: 5/5 — There were no user corrections, pushback, or disfluencies for the assistant to repair from after the initial scope statement was accepted.
+  coherence: 4/5 — The assistant remained consistent about its scope and lack of access but somewhat redundantly restated its limitation instead of recognizing the user had already accepted it and ended the interaction.
+  tone: 4/5 — The tone was polite and clear, though slightly formulaic and repetitive in restating its lack of information.
+  task_completion: FAIL — The user wanted the closing time of their local Chipotle, and the assistant neither provided it nor clearly indicated the limitation in a single, coherent response before repeating itself.
+summary: The assistant correctly communicated that it could not provide store hours and maintained a polite, consistent tone, but it did not help the user find an alternative way to get the information. It also repeated its limitations after the user had already indicated they were done, reducing overall usefulness and conversational polish.
+
+--- Assertion Results ---
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_chipotle_light_help_greeting)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: What time does the Chipotle near me close tonight?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[4] user: Got it, thanks anyway—that’s all I needed.
+[5] agent: I’m afraid I don’t have that information. I don’t currently have access to a knowledge base that would let me look it up.
+[6] agent: Is there anything else I can help you with regarding your Chipotle order?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-88db3e3e-1b37-42fc-a322-f5f2fe3d32a9

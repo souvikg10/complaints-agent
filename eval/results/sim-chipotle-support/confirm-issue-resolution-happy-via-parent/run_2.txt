@@ -1,24 +1,24 @@
 scenario: Confirm issue resolution child flow is reached through a verified accepted order issue
 run: 2
-timestamp: 2026-07-15T13:04:38Z
-conversation_id: sim-8ad79e3f-78ac-4920-a079-933a69e51ed6
+timestamp: 2026-07-15T14:36:11Z
+conversation_id: sim-6550347a-b4c2-4727-90bb-2e497183a2a5
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
-  rationale: In T2 the agent runs `utter_offer_credit`, then `validate_resolution_acceptance` sets `resolution_acceptance = yes` before `flow_started: confirm_issue_resolution`, showing remedy acceptance was collected before the confirmation-and-issuance flow began.
+  rationale: At T3 the user says "Yes, please go ahead and issue the $8 future-meal credit." which sets resolution_acceptance = yes, and only then does the ledger show flow_started: confirm_issue_resolution, so acceptance is collected before starting the confirmation-and-issuance flow.
 
 [PASS] The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
-  rationale: After the issue is verified and eligible in T2 and acceptance is recorded (`resolution_acceptance = yes`), the bot asks, “Would you like the code shown here or sent to the email used for the order?” (requesting delivery channel), then in T3 `coupon_channel = email` is set and `action_mock_coupon_issuance` runs, issuing the remedy.
+  rationale: After acceptance at T3, the bot asks "Would you like the code shown here or sent to the email used for the order?" (delivery channel) and when the user chooses email at T4, the ledger shows coupon_channel = email and action_mock_coupon_issuance with coupon_issued = true, followed by the code in the transcript.
 
 --- Quality Metrics ---
 bot_quality: 4.0/5
-  helpfulness: 4/5 — The assistant efficiently verified the order and provided a concrete remedy code with terms, but added an irrelevant inability-to-access-knowledge-base message at the end.
-  repair_quality: 5/5 — The user never indicated misunderstanding or pushback, so there were no repair opportunities mishandled.
-  coherence: 3/5 — The assistant maintained context about the order and remedy but contradicted itself at the end by claiming it lacked information right after successfully resolving the issue.
-  tone: 4/5 — The tone was polite, empathetic, and conversational overall, with only a slightly robotic, out-of-place disclaimer about lacking a knowledge base.
-  task_completion: PASS — The assistant successfully issued and presented the $8 credit code the user needed for the missing chips.
-summary: The assistant handled the core task well by quickly validating the order and issuing a clear $8 credit code with usage details. However, its final message contained an incongruous disclaimer about lacking information that conflicted with the just-completed resolution, slightly hurting coherence and naturalness. Overall, the interaction was helpful and courteous, but the closing turn should have been simplified or omitted.
+  helpfulness: 4/5 — The assistant clearly walked through the remedy flow, issued a concrete credit code with conditions, but added an irrelevant final message about lacking a knowledge base after the user had already said their issue was resolved.
+  repair_quality: 5/5 — There were no user corrections or signals of misunderstanding, so there was no need for repair and the flow proceeded smoothly.
+  coherence: 3/5 — The assistant maintained state correctly for the order and credit but ended with an incoherent response about not having access to information right after the user said they were satisfied and done.
+  tone: 4/5 — The tone was polite, empathetic, and clear throughout, though the last apologetic message felt slightly robotic and out of place given the context.
+  task_completion: PASS — The assistant successfully verified the order, issued the $8 credit with a specific code and terms, and the user confirmed that this resolved their need.
+summary: The assistant handled the core task well: it validated the order, offered the appropriate remedy, issued a clear credit code, and the user explicitly indicated they were satisfied. The main weakness was the final, irrelevant response about lacking access to information, which broke conversational coherence and slightly undermined the otherwise smooth, helpful interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -31,18 +31,20 @@ summary: The assistant handled the core task well by quickly validating the orde
 [PASS] flow_completed(confirm_issue_resolution)
 
 --- Raw Transcript ---
-[1] user: Hi, my Chipotle order was missing the chips that I paid for.
+[1] user: Hi, my Chipotle order just arrived and it was missing the chips I paid for.
 [2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: Sure, the order number is CP123.
+[4] user: The order number is CP123.
 [5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
-[6] agent: Would you like the code shown here or sent to the email used for the order?
-[7] user: Please send it to the email on the order.
-[8] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
-[9] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[10] user: Got it, thanks for taking care of that—that’s all I needed.
-[11] agent: I’m sorry, but I don’t have that information available right now, as I don’t have access to a knowledge base at this time.
-[12] agent: Glad we could get that sorted out—before you go, is there anything else I can help you with today?
+[6] agent: Would you like me to issue the approved future-meal remedy?
+[7] user: Yes, please go ahead and issue the $8 future-meal credit.
+[8] agent: Would you like the code shown here or sent to the email used for the order?
+[9] user: Please send the code to the email I used for the order.
+[10] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[11] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[12] user: Got it, thank you for taking care of that—that’s all I needed.
+[13] agent: I’m sorry, but I don’t have access to any additional information or a knowledge base right now, so I’m not able to answer that.
+[14] agent: Is there anything else I can assist you with today?
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-8ad79e3f-78ac-4920-a079-933a69e51ed6
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-6550347a-b4c2-4727-90bb-2e497183a2a5

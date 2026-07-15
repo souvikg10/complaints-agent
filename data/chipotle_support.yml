@@ -222,52 +222,20 @@ flows:
     name: "Acknowledge feedback with no requested action"
     always_include_in_prompt: true
     run_pattern_completed: false
-    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. This flow remains active after acknowledgement and captures the literal next message; a deterministic local validator, not competing flow routing or fragile category extraction, recognizes a goodbye, new action request, or added feedback. Do not use if the customer asks for a remedy."
+    description: "Use when a Chipotle customer explicitly says they only want to vent, are just sharing feedback, or do not want anything done. They may be upset about bad, cold, wrong, or disappointing food, but explicitly reject a refund, coupon, credit, replacement, order lookup, report, or follow-up. Acknowledge the specific experience without collecting an order number and without starting compensation or lookup. If enough issue detail was already supplied, log it with the mock feedback logger; otherwise simply acknowledge it without claiming a formal record. Offer at most one optional next step in the acknowledgement. End naturally without asking for a farewell. If the customer later adds feedback, use this flow again; if they ask for a remedy, use the order-issue flow."
     persisted_slots: [feedback_only_active]
     steps:
-      - set_slots: [{feedback_only_active: true}, {feedback_followup_message: null}, {feedback_followup_choice: null}]
+      - set_slots: [{feedback_only_active: true}]
       - action: action_mock_feedback_logging
-      - collect: feedback_followup_message
-        description: "The customer's complete next message after a feedback-only acknowledgement. Preserve it as literal text; it may be an explicit goodbye such as thanks or that's it, a new request for help, or additional feedback."
-        utter: utter_venting_acknowledged
-        ask_before_filling: true
-        force_slot_filling: true
-        rejections: [{if: slots.feedback_followup_message = null, utter: utter_venting_acknowledged}]
-        next: feedback_followup_route
-      - id: feedback_followup_route
-        noop: true
-        next:
-          - if: slots.feedback_followup_choice = "close"
-            then: feedback_terminal_close
-          - if: slots.feedback_followup_choice = "needs_action"
-            then: feedback_issue_link
-          - else: feedback_continue
-      - id: feedback_terminal_close
-        call: close_feedback_only
+      - action: utter_venting_acknowledged
         next: END
-      - id: feedback_issue_link
-        link: report_chipotle_order_issue
-      - id: feedback_continue
-        action: action_mock_feedback_logging
-        next: clear_feedback_followup
-      - id: clear_feedback_followup
-        set_slots: [{feedback_followup_message: null}, {feedback_followup_choice: null}]
-        next: await_feedback_followup
-      - id: await_feedback_followup
-        collect: feedback_followup_message
-        description: "The customer's complete next message after additional feedback. Preserve it as literal text so deterministic validation can recognize a goodbye, a new request for help, or more feedback."
-        utter: utter_feedback_continued
-        ask_before_filling: true
-        force_slot_filling: true
-        rejections: [{if: slots.feedback_followup_message = null, utter: utter_feedback_continued}]
-        next: feedback_followup_route
 
   close_feedback_only:
     name: "Close feedback-only conversation after goodbye"
-    description: "Child-only terminal close called after the active feedback-only flow deterministically classifies an explicit close message. It cannot be selected by the router. Send one warm terminal goodbye, clear feedback-only state, and end with no question, actions, or follow-up."
-    if: False
+    description: "Use only when feedback_only_active is true and the customer clearly says they are done after a feedback-only or light-help acknowledgement, such as 'no, that's it', 'that's all', 'thanks', 'bye', or 'I'm good'. Send exactly one warm terminal goodbye, clear the feedback-only state, and end with no question, suggested action, or follow-up. Do not use if the customer adds issue details or asks for any action."
+    if: slots.feedback_only_active is true
     steps:
-      - set_slots: [{feedback_only_active: false}, {feedback_followup_message: null}, {feedback_followup_choice: null}]
+      - set_slots: [{feedback_only_active: false}]
       - action: utter_feedback_closed
         next: END
 

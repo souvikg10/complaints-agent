@@ -1,24 +1,24 @@
 scenario: Confirm issue resolution child flow is reached through a verified accepted order issue
 run: 2
-timestamp: 2026-07-15T14:44:05Z
-conversation_id: sim-473b069e-5538-404c-934f-38bed4534d90
+timestamp: 2026-07-15T14:46:57Z
+conversation_id: sim-ea655248-08ca-46a1-9e31-7abcf4f4da4f
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
-  rationale: At T2 the bot offers the remedy and asks "Would you like me to issue the approved future-meal remedy?", the user accepts at T3 setting resolution_acceptance = yes, and only then at T3 does the ledger show flow_started: confirm_issue_resolution, so acceptance is collected before the confirmation-and-issuance flow starts.
+  rationale: At T3 the user says "Yes please, that would be great." and `slot_set: resolution_acceptance = yes` occurs before `flow_started: confirm_issue_resolution`, showing remedy acceptance was collected prior to starting the confirmation-and-issuance child flow.
 
 [PASS] The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
-  rationale: After eligibility and acceptance (order_verified = true, issue_eligible = true at T2 and resolution_acceptance = yes at T3), the bot asks "Would you like the code shown here or sent to the email used for the order?" (delivery channel), the user chooses email at T4 (coupon_channel = email), and then action_mock_coupon_issuance runs and coupon_issued = true, meaning the remedy was issued after acceptance and delivery channel selection.
+  rationale: After acceptance at T3, the bot asks "Would you like the code shown here or sent to the email used for the order?" (delivery channel) and once the user chooses email at T4 (`slot_set: coupon_channel = email`), it runs `action: action_mock_coupon_issuance` and reports the issued credit, so the remedy is issued after acceptance and channel selection.
 
 --- Quality Metrics ---
 bot_quality: 4.75/5
-  helpfulness: 5/5 — It directly resolved the missing-item issue by issuing a specific credit code with clear value, validity, and usage instructions, with no missing steps.
-  repair_quality: 5/5 — There were no user disfluencies or pushbacks, so no repairs were needed or missed.
-  coherence: 5/5 — The assistant consistently tracked the order number, remedy type, and delivery method for the code without re-asking or contradicting itself.
-  tone: 4/5 — The tone was polite and empathetic throughout, though one closing line (“glad I could confirm the timing”) was slightly off from the situation and a bit formulaic.
-  task_completion: PASS — The assistant collected the order number, issued the $8 credit with a concrete code, explained its terms, and the user confirmed that this fully resolved their need.
-summary: This conversation was efficient and successful: the assistant gathered the necessary information, issued a concrete credit, and clearly communicated its terms. State tracking was solid and the tone was generally friendly and empathetic, with only a slightly mismatched final line as a minor issue.
+  helpfulness: 5/5 — It gathered the needed order info, provided a specific remedy, issued a detailed credit code, and clearly described its terms of use without any gaps or errors.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order number, remedy decision, and email preference without re-asking or contradicting itself.
+  tone: 4/5 — The tone is polite, empathetic, and clear, though one closing line (“glad I could confirm the timing”) is slightly off from the actual action taken.
+  task_completion: PASS — The assistant successfully verified the order, issued the $8 credit with a concrete code, and explained how and when it can be used, which is exactly what the user requested.
+summary: The assistant efficiently resolved the user’s missing-item issue by verifying the order and issuing a clear, detailed credit code. It maintained context well and used a friendly, service-oriented tone throughout, with only a minor phrasing mismatch in the final line.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -31,19 +31,19 @@ summary: This conversation was efficient and successful: the assistant gathered 
 [PASS] flow_completed(confirm_issue_resolution)
 
 --- Raw Transcript ---
-[1] user: Hi, my Chipotle order arrived without the chips I paid for.
+[1] user: Hi, my Chipotle order was missing the chips I paid for.
 [2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
 [4] user: The order number is CP123.
 [5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
 [6] agent: Would you like me to issue the approved future-meal remedy?
-[7] user: Yes, please go ahead and issue the $8 credit.
+[7] user: Yes please, that would be great.
 [8] agent: Would you like the code shown here or sent to the email used for the order?
-[9] user: Please send it to the email on the order.
+[9] user: Please send it to the email I used for the order.
 [10] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
 [11] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[12] user: Got it, thanks for taking care of that—that’s all I needed.
+[12] user: Perfect, thanks for your help—that’s all I needed.
 [13] agent: You’re welcome—glad I could confirm the timing.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-473b069e-5538-404c-934f-38bed4534d90
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-ea655248-08ca-46a1-9e31-7abcf4f4da4f

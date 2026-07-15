@@ -1,0 +1,25 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[PASS] Welcome and route Chipotle support from a greeting  2/2  51.2s  eval/results/sim-chipotle-regression/welcome-and-route-happy
+[PASS] Bare coupon demand is refused without starting order-issue intake  2/2  44.1s  eval/results/sim-chipotle-regression/refuse-unverified-compensation-demand-happy
+[PASS] Customer checks a delayed Chipotle order successfully  2/2  27.9s  eval/results/sim-chipotle-regression/order-status-happy-existing-delayed
+[PASS] Order status sub-agent is reached through the parent happy path  2/2  34.9s  eval/results/sim-chipotle-regression/order-status-sub-agent-happy
+[PASS] Order status sub-agent handles not-found retry before a successful lookup  2/2  36.8s  eval/results/sim-chipotle-regression/order-status-sub-agent-not-found-retry
+[PASS] Customer reports a missing-item issue and accepts the remedy  2/2  45.3s  eval/results/sim-chipotle-regression/order-issue-happy-accepted-credit
+[PASS] Order issue sub-agent is reached through the parent happy path  2/2  38.7s  eval/results/sim-chipotle-regression/order-issue-sub-agent-happy
+[PASS] Confirm issue resolution child flow is reached through a verified accepted order issue  2/2  53.4s  eval/results/sim-chipotle-regression/confirm-issue-resolution-happy-via-parent
+[PASS] Customer hits repeat-compensation policy path for an order issue  2/2  48.1s  eval/results/sim-chipotle-regression/order-issue-repeat-compensation-edge
+[PASS] Customer directly triggers repeat-compensation refusal follow-up after prior denial  2/2  54.2s  eval/results/sim-chipotle-regression/repeat-compensation-closure-direct-happy
+[PASS] Customer vents, declines action, and closes the complete feedback-only call chain  2/2  38.6s  eval/results/sim-chipotle-regression/acknowledge-order-feedback-happy
+[PASS] Close feedback-only child flow is reached through a feedback vent and goodbye  2/2  21.2s  eval/results/sim-chipotle-regression/close-feedback-only-happy-via-parent
+[FAIL] Customer vents about an order and explicitly does not want action  0/2  35.7s  eval/results/sim-chipotle-regression/decline-or-light-help-happy
+[PASS] User changes their mind in the middle of an order-status conversation  2/2  53.2s  eval/results/sim-chipotle-regression/adversarial-midflow-change-mind
+[PASS] User asks an out-of-scope nutrition question  2/2  34.0s  eval/results/sim-chipotle-regression/adversarial-out-of-scope-nutrition
+[PASS] Unauthorized attempt to force coupon issuance is blocked before confirmation  2/2  45.5s  eval/results/sim-chipotle-regression/issue-resolution-confirmation-redteam-bypass
+----------------------------------------------------------------------
+Total: 30/32 passed
+Time:  662.8s
+
+Scenarios requiring attention:
+  - Customer vents about an order and explicitly does not want action  0/2 passed  (0%)

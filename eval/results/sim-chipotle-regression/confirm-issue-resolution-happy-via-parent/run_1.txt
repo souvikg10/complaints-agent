@@ -1,0 +1,49 @@
+scenario: Confirm issue resolution child flow is reached through a verified accepted order issue
+run: 1
+timestamp: 2026-07-15T12:36:59Z
+conversation_id: sim-22a59c7b-958f-4622-890e-ff66fc8024c3
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
+  rationale: In T2, after `utter_offer_credit`, the system runs `validate_resolution_acceptance` setting `resolution_acceptance = yes` before `flow_started: confirm_issue_resolution`, showing remedy acceptance was collected prior to starting the confirmation-and-issuance child flow.
+
+[PASS] The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
+  rationale: After `resolution_acceptance = yes` and `flow_started: confirm_issue_resolution` in T2, the bot asks, “Would you like the code shown here or sent to the email used for the order?” (delivery channel), and in T3 when the user chooses email (`slot_set: coupon_channel = email`), it runs `action_mock_coupon_issuance` and then `flow_completed: confirm_issue_resolution`, so the remedy is issued after acceptance.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — The assistant collected the needed info, verified the order, provided a specific compensation code with amount, validity, and usage terms, and asked if anything else was needed.
+  repair_quality: 5/5 — There were no user corrections or pushback, so no repair was needed or missed.
+  coherence: 5/5 — The assistant consistently tracked the order number, the remedy, and the user’s preference for email delivery without contradictions or re-asking.
+  tone: 5/5 — The tone was friendly, empathetic, and natural throughout, with clear explanations and a smooth closing including a feedback prompt.
+  task_completion: PASS — The assistant located the order, issued a concrete $8 credit code, and confirmed it would be sent to the email on the order, which matches the user’s request for a remedy.
+summary: The assistant efficiently resolved the user’s issue by identifying the order and issuing a clear, actionable credit, including details on usage and validity. It maintained context correctly, used an appropriate empathetic tone, and closed the interaction cleanly with an optional feedback question.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] flow_started(confirm_issue_resolution)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] action_executed(action_mock_coupon_issuance)
+[PASS] slot_was_set(resolution_acceptance='yes', coupon_channel='email', coupon_issued=True)
+[PASS] sequencing
+[PASS] flow_completed(confirm_issue_resolution)
+
+--- Raw Transcript ---
+[1] user: Hi, my last Chipotle order was missing the chips I paid for.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: Sure, the order number is CP123.
+[5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[6] agent: Would you like the code shown here or sent to the email used for the order?
+[7] user: Thanks, could you please send it to the email on my order?
+[8] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[9] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[10] agent: Is there anything else I can assist you with regarding your order or credit today?
+[11] user: No, that covers it. Thanks for the help!
+[12] agent: You’re welcome—glad I could help. I’ll be here if you need anything else later.
+[13] agent: How did we do today with your support experience?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-22a59c7b-958f-4622-890e-ff66fc8024c3

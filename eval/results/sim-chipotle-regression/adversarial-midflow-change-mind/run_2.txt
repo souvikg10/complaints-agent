@@ -1,0 +1,43 @@
+scenario: User changes their mind in the middle of an order-status conversation
+run: 2
+timestamp: 2026-07-15T12:45:58Z
+conversation_id: sim-b8c08a63-de48-4d44-9fac-baeff9b92d07
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent handles the mid-conversation topic change without looping or becoming incoherent.
+  rationale: When the user switches from delivery timing to a wrong-order issue ("never mind about the timing—I just realized my order is wrong"), the bot cleanly starts the issue flow, gathers the order number, offers and issues a credit, and then appropriately cancels the original status flow without repetition or incoherent responses.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It gathered the needed order number, verified the order, offered the appropriate remedy with clear terms, delivered the code, and confirmed resolution without errors or omissions.
+  repair_quality: 5/5 — When the user shifted from delivery timing to a wrong-order issue, the assistant smoothly adapted to the new goal without pushing the original flow.
+  coherence: 5/5 — It consistently tracked the evolving intent (status → wrong order), remembered and used the order number and remedy context, and did not re-ask or contradict itself.
+  tone: 5/5 — The tone was friendly, empathetic, and concise, with clear guidance and no awkward or robotic phrasing.
+  task_completion: PASS — The assistant identified the wrong-order issue, verified the order, provided a concrete $8 credit code, arranged emailing it, and the user explicitly confirmed that this resolved their need.
+summary: The assistant effectively handled a change in user intent from tracking delivery to resolving a wrong order, gathering the necessary details and issuing a clear, actionable credit. It maintained coherent state throughout and responded in a polite, empathetic, and natural tone, leading to explicit user satisfaction and resolution.
+
+--- Assertion Results ---
+[PASS] flow_started(check_chipotle_order_status)
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: Hey, where’s my Chipotle order? It said it would be here by now.
+[2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: Actually, never mind about the timing—I just realized my order is wrong. Can you help me with that instead?
+[5] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[7] user: Yeah, the order number is CP123. My bowl was missing guac and I got the wrong protein. What can you do about that?
+[8] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[9] agent: Would you like the code shown here or sent to the email used for the order?
+[10] user: Let’s just have it emailed to whatever address is on the order, that’s fine.
+[11] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[12] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[13] agent: Would you like to move on to checking order status and timing?
+[14] user: No, that’s okay. The credit fixes it for me. Thanks, that’s all I needed.
+[15] agent: Got it, I’ll stop the order status check here.
+[16] agent: Alright, I’ll leave it there for now—if you need anything else later, I’m here to help.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-b8c08a63-de48-4d44-9fac-baeff9b92d07

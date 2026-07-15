@@ -1,0 +1,40 @@
+scenario: Customer vents about an order and explicitly does not want action
+run: 2
+timestamp: 2026-07-15T12:42:02Z
+conversation_id: sim-d45a1378-6597-4bfa-850c-82597ed290a8
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[PASS] The assistant recognizes this as feedback-only rather than a request for order support.
+  rationale: The assistant explicitly treats the interaction as feedback-only, as shown by responses like "I won’t start an order lookup or compensation" and "I’ll keep this as feedback only unless you decide you want help with the order," and the ledger shows the acknowledge_order_feedback flow with feedback_only_active = true.
+
+[PASS] The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
+  rationale: The assistant validates the user’s experience ("having a meal go sideways is disappointing") and repeatedly confirms it will keep this as feedback only, and neither the transcript nor the ledger shows any request for order details, compensation offers, or triage actions like order lookup.
+
+--- Quality Metrics ---
+bot_quality: 3.5/5
+  helpfulness: 2/5 — While the assistant respected that the user didn’t want compensation, it did not address the user’s core wish for the feedback to influence future quality or explain how it would be passed along, and instead repeated almost the same sentence.
+  repair_quality: 5/5 — There were no explicit user corrections or disfluency signals; the user did not push back or indicate misunderstanding, so there was no repair opportunity mishandled.
+  coherence: 4/5 — The assistant consistently remembered that this was feedback-only, but on the final turn it repeated an earlier line rather than building on the user’s new statement about hoping the feedback gets passed along.
+  tone: 3/5 — The tone was polite and empathetic but somewhat canned and repetitive, lacking variation or a more natural acknowledgment of the user’s last concern.
+  task_completion: FAIL — The user’s clear goal was to share feedback and have it passed along, but the assistant never explicitly acknowledged submitting or recording the feedback, only repeating it would keep it as 'feedback only'.
+summary: The assistant successfully honored the user’s wish not to pursue a refund or order lookup and responded politely. However, it failed to explicitly confirm that the feedback would be passed along or offer any sense of next steps, and it repeated stock phrasing instead of engaging with the user’s stated hope for better future quality. Improving acknowledgment of the specific feedback and clearly stating how it will be used would substantially raise both helpfulness and perceived task completion.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] action_executed(utter_venting_acknowledged)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] flow_completed(acknowledge_order_feedback) — Flow with id 'acknowledge_order_feedback' did not complete.
+
+--- Raw Transcript ---
+[1] user: I just wanted to vent that my Chipotle meal today was really disappointing, and I’m not looking for a refund, coupon, replacement, order lookup, or anything like that—just sharing feedback.
+[2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[3] user: Thanks. The chicken was really dry, the rice was undercooked, and the bowl barely had any guac even though I paid extra—it just didn’t feel like the quality I’m used to from Chipotle.
+[4] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
+[5] user: I appreciate that. I just hope it gets passed along so the quality’s more consistent next time, because I usually really like your food.
+[6] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d45a1378-6597-4bfa-850c-82597ed290a8

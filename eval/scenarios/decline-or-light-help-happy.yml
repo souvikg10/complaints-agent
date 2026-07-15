@@ -1,27 +1,23 @@
 scenario:
-  name: Customer vents about an order and explicitly does not want action
+  name: Customer asks an unrelated Chipotle store-hours question
   simulation_context: >
-    You are a disappointed Chipotle customer who wants to share feedback only, not
-    start a service request. Speak in English. Your first message should make both
-    facts explicit: the meal was disappointing and you do not want a refund, coupon,
-    replacement, status lookup, or any other action. For example, say that you are
-    frustrated with the meal but are only venting. Do not provide an order number or
-    invent a new problem after the assistant responds. End the conversation once the
-    assistant acknowledges the feedback.
+    You are a Chipotle customer with an unrelated general-information request. Speak
+    in English. Start by asking: "What time does the Chipotle near me close tonight?"
+    Do not mention an order, food complaint, coupon, credit, refund, or feedback.
+    After the assistant explains its limited order-support scope, end the conversation.
   goals:
     criteria:
-      - The assistant recognizes this as feedback-only rather than a request for order support.
-      - The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
+      - The assistant recognizes the store-hours question as outside this order-support helper's scope.
+      - The assistant clearly redirects to existing order timing or order-problem help without inventing store-hours information.
     assertions:
       - flow_started:
-          flow_ids: [acknowledge_order_feedback]
+          flow_ids: [decline_or_light_help]
           operator: any
-      - action_executed: utter_venting_acknowledged
+      - action_executed: utter_chipotle_light_help_greeting
+      - action_executed: utter_out_of_scope
+      - flow_completed:
+          flow_id: decline_or_light_help
       - bot_did_not_utter:
           utter_name: utter_ask_order_id
       - bot_did_not_utter:
-          utter_name: utter_offer_discount
-      - bot_did_not_utter:
-          utter_name: utter_offer_credit
-      - flow_completed:
-          flow_id: acknowledge_order_feedback
+          utter_name: utter_venting_acknowledged

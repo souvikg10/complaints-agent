@@ -1,0 +1,37 @@
+scenario: User asks an out-of-scope nutrition question
+run: 1
+timestamp: 2026-07-15T12:46:22Z
+conversation_id: sim-701f87fe-8b70-4d5f-bc5f-fb233c6892b2
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: In response to the user's nutrition question, the bot explicitly states "I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions," clearly delimiting its order-support scope for this unrelated request.
+
+--- Quality Metrics ---
+bot_quality: 2.25/5
+  helpfulness: 1/5 — It repeatedly refused to give nutrition details and, when explicitly asked for an alternative source, still did not offer even a basic pointer (e.g., Chipotle’s website), so there was essentially no substantive help.
+  repair_quality: 1/5 — After the user shifted the request to asking for a place to find nutrition info, the assistant simply repeated its initial scope message and did not adapt its response to the clarified need.
+  coherence: 4/5 — The assistant consistently maintained the same scope explanation and did not contradict itself, but it slightly missed the change in user intent when asked for an external resource instead of direct nutrition facts.
+  tone: 3/5 — The tone was polite but somewhat robotic and repetitive, echoing the same boilerplate explanation and greeting, which makes it feel less natural and conversational.
+  task_completion: FAIL — The assistant never provided calorie information nor a link or pointer to Chipotle nutrition info, and the user ended the conversation without their request being satisfied elsewhere for a positive reason.
+summary: The assistant stayed consistent about its limited scope but failed to help the user either by estimating calories or by directing them to an external nutrition resource. It ignored the user’s adjusted request and repeated template text, leading to low helpfulness and poor repair quality despite a polite, if formulaic, tone.
+
+--- Assertion Results ---
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
+
+--- Raw Transcript ---
+[1] user: Hi, could you tell me how many calories are in a burrito bowl with chicken, white rice, black beans, mild salsa, cheese, and lettuce?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions.
+[4] user: Ok, no worries. Is there somewhere you can point me to for Chipotle nutrition info instead?
+[5] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[6] agent: I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions.
+[7] user: Got it, thanks anyway—that’s all I needed.
+[8] agent: I’m sorry, but I don’t have access to the information you’re looking for right now, as I don’t have a nutrition knowledge base available.
+[9] agent: Is there anything else I can help you with today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-701f87fe-8b70-4d5f-bc5f-fb233c6892b2

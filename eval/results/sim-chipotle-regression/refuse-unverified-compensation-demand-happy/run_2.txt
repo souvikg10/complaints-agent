@@ -1,0 +1,44 @@
+scenario: Bare coupon demand is refused without starting order-issue intake
+run: 2
+timestamp: 2026-07-15T12:33:21Z
+conversation_id: sim-c3752819-af85-4d70-b0f0-24eb17b25a4f
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent refuses the unsupported compensation request and keeps the conversation within the assistant's order-support policy.
+  rationale: On every turn the bot responds with the refusal template "I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order," and the ledger only shows the `refuse_unverified_compensation_demand` flow without any compensation actions.
+
+[PASS] The agent does not convert a bare demand into order lookup or order-issue intake.
+  rationale: The bot never asks for or looks up order details and the ledger shows only `flow_started/flow_completed: refuse_unverified_compensation_demand` with no order lookup or issue-intake flows or tools invoked.
+
+--- Quality Metrics ---
+bot_quality: 2.25/5
+  helpfulness: 1/5 — Every response simply repeated a constraints message and gave no concrete guidance on how to pursue compensation or report a problem.
+  repair_quality: 1/5 — Despite multiple user pushbacks and clarifications, the assistant ignored them and kept repeating the same statement verbatim.
+  coherence: 5/5 — The assistant was internally consistent across turns, maintaining the same stated limitation without contradiction or state-tracking errors.
+  tone: 2/5 — The wording was polite but extremely repetitive and mechanical, lacking any variation or acknowledgment of the user's frustration.
+  task_completion: FAIL — The assistant never provided a way for the user to obtain a coupon or refund, nor any actionable next steps beyond repeating a capability limitation.
+summary: The assistant consistently restated its inability to issue compensation without offering any constructive alternatives or process guidance, so the user’s request was not advanced. It also failed to adapt when the user pushed back, leading to a repetitive and mechanical interaction, though it was at least consistent about its stated limitations.
+
+--- Assertion Results ---
+[PASS] flow_started(refuse_unverified_compensation_demand)
+[PASS] action_executed(utter_unverified_compensation_refusal)
+[PASS] flow_completed(refuse_unverified_compensation_demand)
+[PASS] slot_was_not_set(order_id, issue_category, issue_details, coupon_channel)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: I want a coupon or a refund right now, how do we make that happen?
+[2] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[3] user: Then just give me the future-meal remedy. I want something comped, I shouldn’t have to jump through hoops for this.
+[4] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[5] user: Fine, then consider this me reporting a problem—just set up the future-meal remedy without making this complicated.
+[6] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[7] user: You keep repeating that, but I still want something comped—just tell me how to get a coupon or credit without all this back and forth.
+[8] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+[9] user: So basically you’re saying you won’t do anything for me unless I jump through all your order hoops? Then I’ll just leave it, never mind.
+[10] agent: I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-c3752819-af85-4d70-b0f0-24eb17b25a4f

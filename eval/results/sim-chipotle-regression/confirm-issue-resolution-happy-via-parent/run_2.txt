@@ -1,0 +1,49 @@
+scenario: Confirm issue resolution child flow is reached through a verified accepted order issue
+run: 2
+timestamp: 2026-07-15T12:37:27Z
+conversation_id: sim-3ddf5164-2f5e-4f8c-976a-690757a2d4ca
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
+  rationale: In T2 the ledger shows `slot_set: resolution_acceptance = null` followed by `action: validate_resolution_acceptance` and then `slot_set: resolution_acceptance = yes`, and only after that does `flow_started: confirm_issue_resolution` occur, indicating remedy acceptance was collected before the confirmation-and-issuance flow started.
+
+[PASS] The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
+  rationale: After the issue is verified eligible and acceptance recorded in T2, the bot asks, “Would you like the code shown here or sent to the email used for the order?” (delivery channel) and in T3, after `slot_set: coupon_channel = email`, runs `action: action_mock_coupon_issuance` and then `slot_set: coupon_issued = true`, showing it both requested the channel and issued the remedy post-acceptance.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It efficiently gathered the needed order info, provided a clear remedy with exact amount, code, and usage details, and confirmed resolution.
+  repair_quality: 5/5 — The user never signaled misunderstanding or pushback, so there were no repair opportunities mishandled.
+  coherence: 5/5 — The assistant correctly tracked the order number, user’s choice to email the code, and the status of the credit without any contradictions or re-asking.
+  tone: 5/5 — The tone is warm, concise, and natural throughout, acknowledging the inconvenience and closing with a polite feedback request.
+  task_completion: PASS — The assistant identified the order, issued a concrete $8 credit with a specific code and terms, and confirmed delivery, which the user accepted as resolving their issue.
+summary: The assistant handled the missing-item complaint smoothly, collecting the necessary details and delivering a clear, concrete credit that the user accepted. It maintained consistent context and a friendly, professional tone throughout, with no signs of misunderstanding or repair issues.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] flow_started(confirm_issue_resolution)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] action_executed(action_mock_coupon_issuance)
+[PASS] slot_was_set(resolution_acceptance='yes', coupon_channel='email', coupon_issued=True)
+[PASS] sequencing
+[PASS] flow_completed(confirm_issue_resolution)
+
+--- Raw Transcript ---
+[1] user: Hi, my Chipotle order was missing the chips that I paid for.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: Sure, the order number is CP123.
+[5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[6] agent: Would you like the code shown here or sent to the email used for the order?
+[7] user: Thanks, please send it to my email.
+[8] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[9] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[10] agent: Is there anything else I can help you with regarding your order or the credit?
+[11] user: No, that covers it. Thanks for your help!
+[12] agent: You’re welcome—glad I could help. I’ll be here if you need anything else later.
+[13] agent: Before we wrap up, how would you rate your experience with us today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3ddf5164-2f5e-4f8c-976a-690757a2d4ca

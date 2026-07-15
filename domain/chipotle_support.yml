@@ -76,7 +76,7 @@ responses:
   utter_venting_acknowledged: [{text: "I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help."}]
   utter_feedback_continued: [{text: "Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order."}]
   utter_feedback_closed: [{text: "Got it — thanks for letting us know. Hope your next Chipotle order hits the spot."}]
-  utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build. I can’t provide nutrition or allergen facts, or help with hours, jobs, catering, rewards, payment, or account questions."}]
+  utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order."}]
   utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."}]
 
 actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, action_mock_feedback_logging, validate_resolution_acceptance, validate_feedback_followup_message]

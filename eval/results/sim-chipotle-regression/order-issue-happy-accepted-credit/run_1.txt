@@ -1,0 +1,52 @@
+scenario: Customer reports a missing-item issue and accepts the remedy
+run: 1
+timestamp: 2026-07-15T12:35:31Z
+conversation_id: sim-0950cef1-8ea4-42a4-bd7a-2c9b3136adcf
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent gathers the order context and issue details before deciding the remedy.
+  rationale: The bot first asks for the order number (T1 transcript, T2 slot_set: order_id = CP123) and then asks what best describes the problem and records the missing item details and category (T3 slot_set: issue_details and issue_category) before running action_mock_order_issue_policy to determine the remedy.
+
+[PASS] The agent issues the accepted remedy after the customer agrees to it.
+  rationale: After the user agrees to the credit (T4: user says "Yes, please issue the credit" and slot_set: resolution_acceptance = yes), the system later calls action_mock_coupon_issuance and sets coupon_issued = true (T5) before uttering the coupon code back to the user, indicating the remedy was issued only after acceptance.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It gathered needed info, applied the appropriate remedy, provided a concrete credit code with clear usage terms, and closed with an offer of further help.
+  repair_quality: 5/5 — There were no user corrections or disfluencies; the interaction flowed smoothly without any need for repair.
+  coherence: 5/5 — The assistant consistently tracked the order number, issue description, and the user’s preference to see the code in chat, without contradictions or re-asks.
+  tone: 5/5 — Tone was warm, concise, and natural throughout, acknowledging the inconvenience and ending with a polite check-in about the experience.
+  task_completion: PASS — The assistant verified the order, issued the requested $8 credit, displayed the code, and confirmed its terms, clearly fulfilling the user’s goal of resolving the missing item.
+summary: This was a clean, successful transactional conversation: the assistant efficiently resolved the missing item by issuing and displaying a usable credit code with clear conditions. It maintained context, used friendly and natural language, and closed the loop with an appropriate satisfaction check and offer of further assistance.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] flow_started(confirm_issue_resolution)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] action_executed(action_mock_coupon_issuance)
+[PASS] slot_was_set(issue_category, issue_details, resolution_acceptance='yes', coupon_channel='chat')
+[PASS] flow_completed(report_chipotle_order_issue)
+[PASS] flow_completed(confirm_issue_resolution)
+
+--- Raw Transcript ---
+[1] user: Hi, my recent order was missing an item.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: The order number is CP123.
+[5] agent: What best describes the problem?
+[6] user: I was missing my side of chips—it was never included in the bag.
+[7] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[8] agent: Would you like me to issue the approved future-meal remedy?
+[9] user: Yes, please issue the credit—that would be great.
+[10] agent: Would you like the code shown here or sent to the email used for the order?
+[11] user: Please just show the code here in chat.
+[12] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[13] agent: Is there anything else I can assist you with today?
+[14] user: No, that’s all I needed—thanks for your help!
+[15] agent: You’re very welcome—if you need anything else later on, I’ll be here to help.
+[16] agent: How did everything go with your experience today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-0950cef1-8ea4-42a4-bd7a-2c9b3136adcf

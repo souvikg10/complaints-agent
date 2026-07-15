@@ -1,0 +1,10 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[FAIL] Customer asks an unrelated Chipotle store-hours question  1/2  26.4s  eval/results/2026-07-15_13-10-00/decline-or-light-help-happy
+----------------------------------------------------------------------
+Total: 1/2 passed
+Time:  26.4s
+
+Scenarios requiring attention:
+  - Customer asks an unrelated Chipotle store-hours question  1/2 passed  (50%)

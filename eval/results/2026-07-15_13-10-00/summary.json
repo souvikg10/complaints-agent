@@ -1,0 +1,9 @@
+[
+  {
+    "scenario_name": "Customer asks an unrelated Chipotle store-hours question",
+    "scenario_slug": "decline-or-light-help-happy",
+    "runs_passed": 1,
+    "runs_total": 2,
+    "duration_s": 26.445791737001855
+  }
+]

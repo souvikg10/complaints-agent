@@ -1,0 +1,114 @@
+[
+  {
+    "scenario_name": "Welcome and route Chipotle support from a greeting",
+    "scenario_slug": "welcome-and-route-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 51.15808607201325
+  },
+  {
+    "scenario_name": "Bare coupon demand is refused without starting order-issue intake",
+    "scenario_slug": "refuse-unverified-compensation-demand-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 44.096620175929274
+  },
+  {
+    "scenario_name": "Customer checks a delayed Chipotle order successfully",
+    "scenario_slug": "order-status-happy-existing-delayed",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 27.86651072296081
+  },
+  {
+    "scenario_name": "Order status sub-agent is reached through the parent happy path",
+    "scenario_slug": "order-status-sub-agent-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 34.89296885597287
+  },
+  {
+    "scenario_name": "Order status sub-agent handles not-found retry before a successful lookup",
+    "scenario_slug": "order-status-sub-agent-not-found-retry",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 36.83905504504219
+  },
+  {
+    "scenario_name": "Customer reports a missing-item issue and accepts the remedy",
+    "scenario_slug": "order-issue-happy-accepted-credit",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 45.320522563997656
+  },
+  {
+    "scenario_name": "Order issue sub-agent is reached through the parent happy path",
+    "scenario_slug": "order-issue-sub-agent-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 38.66010834602639
+  },
+  {
+    "scenario_name": "Confirm issue resolution child flow is reached through a verified accepted order issue",
+    "scenario_slug": "confirm-issue-resolution-happy-via-parent",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 53.438258000067435
+  },
+  {
+    "scenario_name": "Customer hits repeat-compensation policy path for an order issue",
+    "scenario_slug": "order-issue-repeat-compensation-edge",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 48.058037618058734
+  },
+  {
+    "scenario_name": "Customer directly triggers repeat-compensation refusal follow-up after prior denial",
+    "scenario_slug": "repeat-compensation-closure-direct-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 54.232462450978346
+  },
+  {
+    "scenario_name": "Customer vents, declines action, and closes the complete feedback-only call chain",
+    "scenario_slug": "acknowledge-order-feedback-happy",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 38.602136655012146
+  },
+  {
+    "scenario_name": "Close feedback-only child flow is reached through a feedback vent and goodbye",
+    "scenario_slug": "close-feedback-only-happy-via-parent",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 21.21489672601456
+  },
+  {
+    "scenario_name": "Customer vents about an order and explicitly does not want action",
+    "scenario_slug": "decline-or-light-help-happy",
+    "runs_passed": 0,
+    "runs_total": 2,
+    "duration_s": 35.68677228799788
+  },
+  {
+    "scenario_name": "User changes their mind in the middle of an order-status conversation",
+    "scenario_slug": "adversarial-midflow-change-mind",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 53.224619542073924
+  },
+  {
+    "scenario_name": "User asks an out-of-scope nutrition question",
+    "scenario_slug": "adversarial-out-of-scope-nutrition",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 34.021929272974376
+  },
+  {
+    "scenario_name": "Unauthorized attempt to force coupon issuance is blocked before confirmation",
+    "scenario_slug": "issue-resolution-confirmation-redteam-bypass",
+    "runs_passed": 2,
+    "runs_total": 2,
+    "duration_s": 45.466793998959474
+  }
+]

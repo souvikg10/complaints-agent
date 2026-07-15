@@ -1,0 +1,10 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[FAIL] Direct guarded feedback-only close ends an already-active feedback exchange  0/1  13.9s  eval/results/2026-04-21_00-00-00/close-feedback-only-direct-happy
+----------------------------------------------------------------------
+Total: 0/1 passed
+Time:  13.9s
+
+Scenarios requiring attention:
+  - Direct guarded feedback-only close ends an already-active feedback exchange  0/1 passed  (0%)

@@ -1,0 +1,9 @@
+[
+  {
+    "scenario_name": "Feedback continuation re-enters acknowledgement before terminal close",
+    "scenario_slug": "close-feedback-only-direct-happy",
+    "runs_passed": 1,
+    "runs_total": 1,
+    "duration_s": 16.01114240096649
+  }
+]

@@ -1,24 +1,27 @@
-scenario: Customer vents, declines action, and closes the complete feedback-only call chain
+scenario: Customer vents, declines action, then closes a feedback-only exchange
 run: 1
-timestamp: 2026-07-14T12:40:45Z
-conversation_id: sim-0e32de39-a460-4455-a6fe-1dad1bc0d7bd
+timestamp: 2026-07-15T14:43:48Z
+conversation_id: sim-9c1fa822-10ac-40e8-9cd1-e49caf1cafe7
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
-  rationale: At T1 the flow_started is acknowledge_order_feedback with slot_set feedback_only_active = true and the bot reply explicitly says it "won’t start an order lookup or compensation," showing it treated this as feedback-only rather than order-status/issue handling.
+  rationale: On T1 the flow `acknowledge_order_feedback` is started with `slot_set: feedback_only_active = true`, and the bot explicitly says "I won’t start an order lookup or compensation," indicating it treated this as feedback-only rather than an order-status/issue flow.
 
-[PASS] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
-  rationale: At T2, on the user's first closing message ("No, that's it."), validate_feedback_followup_message sets feedback_followup_choice = close, the close_feedback_only flow_started then sets feedback_only_active = false and nulls followup slots, action utter_feedback_closed sends the concise close, flow_completed: close_feedback_only fires, and finally flow_completed: acknowledge_order_feedback is logged.
+[PASS] The acknowledgement completes naturally on the first turn without a required farewell prompt.
+  rationale: On T1 the bot acknowledges the feedback and closes that response without prompting for a farewell ("If you decide you want either later, I can help."), and `flow_completed: acknowledge_order_feedback` confirms the acknowledgement flow concluded in that first turn.
+
+[PASS] The later farewell starts close_feedback_only, clears feedback_only_active, and sends one concise terminal close.
+  rationale: On T2 the ledger shows `flow_started: close_feedback_only`, `slot_set: feedback_only_active = false` then `null`, and `action: utter_feedback_closed`, while the bot sends a single concise closing message: "Got it — thanks for letting us know. Hope your next Chipotle order hits the spot."
 
 --- Quality Metrics ---
 bot_quality: 5.0/5
-  helpfulness: 5/5 — For a pure vent/feedback intent, the assistant appropriately acknowledged the complaint and respected the user's wish for no action, which fully meets the user's needs.
-  repair_quality: 5/5 — There were no disfluencies or corrections from the user, so there was no need for repair and nothing was mishandled.
-  coherence: 5/5 — The assistant consistently remembered that the user did not want follow-up and maintained that stance across turns.
-  tone: 5/5 — The wording is natural, empathetic, concise, and well-matched to a customer venting about a disappointing experience.
-  task_completion: PASS — The user only wanted to vent without any follow-up, and the assistant acknowledged the feedback and explicitly confirmed it would not initiate lookup or compensation.
-summary: The assistant handled a simple venting interaction well: it acknowledged the user’s frustration, clearly stated it would not trigger unwanted actions, and closed the conversation politely. The responses were coherent, on-target, and phrased in a warm, natural tone with no unnecessary complexity or missteps.
+  helpfulness: 5/5 — For a venting scenario with no requested action, the assistant acknowledged the experience clearly and respected the user’s wish for no further help.
+  repair_quality: 5/5 — There were no disfluency or correction signals from the user, so no repair was needed or mishandled.
+  coherence: 5/5 — The assistant consistently tracked that the user was venting and did not want compensation, maintaining that context through the conversation.
+  tone: 5/5 — The tone was natural, empathetic, concise, and appropriate to a user who was just venting about a bad experience.
+  task_completion: PASS — The user only wanted to vent without any follow-up, and the assistant acknowledged the complaint and explicitly confirmed it would not initiate compensation or further actions.
+summary: The assistant handled a simple venting interaction well: it acknowledged the user’s frustration, clearly respected the request for no follow-up, and closed the conversation politely. Tone, coherence, and contextual understanding were all strong, with no evident issues across the short exchange.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -32,13 +35,12 @@ summary: The assistant handled a simple venting interaction well: it acknowledge
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
 [PASS] flow_completed(close_feedback_only)
-[PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I just wanted to say my last Chipotle order was really disappointing—the rice was hard, the steak was super salty, and everything was barely warm, but I’m not looking for a refund, coupon, replacement, or any follow-up at all. I just wanted to vent so you’re aware.
+[1] user: I just wanted to say my last Chipotle bowl was really disappointing—barely any chicken, everything was cold and watery—but I’m not looking for a refund, coupon, replacement, or any follow-up, just venting about it.
 [2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
 [3] user: No, that's it.
 [4] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-0e32de39-a460-4455-a6fe-1dad1bc0d7bd
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-9c1fa822-10ac-40e8-9cd1-e49caf1cafe7

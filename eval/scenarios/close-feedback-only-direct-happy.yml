@@ -1,17 +1,17 @@
 scenario:
-  name: Feedback-only close has one active farewell prompt and ends without generic follow-up
+  name: Feedback continuation re-enters acknowledgement before terminal close
   simulation_context: >
-    You are a calm Chipotle customer who only wants to share feedback about a disappointing meal.
-    First, explicitly say you do not want a refund, coupon, replacement, status check, report, or
-    other action. After the acknowledgement and its farewell instruction, add one more sentence of
-    meal feedback without saying goodbye. The assistant should keep the feedback-only close active
-    and ask the same farewell question once, rather than starting another support flow or producing
-    fallback language. Then say exactly: "That’s all I needed, thanks. Goodbye." Do not introduce
-    an order number, compensation request, or another support topic.
+    You are a calm Chipotle customer who only wants to share feedback about a disappointing
+    meal. First, explicitly say you do not want a refund, coupon, replacement, status check,
+    report, or other action. After the acknowledgement, add one more sentence with a specific
+    meal detail without saying goodbye. The assistant should acknowledge the added detail as
+    feedback only, without opening order support or asking a farewell question. Then say exactly:
+    "That’s all I needed, thanks. Goodbye." Do not introduce an order number, compensation
+    request, or another support topic.
   goals:
     criteria:
-      - The feedback-only acknowledgement keeps the closing task active when the customer adds more feedback without a farewell, rather than starting a new support flow or generic fallback.
-      - The final explicit goodbye clears feedback-only state, sends one warm terminal close, and does not ask for more help.
+      - After the extra feedback detail, the completed feedback-only flow may be started again and gives the lighter continuation acknowledgement; it does not pretend a single active farewell task remained open.
+      - The final explicit goodbye starts close_feedback_only, clears feedback_only_active, sends one warm terminal close, and does not ask for more help.
     assertions:
       - flow_started:
           flow_ids: [acknowledge_order_feedback]
@@ -20,6 +20,7 @@ scenario:
           flow_ids: [close_feedback_only]
           operator: any
       - action_executed: utter_venting_acknowledged
+      - action_executed: utter_feedback_continued
       - action_executed: utter_feedback_closed
       - slot_was_set:
           - name: feedback_only_active

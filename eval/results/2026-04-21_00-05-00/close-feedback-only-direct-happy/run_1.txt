@@ -1,0 +1,47 @@
+scenario: Feedback continuation re-enters acknowledgement before terminal close
+run: 1
+timestamp: 2026-07-15T14:46:02Z
+conversation_id: sim-f1fbe0c8-777f-4fb9-8bf1-91a514156a1c
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] After the extra feedback detail, the completed feedback-only flow may be started again and gives the lighter continuation acknowledgement; it does not pretend a single active farewell task remained open.
+  rationale: After the extra feedback detail at T3, a new acknowledge_order_feedback flow is started and completed, with `utter_feedback_continued` responding lightly to continued feedback, and there is no indication in transcript or ledger that a single active farewell task was being treated as still open from earlier turns.
+
+[PASS] The final explicit goodbye starts close_feedback_only, clears feedback_only_active, sends one warm terminal close, and does not ask for more help.
+  rationale: At T4 the user says goodbye, the ledger shows `flow_started: close_feedback_only`, `slot_set: feedback_only_active = false` then `null`, `flow_completed: close_feedback_only`, and the bot sends a single warm closing line “Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.” without asking if the user needs more help.
+
+--- Quality Metrics ---
+bot_quality: 4.75/5
+  helpfulness: 4/5 — Within the limited goal of listening to feedback, the assistant clearly acknowledged the issues and respected the 'no action' constraint, though it could have added brief assurance about passing feedback along to be slightly more complete.
+  repair_quality: 5/5 — There were no user signals of misunderstanding or pushback; the user accepted the assistant’s behavior throughout, so no repair was needed or missed.
+  coherence: 5/5 — The assistant consistently tracked the user’s intent to provide feedback only and did not revert to offering unwanted actions, maintaining a coherent stance across turns.
+  tone: 5/5 — Responses were warm, natural, and appropriately empathetic without being overdone or robotic.
+  task_completion: PASS — The user only wanted to share feedback with no action taken, and the assistant repeatedly acknowledged the feedback while confirming it would not initiate lookups or compensation, which fulfills the request.
+summary: The assistant successfully handled a feedback-only interaction, clearly acknowledging the user’s experience and honoring their request not to trigger any order or compensation flow. It maintained consistent context and a warm, conversational tone, with only minor room to be slightly more explicit about how the feedback would be used.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] flow_started(close_feedback_only)
+[PASS] action_executed(utter_venting_acknowledged)
+[PASS] action_executed(utter_feedback_continued)
+[PASS] action_executed(utter_feedback_closed)
+[PASS] slot_was_set(feedback_only_active=False)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] flow_completed(close_feedback_only)
+
+--- Raw Transcript ---
+[1] user: I just wanted to share some feedback about a disappointing meal I had recently—I'm not looking for a refund, coupon, replacement, status check, report, or any other action, just to let you know what happened.
+[2] agent: Sorry, I am having trouble with that. Please try again in a few minutes.
+[3] user: No worries. My burrito bowl yesterday was really soggy and everything kind of tasted bland, which was unusual for this location.
+[4] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[5] user: Thanks for understanding. Also, the chicken pieces were mostly fatty and kind of lukewarm in the middle, which really threw off the whole bowl.
+[6] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
+[7] user: That’s all I needed, thanks. Goodbye.
+[8] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-f1fbe0c8-777f-4fb9-8bf1-91a514156a1c

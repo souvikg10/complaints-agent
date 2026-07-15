@@ -1,27 +1,24 @@
 scenario: Feedback-only close has one active farewell prompt and ends without generic follow-up
 run: 1
-timestamp: 2026-07-14T11:54:27Z
-conversation_id: sim-3bd3cefe-eca2-46f9-8657-3c345cfb4dfc
+timestamp: 2026-07-15T14:43:48Z
+conversation_id: sim-644b82e9-de19-454a-9529-900564c7c599
 overall_result: FAIL
 
 --- Quality Criteria Results ---
-[PASS] The feedback-only acknowledgement starts its child closing task and non-farewell elaboration is treated as invalid close input, not a new topic or generic fallback.
-  rationale: The initial feedback-only flow starts at T1 with `flow_started: acknowledge_order_feedback`, and later non-farewell elaborations at T2–T3 are handled as continued feedback (`slot_set: feedback_followup_choice = continue_feedback` and `action: action_mock_feedback_logging`), not as a new topic or fallback, while the child closing task starts only on the actual goodbye at T4 (`flow_started: close_feedback_only`).
+[FAIL] The feedback-only acknowledgement keeps the closing task active when the customer adds more feedback without a farewell, rather than starting a new support flow or generic fallback.
+  rationale: At T2, when the user adds more feedback without a farewell, the system starts a new `acknowledge_order_feedback` flow instead of continuing the existing feedback-only state (`flow_started: acknowledge_order_feedback` and `flow_completed: acknowledge_order_feedback` again), indicating it did not keep a single closing task active.
 
-[FAIL] Each invalid close attempt gets one collect retry from CALM; the custom validator does not independently dispatch a duplicate prompt.
-  rationale: There are no invalid close attempts in this conversation (the user only closes once at T4), so there is no evidence of any collect retries from CALM or validator behavior; because the criterion concerns behavior that does not occur here, it cannot be confirmed and thus is not passed.
-
-[PASS] The final goodbye clears feedback-only state, sends the one-sentence close, and finishes without the completed-conversation pattern asking for more help.
-  rationale: On the user's goodbye at T4, the system clears the feedback-only state (`slot_set: feedback_only_active = false`), runs `action: utter_feedback_closed` which corresponds to the one-sentence close "Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.", and both `flow_completed: close_feedback_only` and `flow_completed: acknowledge_order_feedback` appear with no subsequent prompts asking if the user needs more help.
+[PASS] The final explicit goodbye clears feedback-only state, sends one warm terminal close, and does not ask for more help.
+  rationale: At T3, the user says "That’s all I needed, thanks. Goodbye." and the ledger shows `flow_started: close_feedback_only`, `slot_set: feedback_only_active = false` then `null`, plus a single `utter_feedback_closed` with the bot message "Got it — thanks for letting us know. Hope your next Chipotle order hits the spot." which is a warm closing that does not solicit further help.
 
 --- Quality Metrics ---
-bot_quality: 4.0/5
-  helpfulness: 3/5 — The assistant fulfilled the narrow request to receive feedback without triggering actions, but gave minimal, repetitive responses that missed opportunities to acknowledge specifics or empathize more meaningfully.
-  repair_quality: 5/5 — There were no user disfluencies or corrections, so there was no need for repair and the assistant stayed aligned with the user’s intent throughout.
-  coherence: 5/5 — The assistant consistently respected the user's intent not to pursue refunds or order help and did not contradict itself or re-ask for information.
-  tone: 3/5 — The tone was polite and appropriate but noticeably formulaic and repetitive, using nearly identical phrasing for multiple turns.
-  task_completion: PASS — The user only wanted to share feedback with no action taken, and the assistant consistently acknowledged the feedback and confirmed it would remain feedback-only.
-summary: The assistant correctly understood that the user wanted to share feedback only and honored the request by not initiating any remedial actions. It maintained coherent context and an appropriate, polite tone, but its responses were very boilerplate and repetitive, offering little nuanced acknowledgment of the specific issues the user described. More varied and specific empathy would improve perceived helpfulness and tone.
+bot_quality: 4.75/5
+  helpfulness: 4/5 — The assistant correctly acknowledged and categorized the interaction as feedback-only, though it could have been slightly more substantive by validating specifics of the complaints or noting they’d be shared with the team.
+  repair_quality: 5/5 — There were no user disfluencies or corrections, so there was no need for repair and no mishandling.
+  coherence: 5/5 — Across turns the assistant consistently respected the user’s initial constraint of no actions and referred coherently to the same feedback-only intent.
+  tone: 5/5 — The tone was warm, natural, and concise, validating the user’s experience and closing with an appropriate, friendly remark.
+  task_completion: PASS — The user only wanted to share feedback without triggering any action, and the assistant consistently acknowledged the feedback while explicitly not initiating lookups or compensation.
+summary: The assistant handled a feedback-only interaction cleanly, acknowledging the user’s experience and explicitly honoring the request not to trigger refunds or lookups. It maintained consistent context and a friendly tone throughout, though it could have added a bit more specificity about how the feedback would be used to improve future experiences.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -36,14 +33,12 @@ summary: The assistant correctly understood that the user wanted to share feedba
 [PASS] flow_completed(close_feedback_only)
 
 --- Raw Transcript ---
-[1] user: Hi, I just wanted to share some feedback about a disappointing meal I had recently, and I’m not looking for a refund, coupon, replacement, status check, report, or any other kind of action.
+[1] user: Hi, I just want to share some feedback about a disappointing meal I had recently—I’m not looking for a refund, coupon, replacement, status check, or any other action.
 [2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[3] user: The main issue was that my bowl was mostly lettuce with very little chicken or fajita veggies, so it felt kind of skimpy for the price.
+[3] user: I got a burrito bowl and the portions were really small, plus the steak was kind of dry and lukewarm, which isn’t what I usually get from your stores.
 [4] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
-[5] user: Also, the rice was a bit undercooked and kind of hard, which made the whole bowl less enjoyable than usual.
-[6] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
-[7] user: That’s all I needed, thanks. Goodbye.
-[8] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
+[5] user: I also noticed the guac had a lot of brown spots and the chips were stale, which made the whole meal feel a bit off compared to what I’m used to. That’s all I needed, thanks. Goodbye.
+[6] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3bd3cefe-eca2-46f9-8657-3c345cfb4dfc
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-644b82e9-de19-454a-9529-900564c7c599

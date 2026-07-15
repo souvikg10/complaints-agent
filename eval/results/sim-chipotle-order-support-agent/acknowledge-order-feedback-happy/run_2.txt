@@ -1,24 +1,27 @@
-scenario: Customer vents, declines action, and closes the complete feedback-only call chain
+scenario: Customer vents, declines action, then closes a feedback-only exchange
 run: 2
-timestamp: 2026-07-14T12:40:55Z
-conversation_id: sim-8c3c4a7f-4d9a-4e2d-b4d7-f9a34493fa88
+timestamp: 2026-07-15T14:44:07Z
+conversation_id: sim-f946392c-6b50-460f-8fd5-0db4c275c37d
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
-  rationale: On T1 the flow_started is acknowledge_order_feedback with slot_set feedback_only_active = true and the bot explicitly says "I won’t start an order lookup or compensation," showing it recognized this as feedback-only rather than starting an order-status or issue flow.
+  rationale: On T1 the flow_started is acknowledge_order_feedback with slot_set feedback_only_active = true and no order-status or order-issue flows are started, matching the user’s explicit statement that they don’t want any follow-up actions.
 
-[PASS] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
-  rationale: On T2, the first user farewell "No, that's it." leads directly to flow_started: close_feedback_only, feedback_only_active is set to false, utter_feedback_closed is sent, flow_completed: close_feedback_only fires, and then flow_completed: acknowledge_order_feedback also fires, showing the child closed on first attempt, state was cleared, the concise close was sent, and control returned so the parent flow completed.
+[PASS] The acknowledgement completes naturally on the first turn without a required farewell prompt.
+  rationale: At T1 the flow acknowledge_order_feedback is completed and the bot responds with a self-contained acknowledgement (“I hear you… I won’t start an order lookup or compensation”) without asking the user for further input or prompting for a farewell.
+
+[PASS] The later farewell starts close_feedback_only, clears feedback_only_active, and sends one concise terminal close.
+  rationale: At T2 the flow close_feedback_only is started, feedback_only_active is set to false then null, and a single concise closing utterance (“Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.”) is sent before flow_completed: close_feedback_only.
 
 --- Quality Metrics ---
 bot_quality: 4.75/5
-  helpfulness: 4/5 — For an emotional-venting intent, the assistant validated the experience and confirmed no action would be taken, though it could have briefly expressed more empathy or apology about the bad meal.
-  repair_quality: 5/5 — There were no user corrections or pushback; the assistant aligned with the user's stated intent throughout, so no repair was needed or missed.
-  coherence: 5/5 — The assistant consistently tracked that the user only wanted to vent and did not seek compensation or follow-up, and it did not contradict itself or re-ask anything.
-  tone: 5/5 — The tone was natural, empathetic, and concise, with phrasing like 'having a meal go sideways is disappointing' that feels conversational and easy to read.
-  task_completion: PASS — The user only wanted to vent without any follow-up actions, and the assistant acknowledged the complaint and respected the user's request not to proceed further.
-summary: The assistant handled this brief venting interaction well: it acknowledged the user’s disappointment, clearly respected their wish for no follow-up action, and closed the conversation cleanly. Its tone was warm and natural, and it stayed coherent with the user’s intent across turns, though a slightly stronger expression of empathy could have made the response even more supportive.
+  helpfulness: 4/5 — The assistant appropriately validated the user’s experience and confirmed no follow-up would be initiated, though it could have offered a slightly more empathetic or reflective response about the specific issues mentioned.
+  repair_quality: 5/5 — There were no disfluencies or corrections from the user; the assistant smoothly accepted the user’s clarification that they were done.
+  coherence: 5/5 — The assistant consistently remembered that the user did not want refunds or follow-up and maintained that stance without contradiction.
+  tone: 5/5 — The tone was natural, concise, and appropriately empathetic and casual for a brief venting interaction.
+  task_completion: PASS — The user only wanted to vent without any follow-up actions, and the assistant acknowledged the complaint and explicitly respected the request for no further action.
+summary: The assistant effectively handled a simple venting interaction by acknowledging the user’s dissatisfaction and clearly honoring their desire for no follow-up actions. Its responses were coherent, on-target, and phrased in a friendly, natural tone, though there was minor room to deepen empathy by reflecting more directly on the specific issues with the meal.
 
 --- Assertion Results ---
 [PASS] flow_started(acknowledge_order_feedback)
@@ -32,13 +35,12 @@ summary: The assistant handled this brief venting interaction well: it acknowled
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
 [PASS] flow_completed(close_feedback_only)
-[PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I just wanted to say my last Chipotle order was really disappointing—the rice was hard, the chicken was dry, and everything was barely warm. I’m not looking for a refund, coupon, replacement, or any follow-up, I just needed to vent about it.
+[1] user: I just wanted to say my last Chipotle meal was really disappointing—the rice was hard, the chicken was dry, and the whole bowl was barely warm. I don’t want a refund, coupon, replacement, order check, or any follow-up, I just needed to vent about it.
 [2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
 [3] user: No, that's it.
 [4] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-8c3c4a7f-4d9a-4e2d-b4d7-f9a34493fa88
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-f946392c-6b50-460f-8fd5-0db4c275c37d

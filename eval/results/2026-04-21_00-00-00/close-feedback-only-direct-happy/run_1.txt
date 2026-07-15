@@ -1,0 +1,40 @@
+scenario: Direct guarded feedback-only close ends an already-active feedback exchange
+run: 1
+timestamp: 2026-07-15T14:45:32Z
+conversation_id: sim-e464e957-0208-4ab4-9947-2de032c834a5
+overall_result: FAIL
+
+--- Quality Criteria Results ---
+[FAIL] With feedback_only_active already set from a completed feedback acknowledgement, the explicit goodbye starts close_feedback_only directly.
+  rationale: There is no evidence in the ledger of feedback_only_active being set or of a close_feedback_only action starting; the only action is `utter_internal_error_rasa` in response to the goodbye.
+
+[FAIL] The close clears the feedback-only state, sends exactly one warm terminal close, and does not ask a follow-up question or reopen support.
+  rationale: The bot reply is an error message (`"Sorry, I am having trouble with that. Please try again in a few minutes."`), with no evidence of clearing a feedback-only state, no warm terminal close, and instead prompting the user to try again.
+
+--- Quality Metrics ---
+bot_quality: 2.75/5
+  helpfulness: 1/5 — The assistant did not provide any substantive help or an appropriate closing response, instead offering an irrelevant error message.
+  repair_quality: 5/5 — There was no user pushback or disfluency to repair, so no repair opportunities were missed.
+  coherence: 2/5 — The assistant failed to track the clear conversational state that the interaction was ending and responded with an incongruent error message instead of a farewell.
+  tone: 3/5 — The wording is polite and clear but somewhat canned and out of place given the user's friendly goodbye.
+  task_completion: FAIL — The user was simply closing the conversation politely, and the assistant instead returned an error-style message rather than acknowledging and ending the chat gracefully.
+summary: The assistant mishandled a simple closing turn by responding with an error-style message instead of a natural farewell, so it neither advanced the interaction nor exited gracefully. While the tone was polite and there were no repair opportunities to evaluate, the response was unhelpful and contextually incoherent with the user's intent to end the conversation.
+
+--- Assertion Results ---
+[FAIL] flow_started(close_feedback_only) — None of the flows with ids 'close_feedback_only' started.
+[FAIL] action_executed(utter_feedback_closed) — Action 'utter_feedback_closed' did not execute.
+[FAIL] slot_was_set(feedback_only_active=False) — Slot 'feedback_only_active' was set to a different value 'True' than the expected 'False' value.
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[FAIL] flow_completed(close_feedback_only) — Flow with id 'close_feedback_only' did not complete.
+
+--- Raw Transcript ---
+[1] user: That’s all I needed, thanks. Goodbye.
+[2] agent: Sorry, I am having trouble with that. Please try again in a few minutes.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e464e957-0208-4ab4-9947-2de032c834a5

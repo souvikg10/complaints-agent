@@ -1,0 +1,9 @@
+[
+  {
+    "scenario_name": "Direct guarded feedback-only close ends an already-active feedback exchange",
+    "scenario_slug": "close-feedback-only-direct-happy",
+    "runs_passed": 0,
+    "runs_total": 1,
+    "duration_s": 13.90665502200136
+  }
+]

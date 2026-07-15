@@ -1,0 +1,7 @@
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+[PASS] Feedback continuation re-enters acknowledgement before terminal close  1/1  16.0s  eval/results/2026-04-21_00-05-00/close-feedback-only-direct-happy
+----------------------------------------------------------------------
+Total: 1/1 passed
+Time:  16.0s

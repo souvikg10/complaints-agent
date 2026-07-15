@@ -1,40 +1,39 @@
-scenario: Customer vents about an order and explicitly does not want action
+scenario: Customer asks an unrelated Chipotle store-hours question
 run: 1
-timestamp: 2026-07-14T12:41:47Z
-conversation_id: sim-20af8ccd-053e-4808-8696-f6fbf8480657
+timestamp: 2026-07-15T14:43:48Z
+conversation_id: sim-d51b4ed0-688b-4585-97f9-b22a91d690c6
 overall_result: PASS
 
 --- Quality Criteria Results ---
-[PASS] The assistant recognizes this as feedback-only rather than a request for order support.
-  rationale: In T1 the flow `acknowledge_order_feedback` is started with `feedback_only_active = true`, and the bot says "I won’t start an order lookup or compensation," explicitly treating it as feedback-only rather than order support.
+[PASS] The assistant recognizes the store-hours question as outside this order-support helper's scope.
+  rationale: In response to the store-hours question, the assistant states it is focused on order timing and problems and explicitly says it "can’t help with hours, locations..." thereby marking hours as out of scope.
 
-[PASS] The assistant acknowledges the frustration without collecting order information, offering compensation, or forcing issue triage.
-  rationale: Across all turns the bot validates the user’s experience (e.g., "having a meal go sideways is disappointing") and, per the ledger, never asks for order details, never initiates any refund/compensation/triage flow, and only logs feedback via `action_mock_feedback_logging`.
+[PASS] The assistant clearly redirects to existing order timing or order-problem help without inventing store-hours information.
+  rationale: The assistant does not provide any store-hours information and instead explains it can help with "check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order," which redirects to order timing/problem support.
 
 --- Quality Metrics ---
-bot_quality: 4.75/5
-  helpfulness: 4/5 — The assistant met the user's stated goal of being heard and not escalating, though it could have added a bit more empathic engagement (e.g., reflecting specifics of the complaint) to be maximally useful for venting.
-  repair_quality: 5/5 — There were no disfluency or misunderstanding signals from the user; the assistant's direction aligned with user intent throughout, so no repair was needed.
-  coherence: 5/5 — The assistant consistently remembered that the user wanted only to vent and reiterated that it would not start an order lookup or compensation, staying aligned with the intent across all turns.
-  tone: 5/5 — The tone was natural, empathetic, and concise, matching the emotional context and staying friendly and readable without sounding robotic.
-  task_completion: PASS — The user only wanted to vent without triggers for refunds or follow-up, and the assistant consistently listened, acknowledged the feedback, and explicitly avoided escalation or compensation steps.
-summary: The assistant handled the venting scenario well, acknowledging the user’s disappointment and clearly respecting their wish not to pursue refunds or follow-up. It maintained coherent context and an empathetic tone throughout, though it could have slightly deepened its engagement with the specific issues mentioned to be maximally supportive. Overall, the user’s limited goal was effectively met.
+bot_quality: 4.25/5
+  helpfulness: 3/5 — The assistant clearly communicated its scope limits and what it could help with, which is somewhat useful but did not provide any substantive solution for the specific hours question.
+  repair_quality: 5/5 — There were no user corrections or pushback; the assistant did not face any repair opportunities.
+  coherence: 5/5 — The assistant consistently stayed within its declared scope and responded appropriately to the user’s acknowledgement and closure.
+  tone: 4/5 — The tone was polite and concise, though slightly formulaic and promotional in the opener but still natural and easy to read.
+  task_completion: PASS — The user voluntarily withdrew the request after seeing the bot’s stated limitations and said they were all set, indicating their need was resolved for purposes of this interaction.
+summary: The assistant clearly stated its limitations and maintained consistent, polite responses, correctly recognizing when the user was finished. However, it did not help with the specific hours question and mainly served to clarify scope rather than provide concrete assistance for the user’s original intent.
 
 --- Assertion Results ---
-[PASS] flow_started(acknowledge_order_feedback)
-[PASS] action_executed(utter_venting_acknowledged)
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_chipotle_light_help_greeting)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
 [PASS] bot_did_not_utter
 [PASS] bot_did_not_utter
-[PASS] bot_did_not_utter
-[PASS] flow_completed(acknowledge_order_feedback)
 
 --- Raw Transcript ---
-[1] user: I’m really disappointed with the Chipotle I had today and just want to vent about it a bit—I’m not looking for a refund, coupon, replacement, or any kind of follow-up on my order.
-[2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
-[3] user: Thanks. The main thing is my bowl was really skimpy on portions and the rice was undercooked and crunchy, so it just didn’t feel worth what I paid this time.
-[4] agent: Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order.
-[5] user: Yeah, that’s all I wanted—to say it was disappointing and hope it gets better, because I usually like you guys. Thanks for listening.
-[6] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
+[1] user: What time does the Chipotle near me close tonight?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[4] user: Got it, thanks. I was just wondering about hours, so I’m all set.
+[5] agent: You’re welcome—glad I could confirm the timing.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-20af8ccd-053e-4808-8696-f6fbf8480657
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d51b4ed0-688b-4585-97f9-b22a91d690c6

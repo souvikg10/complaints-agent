@@ -1,24 +1,24 @@
 scenario: Order status sub-agent handles not-found retry before a successful lookup
 run: 2
-timestamp: 2026-07-14T12:42:07Z
-conversation_id: sim-9a1ced8b-a6c5-4d11-9b8b-0275a0585605
+timestamp: 2026-07-15T14:44:06Z
+conversation_id: sim-3629e7ee-dd63-4b78-9ed8-54c56584e7b7
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent asks for a corrected order identifier after the first lookup is not found.
-  rationale: After the first lookup result is not found (`order_lookup_result = not_found` at T2), the bot responds "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more." and then re-asks "What’s the order or confirmation number?", explicitly requesting a corrected identifier.
+  rationale: After the first lookup returns not_found at T2, the bot says "I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more" and then re-asks "What’s the order or confirmation number?", explicitly prompting for a corrected order identifier.
 
 [PASS] The agent completes the second lookup instead of stopping after the failed first lookup.
-  rationale: At T3, after the user provides CP999, the ledger shows `flow_started: order_status_sub_agent` followed by `action: action_mock_order_status`, `slot_set: order_lookup_result = found`, and `flow_completed: order_status_sub_agent`, and the bot tells the user "Order CP999 is delayed...", indicating the second lookup was completed.
+  rationale: At T3, after receiving CP999, the ledger shows flow_started: order_status_sub_agent, action: action_mock_order_status with order_lookup_result = found, and flow_completed: order_status_sub_agent, followed by the bot returning the delayed status and ETA, demonstrating the second lookup was completed.
 
 --- Quality Metrics ---
-bot_quality: 4.75/5
-  helpfulness: 5/5 — Once given the valid order number, the assistant clearly stated that the order was delayed, gave a concrete updated time estimate, and advised the user on what to do.
-  repair_quality: 5/5 — When the user corrected the order number, the assistant smoothly adjusted and returned an updated, relevant status without friction.
-  coherence: 5/5 — The assistant maintained context about the user’s goal (order status), handled the updated order number correctly, and did not contradict itself or re-ask for already given information beyond the initial clarification loop.
-  tone: 4/5 — The tone is polite, clear, and concise, though slightly scripted and survey-like at the end.
-  task_completion: PASS — The assistant successfully identified the order status and provided a clear updated timing window, which is what the user asked for.
-summary: The assistant efficiently helped the user track their Chipotle order, correctly updating the status once it had the right confirmation number. It maintained context, handled the user’s correction smoothly, and used a generally natural, polite tone, with only minor formulaic phrasing in the closing survey prompt.
+bot_quality: 5.0/5
+  helpfulness: 5/5 — It asked for the needed order number, then gave a clear, specific status and wait time for the correct order without irrelevant detail.
+  repair_quality: 5/5 — When the user corrected the order number, the assistant smoothly retried with the new number and updated the answer accordingly.
+  coherence: 5/5 — It correctly tracked the conversation flow from missing order to corrected number to updated status without contradictions or unnecessary re-asks.
+  tone: 5/5 — The tone is friendly, brief, and natural, with clear prompts and a polite closing that are easy to read.
+  task_completion: PASS — After getting the correct order number, the assistant clearly reported the order status and updated timing, which is exactly what the user asked for.
+summary: The assistant handled this simple tracking query effectively: it requested the necessary identifier, recovered cleanly when the user corrected it, and provided a precise, relevant status update. Its responses were coherent across turns and phrased in a natural, polite tone, leading to a successful and efficient interaction.
 
 --- Assertion Results ---
 [PASS] flow_started(order_status_sub_agent)
@@ -27,18 +27,16 @@ summary: The assistant efficiently helped the user track their Chipotle order, c
 [PASS] flow_completed(check_chipotle_order_status)
 
 --- Raw Transcript ---
-[1] user: Hi, where is my Chipotle order?
+[1] user: Hi, I’m just checking—where is my Chipotle order right now?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll check the timing with you.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[4] user: The order number is CP000.
+[4] user: Sure, the order number is CP000.
 [5] agent: I couldn’t find that order yet—please check the number or the phone/email used and I’ll try once more.
 [6] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
-[7] user: Let me double-check—it's actually CP999.
+[7] user: Let me double-check—sorry, the order number is CP999.
 [8] agent: Order CP999 is delayed. The kitchen is catching up with a busy rush. The updated timing is about 25 minutes; please wait for that window before heading over.
-[9] agent: Is there anything else you’d like help with regarding your order today?
-[10] user: Got it, thanks for the update—that’s all I needed.
-[11] agent: You’re welcome—if you need anything else later, I’ll be here to help.
-[12] agent: How satisfied were you with the help you received today?
+[9] user: Got it, thanks for the update—that’s all I needed.
+[10] agent: You’re welcome—glad I could confirm the timing.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-9a1ced8b-a6c5-4d11-9b8b-0275a0585605
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-3629e7ee-dd63-4b78-9ed8-54c56584e7b7

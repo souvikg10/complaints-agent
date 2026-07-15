@@ -1,0 +1,50 @@
+scenario: Confirm issue resolution child flow is reached through a verified accepted order issue
+run: 1
+timestamp: 2026-07-15T13:04:12Z
+conversation_id: sim-fafbe1c3-9da2-4bfb-99e1-8f42bfeefc75
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent collects remedy acceptance before starting the confirmation-and-issuance child flow.
+  rationale: At T3 the user says "Yes, please go ahead and issue the credit," the slot resolution_acceptance is set to yes and validated, and only then does the ledger show flow_started: confirm_issue_resolution, so acceptance is collected before that child flow starts.
+
+[PASS] The agent asks for the delivery channel and issues the approved remedy after the verified eligible issue is accepted.
+  rationale: After acceptance at T3, the bot asks "Would you like the code shown here or sent to the email used for the order?" and at T4, after the user chooses email (slot_set: coupon_channel = email), the system runs action_mock_coupon_issuance and marks coupon_issued = true, satisfying asking for a channel and issuing the remedy post-acceptance.
+
+--- Quality Metrics ---
+bot_quality: 4.0/5
+  helpfulness: 4/5 — The assistant efficiently gathered the order number, verified the order, and delivered a concrete remedy with clear terms, though the final irrelevant knowledge-base apology was mildly confusing.
+  repair_quality: 5/5 — There were no user pushbacks or corrections, so there were no repair opportunities mishandled.
+  coherence: 3/5 — Context was tracked well through the resolution flow, but after the user said the issue was resolved the assistant produced an unrelated knowledge-base error before resuming normal closure, a self-contradictory and incoherent turn.
+  tone: 4/5 — The tone was friendly, empathetic, and clear throughout, with only the stray knowledge-base line sounding slightly robotic and out of place.
+  task_completion: PASS — The bot successfully issued and clearly communicated the $8 credit code the user requested, and the user's final acknowledgement shows their need was met before the odd error response.
+summary: The assistant effectively resolved the user's issue by issuing an $8 credit and clearly presenting the code, with a helpful and polite tone. The main flaw was a spurious, incoherent knowledge-base error message after the user had already confirmed satisfaction, which could create brief confusion despite the task being completed.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] flow_started(confirm_issue_resolution)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] action_executed(action_mock_coupon_issuance)
+[PASS] slot_was_set(resolution_acceptance='yes', coupon_channel='email', coupon_issued=True)
+[PASS] sequencing
+[PASS] flow_completed(confirm_issue_resolution)
+
+--- Raw Transcript ---
+[1] user: Hi, my Chipotle order was missing my chips.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: The order number is CP123.
+[5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[6] agent: Would you like me to issue the approved future-meal remedy?
+[7] user: Yes, please go ahead and issue the credit.
+[8] agent: Would you like the code shown here or sent to the email used for the order?
+[9] user: Please send it to the email used for my order.
+[10] agent: I’ll also mark it for the order email in this mock flow. The code is shown here so you have it now.
+[11] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[12] user: Got it, thank you—that’s all I needed.
+[13] agent: I’m sorry, but I don’t have access to a knowledge base right now, so I’m not able to provide an answer to that.
+[14] agent: Glad I could help—before we wrap up, is there anything else you need today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-fafbe1c3-9da2-4bfb-99e1-8f42bfeefc75

@@ -1,0 +1,47 @@
+scenario: Order issue sub-agent is reached through the parent happy path
+run: 2
+timestamp: 2026-07-15T13:04:34Z
+conversation_id: sim-d0b0d9d3-7bff-45d6-9197-aa4452e0d272
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
+  rationale: At T1 the system sets `issue_details = Hi, my order was missing the chips that were supposed to come with it` and `issue_category = missing_item`, and there is no later overwrite or loss of this information while it collects `order_id` and proceeds with the flow through T4.
+
+[PASS] Once the report has enough context, the order-issue sub-agent runs the mock policy check and offers the eligible resolution path.
+  rationale: After receiving the order number at T2, the ledger shows `flow_started: order_issue_sub_agent`, then `action: action_mock_order_issue_policy` with `order_verified = true`, `issue_eligible = true`, and `suggested_remedy = item_credit`, followed by `flow_completed: order_issue_sub_agent` and the bot message offering an `$8 item credit` as the remedy.
+
+--- Quality Metrics ---
+bot_quality: 3.75/5
+  helpfulness: 4/5 — The assistant efficiently collected the needed info, applied the correct remedy, and provided a usable credit code, but the final irrelevant refusal message added slight confusion after the issue was already resolved.
+  repair_quality: 5/5 — There were no user corrections or signs of misunderstanding, so there was no opportunity for repair to be tested or mishandled.
+  coherence: 2/5 — While the assistant maintained context for the order and remedy, it abruptly contradicted the resolved state by saying it couldn’t provide an answer after the user had already confirmed they were done.
+  tone: 4/5 — The tone was polite, empathetic, and clear throughout, with only the final generic refusal sounding slightly robotic and out of place.
+  task_completion: PASS — The assistant successfully verified the order and issued a concrete $8 credit code with details of use before the conversation ended.
+summary: The assistant handled the main task well: it verified the order, explained the remedy, and issued a clear $8 credit code the user could use. Tone and helpfulness were solid overall, but the last message was incoherent with the prior context and slightly undermined the smooth conclusion of an otherwise successful interaction.
+
+--- Assertion Results ---
+[PASS] flow_started(report_chipotle_order_issue)
+[PASS] flow_started(order_issue_sub_agent)
+[PASS] action_executed(action_mock_order_issue_policy)
+[PASS] slot_was_set(order_id, issue_category, issue_details, resolution_acceptance='yes')
+[PASS] sequencing
+[PASS] flow_completed(report_chipotle_order_issue)
+
+--- Raw Transcript ---
+[1] user: Hi, my order was missing the chips that were supposed to come with it.
+[2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
+[3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
+[4] user: The order number is CP123.
+[5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[6] agent: Would you like me to issue the approved future-meal remedy?
+[7] user: Yes, please go ahead and issue the $8 item credit.
+[8] agent: Would you like the code shown here or sent to the email used for the order?
+[9] user: Shown here in the chat is fine, thanks.
+[10] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[11] user: Got it, thank you for the help—that’s all I needed.
+[12] agent: I’m sorry, but I don’t have access to any additional information or a knowledge base right now, so I’m not able to provide an answer.
+[13] agent: Is there anything else I can help you with today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-d0b0d9d3-7bff-45d6-9197-aa4452e0d272

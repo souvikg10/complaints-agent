@@ -1,0 +1,37 @@
+scenario: User asks an out-of-scope nutrition question
+run: 1
+timestamp: 2026-07-15T13:04:12Z
+conversation_id: sim-6b5ce2fa-f171-4c84-9cf2-b0ec8b310aed
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: In response to the user’s nutrition question, the bot twice states it is focused on order timing and problems and explicitly says it “can’t help with … nutrition, allergen, or ingredient questions,” clearly defining its limited order-support scope.
+
+--- Quality Metrics ---
+bot_quality: 2.25/5
+  helpfulness: 1/5 — The assistant consistently deflected the nutrition question and provided no substantive help beyond stating its limitations.
+  repair_quality: 1/5 — When the user asked a clarifying question about the limitation, the assistant simply repeated the same scripted response and only later added a slightly different refusal, never really engaging with the clarification.
+  coherence: 4/5 — The assistant stayed consistent about its capabilities and did not contradict itself, though it failed to adapt its repeated message to the evolving context of the user’s clarification and closing remark.
+  tone: 3/5 — The tone was polite but somewhat robotic and repetitive, using the same canned introduction and limitation statement multiple times.
+  task_completion: FAIL — The user wanted nutrition information, which the assistant repeatedly refused and never provided, and the final clarification came only after the user had already withdrawn.
+summary: The assistant clearly communicated its limitation around nutrition information but did not actually help with the user’s request or meaningfully engage with their clarification. It repeated a canned response instead of adapting to the conversation, and only slightly personalized its final refusal after the user had already indicated they were done. While coherent and polite, the interaction felt scripted and unhelpful from the user’s standpoint.
+
+--- Assertion Results ---
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, fajita veggies, mild salsa, cheese, and guac?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[4] user: Got it. In that case, you can’t help me with nutrition info for a bowl, right?
+[5] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[6] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[7] user: Okay, thanks anyway—that’s all I needed.
+[8] agent: I’m sorry, but I don’t have the information you’re looking for. Right now, I don’t have access to a nutrition or calorie database.
+[9] agent: Is there anything else I can help you with related to your order today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-6b5ce2fa-f171-4c84-9cf2-b0ec8b310aed

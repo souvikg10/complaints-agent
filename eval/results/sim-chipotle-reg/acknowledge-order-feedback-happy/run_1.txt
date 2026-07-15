@@ -1,0 +1,44 @@
+scenario: Customer vents, declines action, and closes the complete feedback-only call chain
+run: 1
+timestamp: 2026-07-15T13:01:22Z
+conversation_id: sim-06220ca5-335d-4cf3-8204-45bda5b279f0
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent recognizes feedback-only intent rather than opening order-status or order-issue handling.
+  rationale: On T1 the flow_started is acknowledge_order_feedback with slot_set: feedback_only_active = true and no order-status or issue flows start, and the bot explicitly says "I won’t start an order lookup or compensation."
+
+[PASS] The closing child accepts the natural farewell on its first attempt, clears feedback-only state, sends the concise close, and returns so the parent feedback flow completes too.
+  rationale: On T2 the user's first closing message "No, that's it" leads directly to flow_started: close_feedback_only, which clears feedback_only_active and related slots, triggers utter_feedback_closed, then shows flow_completed: close_feedback_only followed by flow_completed: acknowledge_order_feedback.
+
+--- Quality Metrics ---
+bot_quality: 5.0/5
+  helpfulness: 5/5 — For an emotional-venting intent with no requested action, the assistant appropriately validated the experience and respected the user's constraint of not initiating any resolution steps.
+  repair_quality: 5/5 — There were no disfluency signals or corrections from the user, so there was no need for repair and nothing was mishandled.
+  coherence: 5/5 — The assistant consistently tracked that the user only wanted to vent and reiterated it would not start any order or compensation flow, maintaining that stance through the conversation.
+  tone: 5/5 — The tone was natural, empathetic, and concise, matching the casual nature of the interaction without sounding robotic or formulaic.
+  task_completion: PASS — The user only wanted to vent without any follow-up actions, and the assistant acknowledged the complaint and explicitly confirmed it would not initiate any order lookup or compensation.
+summary: The assistant correctly recognized that the user simply wanted to vent, acknowledged their frustration, and explicitly avoided unwanted follow-up actions. It maintained consistent context and used a warm, natural tone throughout. Overall, the brief interaction met the user's needs cleanly and respectfully.
+
+--- Assertion Results ---
+[PASS] flow_started(acknowledge_order_feedback)
+[PASS] flow_started(close_feedback_only)
+[PASS] action_executed(utter_venting_acknowledged)
+[PASS] action_executed(utter_feedback_closed)
+[PASS] slot_was_set(feedback_only_active=False)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+[PASS] flow_completed(close_feedback_only)
+[PASS] flow_completed(acknowledge_order_feedback)
+
+--- Raw Transcript ---
+[1] user: I just wanted to say my last Chipotle meal was really disappointing—the rice was hard, the steak was super chewy, and everything was barely warm. I’m not looking for a refund, coupon, replacement, order check, or any follow-up, I just needed to vent about it.
+[2] agent: I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help.
+[3] user: No, that's it.
+[4] agent: Got it — thanks for letting us know. Hope your next Chipotle order hits the spot.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-06220ca5-335d-4cf3-8204-45bda5b279f0

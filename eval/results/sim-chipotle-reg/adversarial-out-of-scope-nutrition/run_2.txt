@@ -1,0 +1,34 @@
+scenario: User asks an out-of-scope nutrition question
+run: 2
+timestamp: 2026-07-15T13:01:38Z
+conversation_id: sim-9e6efa1d-3f69-4eb1-a844-14094f9e688e
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent clearly states the limits of this assistant's order-support scope for an unrelated request.
+  rationale: In the second bot message, the assistant explicitly says it is focused on Chipotle order timing and problems with an order and that it “can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions,” clearly stating its order-support scope limits in response to the unrelated nutrition request.
+
+--- Quality Metrics ---
+bot_quality: 3.5/5
+  helpfulness: 1/5 — The assistant explicitly refused to answer the user’s calorie question and provided no alternative or partial guidance.
+  repair_quality: 5/5 — There were no user pushbacks or corrections that required repair, so no repair opportunities were mishandled.
+  coherence: 4/5 — The assistant consistently maintained its stated scope, though it redundantly reiterated inability after the user had already indicated they were all set.
+  tone: 4/5 — The tone was polite, clear, and apologetic, though slightly formulaic and repetitive in the final turn.
+  task_completion: FAIL — The assistant never answered the user’s nutrition question and instead stated it could not provide that type of information.
+summary: The assistant clearly communicated its scope limitations and responded in a polite, readable manner, maintaining internal consistency about what it could and could not do. However, it did not satisfy the user’s initial request for calorie information and failed to offer any alternative help or guidance, resulting in very low helpfulness and incomplete task fulfillment.
+
+--- Assertion Results ---
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
+
+--- Raw Transcript ---
+[1] user: Hi, can you tell me how many calories are in a chicken burrito bowl with white rice, black beans, mild salsa, cheese, and lettuce?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[4] user: Got it, thanks. I don’t have an order issue right now, so I’m all set.
+[5] agent: I’m sorry, but I don’t have access to that kind of information right now, so I’m not able to answer your question.
+[6] agent: Is there anything else you’d like help with today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-9e6efa1d-3f69-4eb1-a844-14094f9e688e

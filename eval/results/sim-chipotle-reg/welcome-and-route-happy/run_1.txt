@@ -1,0 +1,42 @@
+scenario: Welcome and route Chipotle support from a greeting
+run: 1
+timestamp: 2026-07-15T12:59:18Z
+conversation_id: sim-36186df5-f05f-47af-a57b-24efa2bbeef5
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent introduces its Chipotle order-support scope clearly after the greeting.
+  rationale: Immediately after the greeting, the bot says "I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong" and then clarifies "I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order," which clearly introduces its Chipotle order-support scope.
+
+--- Quality Metrics ---
+bot_quality: 3.0/5
+  helpfulness: 2/5 — The assistant initially gave a clear scope description but then failed to answer a direct clarification question about that same scope, responding instead with an irrelevant knowledge-base limitation.
+  repair_quality: 4/5 — There were no explicit user pushbacks or corrections that the assistant ignored, so there was little need for repair behavior and no evident mishandling of disfluency.
+  coherence: 2/5 — After clearly stating its capabilities, the assistant contradicted itself by saying it did not have the information to answer whether it could only help with order timing and problems, showing poor context tracking of its own prior message.
+  tone: 4/5 — The tone was polite and conversational throughout, though occasionally a bit formulaic and scripted (e.g., repeated self-introduction and closing survey prompt).
+  task_completion: FAIL — When the user asked for confirmation of the assistant’s capabilities, the bot incorrectly claimed it lacked information instead of reaffirming or summarizing its earlier clear explanation.
+summary: The assistant clearly articulated its scope at first but then failed to maintain that clarity when the user sought confirmation, incorrectly deflecting due to a supposed lack of knowledge. While its tone remained polite and it did not mishandle user disfluency, the self-contradiction about its own capabilities and the non-answer to a simple clarification lowered overall helpfulness and coherence.
+
+--- Assertion Results ---
+[PASS] flow_started(welcome_and_route)
+[PASS] action_executed(utter_chipotle_welcome)
+[PASS] action_executed(utter_chipotle_scope)
+[PASS] flow_completed(welcome_and_route)
+
+--- Raw Transcript ---
+[1] user: Hi there! What kinds of things can you help me with today?
+[2] agent: Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong.
+[3] agent: I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?
+[4] agent: Is there anything else I can assist you with today?
+[5] user: Got it, thanks. Besides order issues, are there other things you can help with, like menu questions or nutrition info?
+[6] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[7] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[8] user: Thanks for explaining. Just so I understand, you can only help with order timing and problems with an existing order, right?
+[9] agent: I’m sorry, but I don’t have the information to answer that. Right now I don’t have access to a knowledge base.
+[10] agent: Is there anything else you’d like help with today?
+[11] user: No worries, thanks for clarifying what you can and can’t help with. That’s all I needed.
+[12] agent: Got it. I’ll be here if you need anything else later.
+[13] agent: Before you go, how would you rate your experience with me today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-36186df5-f05f-47af-a57b-24efa2bbeef5

@@ -1,0 +1,43 @@
+scenario: Customer asks an unrelated Chipotle store-hours question
+run: 1
+timestamp: 2026-07-15T13:01:23Z
+conversation_id: sim-a298de76-9039-40b4-bbd0-f7d3c9807522
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The assistant recognizes the store-hours question as outside this order-support helper's scope.
+  rationale: In every reply the assistant states it is focused on order timing and problems and explicitly says it “can’t help with hours, locations…” thereby recognizing the store-hours question is out of scope.
+
+[PASS] The assistant clearly redirects to existing order timing or order-problem help without inventing store-hours information.
+  rationale: The assistant does not provide any store-hours information and repeatedly redirects by saying it can help check an existing order’s pickup or delivery timing or help with a wrong, missing, or poor-quality order.
+
+--- Quality Metrics ---
+bot_quality: 1.5/5
+  helpfulness: 1/5 — It provided no substantive help toward the user’s goal and only repeated a scope disclaimer.
+  repair_quality: 1/5 — After the user acknowledged the limitation and effectively closed the conversation, the assistant ignored this and repeated the same canned message without adapting.
+  coherence: 1/5 — The assistant failed to incorporate the evolving context and simply restarted its introductory script each turn despite the user’s clear understanding and closing remarks.
+  tone: 3/5 — The phrasing is polite and clear but highly repetitive and template-like, lacking natural variation across turns.
+  task_completion: FAIL — The assistant never helped the user find store hours and instead repeatedly restated its limitations.
+summary: The assistant clearly communicated its scope but never addressed the user’s need for store hours, leading to task failure. It also failed to adapt to user responses, repeatedly returning the same stock message instead of acknowledging understanding or gracefully closing, and its tone, while polite, felt mechanical due to repetition.
+
+--- Assertion Results ---
+[PASS] flow_started(decline_or_light_help)
+[PASS] action_executed(utter_chipotle_light_help_greeting)
+[PASS] action_executed(utter_out_of_scope)
+[PASS] flow_completed(decline_or_light_help)
+[PASS] bot_did_not_utter
+[PASS] bot_did_not_utter
+
+--- Raw Transcript ---
+[1] user: What time does the Chipotle near me close tonight?
+[2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[3] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[4] user: Oh got it, thanks for explaining. I was just trying to find out what time my local Chipotle closes tonight, so I guess that’s not something you can help with?
+[5] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[6] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+[7] user: Okay, understood. I was just looking for the store hours, so I’ll check somewhere else. Thanks anyway.
+[8] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[9] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-a298de76-9039-40b4-bbd0-f7d3c9807522

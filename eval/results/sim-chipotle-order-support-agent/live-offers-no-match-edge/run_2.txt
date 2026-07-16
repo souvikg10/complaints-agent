@@ -1,21 +1,21 @@
 scenario: Unsupported offer hunt returns no matching promotion
 run: 2
-timestamp: 2026-07-16T09:54:23Z
-conversation_id: sim-1f09d248-9598-4edf-afb5-b9fb7d4b0f30
+timestamp: 2026-07-16T09:57:48Z
+conversation_id: sim-578880c6-df5b-45e2-9d6a-76a735b0073a
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The agent reports when no matching current offer is returned instead of inventing one.
-  rationale: For both offer queries the ledger shows offers_lookup_result = no_match and the bot replied "I don’t have a current matching offer for that request," only listing concrete offers later when offers_lookup_result = available, so it did report no match instead of inventing one when none was returned.
+  rationale: In both offer queries the bot replied, "I don’t have a current matching offer for that request," which matches the ledger showing offers_lookup_result = no_match, and it did not invent any offer.
 
 --- Quality Metrics ---
-bot_quality: 3.0/5
-  helpfulness: 2/5 — It twice gave the same non-specific deflection instead of directly answering about birthday and student discounts, and the later detailed offers list came too late and did not address the user's specific questions.
-  repair_quality: 5/5 — There were no user pushbacks or corrections indicating misunderstanding; the user accepted each response, so there was no repair opportunity to mishandle.
-  coherence: 2/5 — The assistant contradicted its earlier statements that there were no matching offers by later listing active offers, and it provided this new information after the user had clearly closed the conversation.
-  tone: 3/5 — The wording is clear and polite enough but somewhat canned and slightly brusque, especially the repeated phrase 'I won’t treat this as complaint compensation.'
-  task_completion: FAIL — The bot repeatedly failed to give concrete answers about birthday and student offers, and then added extra offer details only after the user said they were done, so the user's original needs were never clearly met.
-summary: The assistant gave repetitive, generic deflections to specific questions about birthday and student offers and only later surfaced relevant offer details after the user had indicated the conversation was over. It remained polite but slightly stiff in tone, and its late-breaking list of offers conflicted with its earlier claims that there were no matching offers, leading to low coherence and incomplete task fulfillment.
+bot_quality: 3.75/5
+  helpfulness: 3/5 — The bot answered the core questions correctly by stating there were no matching offers and suggesting the app, but it was repetitive and rigid (including the irrelevant note about complaint compensation) instead of tailoring the response, offering alternative ways to check, or clarifying what 'no matching offer' means.
+  repair_quality: 5/5 — There were no user pushbacks or corrections; the user accepted the responses, so there were no repair opportunities to mishandle.
+  coherence: 5/5 — The assistant stayed consistent across turns, correctly handling a second, different offer question without contradicting itself or losing track of context.
+  tone: 2/5 — The tone is polite but noticeably canned and slightly off (“I won’t treat this as complaint compensation”), making it feel robotic and poorly adapted to the user’s simple, friendly queries.
+  task_completion: PASS — For both questions about birthday entrée and student discount, the bot clearly conveyed that there were no matching current offers and the user acknowledged this as sufficient.
+summary: The assistant successfully informed the user that there were no current birthday or student discount offers and pointed them to the app, which satisfied the user’s stated needs. However, responses were rigid, repetitive, and included an odd disclaimer about complaint compensation that reduced naturalness and made the tone feel unnecessarily scripted rather than conversational or user-focused.
 
 --- Assertion Results ---
 [PASS] flow_started(live_offers)
@@ -25,15 +25,12 @@ summary: The assistant gave repetitive, generic deflections to specific question
 [PASS] flow_completed(live_offers)
 
 --- Raw Transcript ---
-[1] user: Hi, I was wondering if you currently have any birthday free entrée offers?
+[1] user: Hi! Do you currently have any kind of birthday free entrée offer?
 [2] agent: I don’t have a current matching offer for that request. Check again later, or look in the Chipotle app while signed in for account-specific offers. I won’t treat this as complaint compensation.
-[3] user: Okay, thanks. Do you have any student discounts available right now?
+[3] user: Okay, thanks. Do you have any kind of student discount going on right now?
 [4] agent: I don’t have a current matching offer for that request. Check again later, or look in the Chipotle app while signed in for account-specific offers. I won’t treat this as complaint compensation.
-[5] user: Got it, thanks for checking. That’s all I needed.
-[6] agent: Here are the offers currently returned by the offers service:
-• Rewards app entrée perk — 20% off one qualifying entrée; expires April 30, 2026. Use the Chipotle app while signed in, add one qualifying entrée, and apply the offer before checkout.
-• Delivery week deal — $0 delivery fee on a qualifying digital delivery order; expires April 7, 2026. Order in the Chipotle app or on chipotle.com and apply the offer at checkout.
-Each offer is one use per account, while available, and cannot be stacked with another offer.
+[5] user: Got it, thanks for checking—that’s all I needed.
+[6] agent: You’re welcome—glad I could confirm the timing.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-1f09d248-9598-4edf-afb5-b9fb7d4b0f30
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-578880c6-df5b-45e2-9d6a-76a735b0073a

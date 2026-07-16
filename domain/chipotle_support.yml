@@ -26,16 +26,18 @@ slots:
   feedback_followup_message: {type: text, mappings: [{type: from_llm}]}
   feedback_followup_choice: {type: categorical, values: [close, continue_feedback, needs_action], mappings: [{type: controlled}]}
   feedback_logged: {type: bool, mappings: [{type: controlled}]}
+  offers_lookup_result: {type: categorical, values: [available, no_match, unavailable, sensitive_data], mappings: [{type: controlled}]}
+  live_offers_summary: {type: text, mappings: [{type: controlled}]}
 
 responses:
   utter_chipotle_welcome:
-    - text: "Hi, I’m your Chipotle order helper. I can check when your order will be ready or help fix something that went wrong."
-      buttons: [{title: "Check my order time", payload: "Check my order time"}, {title: "Report an order issue", payload: "Report an order issue"}]
-  utter_chipotle_scope: [{text: "I can help with an order’s pickup or delivery time, or with a wrong, missing, or poor-quality order. Which would you like to handle?"}]
+    - text: "Hi, I’m your Chipotle order helper. I can check when your order will be ready, help fix something that went wrong, or show current offers."
+      buttons: [{title: "Check my order time", payload: "Check my order time"}, {title: "Report an order issue", payload: "Report an order issue"}, {title: "See current offers", payload: "Show current offers"}]
+  utter_chipotle_scope: [{text: "I can help with an order’s pickup or delivery time, a wrong, missing, or poor-quality order, or current offers. What would you like to handle?"}]
   utter_unverified_compensation_refusal: [{text: "I can’t issue a coupon, credit, refund, or free item on its own. This helper only considers a future-meal remedy after a reported problem with a verified Chipotle order."}]
   utter_chipotle_status_greeting: [{text: "Hi—I’m your Chipotle order helper. I’ll check the timing with you."}]
   utter_chipotle_light_help_greeting: [{text: "Hi—I’m your Chipotle order helper. I’ll keep this quick and practical."}]
-  utter_safe_boundary_redirect: [{text: "I can’t help with that. I can help check a Chipotle order’s timing or help with a wrong, missing, or poor-quality order."}]
+  utter_safe_boundary_redirect: [{text: "I can’t help with that. I can help check a Chipotle order’s timing, help with a wrong, missing, or poor-quality order, or show current offers."}]
   utter_ask_order_id: [{text: "What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123)."}]
   utter_invalid_order_id: [{text: "I need a usable order detail to check it. Try the confirmation number, or the phone or email used for the order—never payment details."}]
   utter_ask_order_mode:
@@ -77,7 +79,11 @@ responses:
   utter_venting_acknowledged: [{text: "I hear you. Thanks for letting us know—having a meal go sideways is disappointing. I won’t start an order lookup or compensation. If you decide you want either later, I can help."}]
   utter_feedback_continued: [{text: "Thanks for adding that detail. I’ll keep this as feedback only unless you decide you want help with the order."}]
   utter_feedback_closed: [{text: "Got it — thanks for letting us know. Hope your next Chipotle order hits the spot."}]
-  utter_out_of_scope: [{text: "I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order."}]
-  utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status or help log and resolve an order issue here."}]
+  utter_out_of_scope: [{text: "I’m focused on Chipotle order timing, problems with an order, and current offers in this build, so I can’t help with hours, locations, jobs, catering, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, help with a wrong, missing, or poor-quality order, or show current offers."}]
+  utter_no_human_handoff: [{text: "This build doesn’t have human handoff. I can still check a mock order status, help log and resolve an order issue, or show available offers here."}]
+  utter_live_offers_available: [{text: "Here are the offers currently returned by the offers service:\n{live_offers_summary}"}]
+  utter_live_offers_no_match: [{text: "I don’t have a current matching offer for that request. Check again later, or look in the Chipotle app while signed in for account-specific offers. I won’t treat this as complaint compensation."}]
+  utter_live_offers_unavailable: [{text: "I can’t check current offers right now, so I won’t invent one. Please try again later or check the Chipotle app."}]
+  utter_live_offers_sensitive_data: [{text: "Please don’t share passwords, payment-card numbers, or other account credentials here. I only need safe details such as whether you’re using pickup or delivery when an offer requires it."}]
 
-actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, action_mock_feedback_logging, validate_resolution_acceptance, validate_feedback_followup_message]
+actions: [action_mock_order_status, action_mock_order_issue_policy, action_mock_coupon_issuance, action_mock_feedback_logging, action_mock_live_offers, validate_resolution_acceptance, validate_feedback_followup_message]

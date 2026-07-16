@@ -1,0 +1,31 @@
+version: "3.1"
+
+flows:
+  live_offers:
+    name: "Show current Chipotle offers"
+    run_pattern_completed: false
+    description: "Use when a customer asks for current, new, live, active, app, rewards, delivery, BOGO, student, birthday, free entrée, discount, or promotion offers from Chipotle. This is for general user-facing promotions, not a coupon, credit, refund, or replacement requested because of an order problem; route an order-problem compensation request to the order-issue flow instead. Do not collect passwords, payment cards, or account credentials. Retrieve the current offer catalog through the local offers capability and show only returned offers, key terms, expiry, redemption steps, and stacking limits. If the capability reports no match or unavailable, say so plainly and do not invent an offer."
+    steps:
+      - action: action_mock_live_offers
+      - id: offers_result
+        noop: true
+        next:
+          - if: slots.offers_lookup_result = "available"
+            then: show_offers
+          - if: slots.offers_lookup_result = "no_match"
+            then: no_matching_offers
+          - if: slots.offers_lookup_result = "sensitive_data"
+            then: protect_sensitive_data
+          - else: offers_unavailable
+      - id: show_offers
+        action: utter_live_offers_available
+        next: END
+      - id: no_matching_offers
+        action: utter_live_offers_no_match
+        next: END
+      - id: protect_sensitive_data
+        action: utter_live_offers_sensitive_data
+        next: END
+      - id: offers_unavailable
+        action: utter_live_offers_unavailable
+        next: END

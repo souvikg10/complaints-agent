@@ -1,24 +1,24 @@
 scenario: Order issue sub-agent is reached through the parent happy path
 run: 2
-timestamp: 2026-07-15T14:46:56Z
-conversation_id: sim-aafca8bc-e254-4891-a81a-066b4c940484
-overall_result: PASS
+timestamp: 2026-07-16T09:53:31Z
+conversation_id: sim-e34bca48-bda0-4e74-a5fe-add5325f7d36
+overall_result: FAIL
 
 --- Quality Criteria Results ---
-[PASS] The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
-  rationale: At T1 the system sets and retains `issue_details = Hi, my order was missing the chips that were supposed to come with it` and `issue_category = missing_item` while then collecting `order_id = CP123` at T2, with no evidence these issue slots were cleared or overwritten during context collection.
+[FAIL] The agent preserves issue information it can infer from the opening complaint while collecting the required order context.
+  rationale: At T1 the system initially sets issue_details and issue_category from the opening complaint, but immediately afterward in the same turn it resets issue_category and issue_details to null while collecting order context, so the inferred issue information is not preserved.
 
 [PASS] Once the report has enough context, the order-issue sub-agent runs the mock policy check and offers the eligible resolution path.
-  rationale: After obtaining `order_id = CP123` at T2, the `order_issue_sub_agent` is started and `action_mock_order_issue_policy` runs, setting `order_verified = true`, `issue_eligible = true`, and `suggested_remedy = item_credit`, followed immediately by `utter_offer_credit` that presents an $8 item credit remedy to the user.
+  rationale: At T3, after order_id and issue details are known, flow_started: order_issue_sub_agent and action: action_mock_order_issue_policy run, setting issue_eligible=true and suggested_remedy=item_credit, followed by action: utter_offer_credit in the transcript offering an $8 item credit as the resolution.
 
 --- Quality Metrics ---
 bot_quality: 4.75/5
-  helpfulness: 5/5 — It efficiently gathered the needed info, applied the correct remedy, and delivered clear, actionable details about the credit and its use.
-  repair_quality: 5/5 — There were no user pushbacks or corrections, so no repair opportunities were missed.
-  coherence: 5/5 — The assistant consistently tracked the order number, the remedy, and the user’s preference to receive the code in chat without contradiction or re-asking.
-  tone: 4/5 — The tone is polite, empathetic, and clear, though one closing line ('glad I could confirm the timing') is slightly off from the context of issuing a credit rather than timing.
-  task_completion: PASS — The assistant validated the order, issued the requested $8 credit, provided the code in chat as requested, and the user confirmed that resolved their need.
-summary: The assistant effectively resolved the user’s issue by issuing an appropriate credit, providing the code as requested, and giving clear usage details. It maintained context well and used a courteous, user-friendly tone. Apart from a mildly off-key final sentence, the interaction is strong, concise, and goal-focused.
+  helpfulness: 5/5 — It efficiently collected needed info, issued the correct credit, presented the code with clear usage details, and fully resolved the user's request.
+  repair_quality: 5/5 — There were no user corrections or pushback, so no repair was needed or mishandled.
+  coherence: 5/5 — The assistant consistently tracked the order number, issue type, and user preference for code delivery without contradictions or re-asking.
+  tone: 4/5 — The tone is polite, clear, and appropriate, though the closing line is slightly odd (“confirm the timing”) rather than a more natural wrap-up.
+  task_completion: PASS — The assistant verified the order, applied the $8 credit, displayed the specific code with terms, and the user confirmed that resolved their need.
+summary: The assistant handled the missing-item complaint smoothly, gathered the necessary details, and provided a concrete remedy that the user accepted as sufficient. Conversation flow and state tracking were clean, and the tone was generally warm and service-oriented, with only a mildly awkward final sentence.
 
 --- Assertion Results ---
 [PASS] flow_started(report_chipotle_order_issue)
@@ -33,12 +33,16 @@ summary: The assistant effectively resolved the user’s issue by issuing an app
 [2] agent: Hi—I’m your Chipotle order helper. That’s frustrating—let’s see what I can do to make the meal situation easier.
 [3] agent: What’s the order or confirmation number? Please don’t share card or payment details. For a future-meal coupon or credit, this mock flow needs a matching Chipotle order number (for example, CP123).
 [4] user: Sure, the order number is CP123.
-[5] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
-[6] agent: Would you like the code shown here or sent to the email used for the order?
-[7] user: I’ll take the code shown here in chat, please.
-[8] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
-[9] user: Got it, thanks for taking care of that. That’s all I needed.
-[10] agent: You’re welcome—glad I could confirm the timing.
+[5] agent: What best describes the problem?
+[6] user: The chips were missing from my order when it was delivered.
+[7] agent: I found and verified the order. The available remedy is an $8 item credit toward a future meal for the order mix-up.
+[8] agent: Would you like me to issue the approved future-meal remedy?
+[9] user: Yes, please go ahead and issue the $8 item credit.
+[10] agent: Would you like the code shown here or sent to the email used for the order?
+[11] user: You can just show the code here in the chat, that works for me.
+[12] agent: Issued: $8 item credit. Your code is CREDIT-CP123, valid for 30 days from today. Use it on one qualifying Chipotle entrée at checkout; one use only and it can’t be combined with another offer.
+[13] user: Got it, thanks for taking care of that—that’s all I needed.
+[14] agent: You’re welcome—glad I could confirm the timing.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-aafca8bc-e254-4891-a81a-066b4c940484
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-e34bca48-bda0-4e74-a5fe-add5325f7d36

@@ -1,0 +1,46 @@
+scenario: Customer asks for current Chipotle offers and receives catalog-backed offers
+run: 1
+timestamp: 2026-07-16T09:54:10Z
+conversation_id: sim-bce1de4b-1e54-4296-b120-f5127c908852
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent retrieves the live offer catalog before presenting any promotions.
+  rationale: At T1 the ledger shows `flow_started: live_offers` followed by `action: action_mock_live_offers` and then the bot message listing offers, indicating the live offer catalog was retrieved before presenting promotions.
+
+[PASS] The agent presents only the offers returned by the offers capability rather than inventing additional deals.
+  rationale: The offers listed in the bot responses (“Rewards app entrée perk” and “Delivery week deal”) match the `live_offers_summary` from `action_mock_live_offers` with no additional promotions invented.
+
+--- Quality Metrics ---
+bot_quality: 2.25/5
+  helpfulness: 2/5 — The initial offer description is useful, but the assistant fails to address the user's specific eligibility question and later gives an unhelpful access excuse, so the key follow-up is not answered.
+  repair_quality: 1/5 — When the user implicitly signaled that their follow-up question wasn’t answered by asking a more specific question, the assistant simply repeated the same generic offer list instead of adjusting to the clarified intent.
+  coherence: 2/5 — The assistant maintains basic topic coherence about offers but contradicts itself by first presenting detailed offers, then later saying it lacks access to the necessary information, and it ignores the clear shift in user intent toward eligibility.
+  tone: 4/5 — The tone is polite and clear, though slightly formulaic and repetitive in re-listing the same offers and ending with a standard closing line.
+  task_completion: FAIL — The user asked a follow-up about eligibility for a specific offer, but the assistant only repeated the generic offer list and then claimed lack of access, never answering the eligibility question.
+summary: The assistant gives a clear initial description of active offers but fails to respond to the user's specific eligibility question and instead repeats prior information. It then claims a lack of access that contradicts its earlier detailed response, showing issues with coherence and repair, even though the tone remains polite and readable.
+
+--- Assertion Results ---
+[PASS] flow_started(live_offers)
+[PASS] action_executed(action_mock_live_offers)
+[PASS] slot_was_set(offers_lookup_result='available')
+[PASS] action_executed(utter_live_offers_available)
+[PASS] flow_completed(live_offers)
+
+--- Raw Transcript ---
+[1] user: Hi! What promos or special deals do you have running right now?
+[2] agent: Here are the offers currently returned by the offers service:
+• Rewards app entrée perk — 20% off one qualifying entrée; expires April 30, 2026. Use the Chipotle app while signed in, add one qualifying entrée, and apply the offer before checkout.
+• Delivery week deal — $0 delivery fee on a qualifying digital delivery order; expires April 7, 2026. Order in the Chipotle app or on chipotle.com and apply the offer at checkout.
+Each offer is one use per account, while available, and cannot be stacked with another offer.
+[3] user: Thanks! Is the 20% off entrée perk available to all Rewards members, or only some accounts?
+[4] agent: Here are the offers currently returned by the offers service:
+• Rewards app entrée perk — 20% off one qualifying entrée; expires April 30, 2026. Use the Chipotle app while signed in, add one qualifying entrée, and apply the offer before checkout.
+• Delivery week deal — $0 delivery fee on a qualifying digital delivery order; expires April 7, 2026. Order in the Chipotle app or on chipotle.com and apply the offer at checkout.
+Each offer is one use per account, while available, and cannot be stacked with another offer.
+[5] user: Got it, thanks for explaining the offers. That’s all I needed.
+[6] agent: I’m afraid I don’t have access to the information needed to answer that right now, as I don’t have a connected knowledge base.
+[7] agent: Let me know if there’s anything else I can help you with.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-bce1de4b-1e54-4296-b120-f5127c908852

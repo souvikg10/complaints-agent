@@ -1,0 +1,22 @@
+scenario:
+  name: Customer asks for current Chipotle offers and receives catalog-backed offers
+  simulation_context: >
+    You are a cooperative Chipotle customer who wants to know what promotions are
+    active right now. Speak in English. Ask for current offers, deals, or promotions.
+    Do not ask for compensation because of an order problem, and do not request a
+    coupon tied to a complaint.
+  goals:
+    criteria:
+      - The agent retrieves the live offer catalog before presenting any promotions.
+      - The agent presents only the offers returned by the offers capability rather than inventing additional deals.
+    assertions:
+      - flow_started:
+          flow_ids: [live_offers]
+          operator: any
+      - action_executed: action_mock_live_offers
+      - slot_was_set:
+          - name: offers_lookup_result
+            value: available
+      - action_executed: utter_live_offers_available
+      - flow_completed:
+          flow_id: live_offers

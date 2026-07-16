@@ -1,0 +1,36 @@
+scenario: Unsupported offer hunt returns no matching promotion
+run: 1
+timestamp: 2026-07-16T09:54:10Z
+conversation_id: sim-f9bc3803-d462-41dd-bd06-4cc4ffab9918
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent reports when no matching current offer is returned instead of inventing one.
+  rationale: In both offer queries, the ledger shows offers_lookup_result = no_match and the bot responds "I don’t have a current matching offer for that request," clearly reporting no matching offer instead of inventing one.
+
+--- Quality Metrics ---
+bot_quality: 4.0/5
+  helpfulness: 3/5 — The assistant directly answered both promotion queries by stating no current matching offers and suggesting where to check, but repeated a canned line including an irrelevant disclaimer about complaint compensation instead of tailoring the reply to the second question.
+  repair_quality: 5/5 — There were no user corrections or pushback; the user accepted the answers, so there was no repair opportunity to mishandle.
+  coherence: 5/5 — The assistant consistently recognized the user’s intent in each turn and closed the conversation coherently without contradicting itself or losing context.
+  tone: 3/5 — While polite and concise, the repeated phrase 'I won’t treat this as complaint compensation' is stiff, unnecessary, and slightly awkward for the user’s simple discount questions.
+  task_completion: PASS — For both questions (birthday entrée and student discount), the assistant clearly conveyed that there were no matching offers and directed the user to check the app, which the user accepted as sufficient.
+summary: The assistant correctly informed the user that there were no matching birthday or student discount offers and pointed them to the app, fulfilling the user’s informational needs. However, its responses were formulaic and included an irrelevant complaint-compensation disclaimer that made the tone feel canned and slightly awkward rather than conversational and tailored to the user’s simple queries.
+
+--- Assertion Results ---
+[PASS] flow_started(live_offers)
+[PASS] action_executed(action_mock_live_offers)
+[PASS] slot_was_set(offers_lookup_result='no_match')
+[PASS] action_executed(utter_live_offers_no_match)
+[PASS] flow_completed(live_offers)
+
+--- Raw Transcript ---
+[1] user: Hi, I was wondering if you currently have any birthday free entrée offers?
+[2] agent: I don’t have a current matching offer for that request. Check again later, or look in the Chipotle app while signed in for account-specific offers. I won’t treat this as complaint compensation.
+[3] user: Okay, thanks. Do you have any kind of student discount right now?
+[4] agent: I don’t have a current matching offer for that request. Check again later, or look in the Chipotle app while signed in for account-specific offers. I won’t treat this as complaint compensation.
+[5] user: Got it, thanks for letting me know. That’s all I needed.
+[6] agent: You’re welcome—glad I could confirm the timing.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-f9bc3803-d462-41dd-bd06-4cc4ffab9918

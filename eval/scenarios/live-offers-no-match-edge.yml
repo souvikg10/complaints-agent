@@ -1,0 +1,21 @@
+scenario:
+  name: Unsupported offer hunt returns no matching promotion
+  simulation_context: >
+    You are a cooperative Chipotle customer asking about a very specific promotion
+    that may not exist. Speak in English. Ask whether there is currently a birthday
+    free entree offer or student discount, and let the assistant answer based only on
+    what its offers capability returns.
+  goals:
+    criteria:
+      - The agent reports when no matching current offer is returned instead of inventing one.
+    assertions:
+      - flow_started:
+          flow_ids: [live_offers]
+          operator: any
+      - action_executed: action_mock_live_offers
+      - slot_was_set:
+          - name: offers_lookup_result
+            value: no_match
+      - action_executed: utter_live_offers_no_match
+      - flow_completed:
+          flow_id: live_offers

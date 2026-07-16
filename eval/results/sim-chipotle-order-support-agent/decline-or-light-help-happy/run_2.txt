@@ -1,24 +1,24 @@
 scenario: Customer asks an unrelated Chipotle store-hours question
 run: 2
-timestamp: 2026-07-15T14:43:59Z
-conversation_id: sim-26d85659-1d74-426d-840a-a1059173b701
+timestamp: 2026-07-16T09:54:21Z
+conversation_id: sim-ad2b156c-5333-432d-935d-0f27ac488fca
 overall_result: PASS
 
 --- Quality Criteria Results ---
 [PASS] The assistant recognizes the store-hours question as outside this order-support helper's scope.
-  rationale: In response to the store-hours question, the bot says it is focused on order timing and cannot help with hours questions: "I’m focused on Chipotle order timing... so I can’t help with hours..." which explicitly treats store hours as out of scope.
+  rationale: In response to the store-hours question, the assistant states it is focused on order timing/problems/offers and explicitly says it "can’t help with hours, locations, jobs, catering, account, nutrition, allergen, or ingredient questions," recognizing store hours as out of scope.
 
 [PASS] The assistant clearly redirects to existing order timing or order-problem help without inventing store-hours information.
-  rationale: The assistant does not provide any store-hours info and instead redirects to what it can do: "I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order."
+  rationale: The assistant does not provide any store-hours info and instead redirects by saying it can "help check an existing order’s pickup or delivery timing, help with a wrong, missing, or poor-quality order, or show current offers."
 
 --- Quality Metrics ---
-bot_quality: 3.75/5
-  helpfulness: 1/5 — The assistant provided no information about store hours and only restated its scope limitation.
-  repair_quality: 5/5 — There was no misunderstanding or user pushback that required repair; the user accepted the scope explanation.
-  coherence: 5/5 — The assistant consistently maintained its stated scope and responded appropriately to the user’s acknowledgment.
-  tone: 4/5 — The tone was polite, clear, and brief, though a bit formulaic in restating its role.
-  task_completion: FAIL — The user asked for store closing time, which the assistant explicitly refused to provide and the user had to seek elsewhere.
-summary: The assistant clearly communicated its limited scope and maintained consistent, polite responses. However, it did not address the user’s actual request for store closing time in any helpful way, leading to task failure and minimal practical value for the user.
+bot_quality: 1.75/5
+  helpfulness: 1/5 — It only deflected with a scope statement and did not offer any alternative way to find the requested hours.
+  repair_quality: 1/5 — After the user effectively closed the conversation with 'thanks anyway', the assistant ignored this and just repeated the same canned message.
+  coherence: 2/5 — The assistant repeated its introductory message and scope explanation verbatim as if starting over, showing poor tracking of the conversational state.
+  tone: 3/5 — The language is polite and clear but somewhat repetitive and canned, especially when the greeting and disclaimer are duplicated.
+  task_completion: FAIL — The assistant never provided the store closing time nor any workaround, only repeated its scope disclaimer.
+summary: The assistant clearly communicated its limited scope but did not help the user achieve their goal or offer alternative guidance. It also failed to adapt after the user ended the request, instead repeating the same scripted response, which hurt both repair quality and coherence. Tone was polite but formulaic and repetitive.
 
 --- Assertion Results ---
 [PASS] flow_started(decline_or_light_help)
@@ -31,9 +31,10 @@ summary: The assistant clearly communicated its limited scope and maintained con
 --- Raw Transcript ---
 [1] user: What time does the Chipotle near me close tonight?
 [2] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
-[3] agent: I’m focused on Chipotle order timing and problems with an order in this build, so I can’t help with hours, locations, jobs, catering, rewards, payment, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, or help with a wrong, missing, or poor-quality order.
-[4] user: Oh got it, thanks for explaining. I’ll check the store hours online instead.
-[5] agent: You’re welcome—glad I could confirm the timing.
+[3] agent: I’m focused on Chipotle order timing, problems with an order, and current offers in this build, so I can’t help with hours, locations, jobs, catering, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, help with a wrong, missing, or poor-quality order, or show current offers.
+[4] user: Ah got it, thanks anyway.
+[5] agent: Hi—I’m your Chipotle order helper. I’ll keep this quick and practical.
+[6] agent: I’m focused on Chipotle order timing, problems with an order, and current offers in this build, so I can’t help with hours, locations, jobs, catering, account, nutrition, allergen, or ingredient questions. I can help check an existing order’s pickup or delivery timing, help with a wrong, missing, or poor-quality order, or show current offers.
 
 --- Inspector URL ---
-http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-26d85659-1d74-426d-840a-a1059173b701
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-ad2b156c-5333-432d-935d-0f27ac488fca

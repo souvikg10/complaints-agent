@@ -1,0 +1,39 @@
+scenario: Unsupported offer hunt returns no matching promotion
+run: 2
+timestamp: 2026-07-16T09:54:23Z
+conversation_id: sim-1f09d248-9598-4edf-afb5-b9fb7d4b0f30
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent reports when no matching current offer is returned instead of inventing one.
+  rationale: For both offer queries the ledger shows offers_lookup_result = no_match and the bot replied "I don’t have a current matching offer for that request," only listing concrete offers later when offers_lookup_result = available, so it did report no match instead of inventing one when none was returned.
+
+--- Quality Metrics ---
+bot_quality: 3.0/5
+  helpfulness: 2/5 — It twice gave the same non-specific deflection instead of directly answering about birthday and student discounts, and the later detailed offers list came too late and did not address the user's specific questions.
+  repair_quality: 5/5 — There were no user pushbacks or corrections indicating misunderstanding; the user accepted each response, so there was no repair opportunity to mishandle.
+  coherence: 2/5 — The assistant contradicted its earlier statements that there were no matching offers by later listing active offers, and it provided this new information after the user had clearly closed the conversation.
+  tone: 3/5 — The wording is clear and polite enough but somewhat canned and slightly brusque, especially the repeated phrase 'I won’t treat this as complaint compensation.'
+  task_completion: FAIL — The bot repeatedly failed to give concrete answers about birthday and student offers, and then added extra offer details only after the user said they were done, so the user's original needs were never clearly met.
+summary: The assistant gave repetitive, generic deflections to specific questions about birthday and student offers and only later surfaced relevant offer details after the user had indicated the conversation was over. It remained polite but slightly stiff in tone, and its late-breaking list of offers conflicted with its earlier claims that there were no matching offers, leading to low coherence and incomplete task fulfillment.
+
+--- Assertion Results ---
+[PASS] flow_started(live_offers)
+[PASS] action_executed(action_mock_live_offers)
+[PASS] slot_was_set(offers_lookup_result='no_match')
+[PASS] action_executed(utter_live_offers_no_match)
+[PASS] flow_completed(live_offers)
+
+--- Raw Transcript ---
+[1] user: Hi, I was wondering if you currently have any birthday free entrée offers?
+[2] agent: I don’t have a current matching offer for that request. Check again later, or look in the Chipotle app while signed in for account-specific offers. I won’t treat this as complaint compensation.
+[3] user: Okay, thanks. Do you have any student discounts available right now?
+[4] agent: I don’t have a current matching offer for that request. Check again later, or look in the Chipotle app while signed in for account-specific offers. I won’t treat this as complaint compensation.
+[5] user: Got it, thanks for checking. That’s all I needed.
+[6] agent: Here are the offers currently returned by the offers service:
+• Rewards app entrée perk — 20% off one qualifying entrée; expires April 30, 2026. Use the Chipotle app while signed in, add one qualifying entrée, and apply the offer before checkout.
+• Delivery week deal — $0 delivery fee on a qualifying digital delivery order; expires April 7, 2026. Order in the Chipotle app or on chipotle.com and apply the offer at checkout.
+Each offer is one use per account, while available, and cannot be stacked with another offer.
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-1f09d248-9598-4edf-afb5-b9fb7d4b0f30

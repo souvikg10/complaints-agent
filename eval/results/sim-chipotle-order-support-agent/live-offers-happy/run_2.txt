@@ -1,0 +1,47 @@
+scenario: Customer asks for current Chipotle offers and receives catalog-backed offers
+run: 2
+timestamp: 2026-07-16T09:54:25Z
+conversation_id: sim-686d46f8-5372-43b3-ae4d-2ede870f5610
+overall_result: PASS
+
+--- Quality Criteria Results ---
+[PASS] The agent retrieves the live offer catalog before presenting any promotions.
+  rationale: At T1, before listing promotions, the ledger shows `flow_started: live_offers` followed by `action: action_mock_live_offers` and then `utter_live_offers_available`, indicating the live offer catalog was retrieved before presenting offers.
+
+[PASS] The agent presents only the offers returned by the offers capability rather than inventing additional deals.
+  rationale: The offers listed in the bot response (“Rewards app entrée perk” and “Delivery week deal”) match the `live_offers_summary` set by `action_mock_live_offers` at T1, and no additional promotions are mentioned beyond those returned by the offers service.
+
+--- Quality Metrics ---
+bot_quality: 4.25/5
+  helpfulness: 3/5 — It gave concrete, actionable details about the two promotions but then provided no additional guidance or alternatives (e.g., where to check terms) when asked follow-up questions about exclusions and minimums.
+  repair_quality: 5/5 — There were no user disfluencies or corrections; the user accepted each answer, so there was no need for repair.
+  coherence: 5/5 — It consistently tracked the topic of each promotion and the user's follow-up questions without contradiction or re-asking for information.
+  tone: 4/5 — The tone was polite and conversational, though slightly formulaic and repetitive with lines like 'Is there anything else I can help you look into today?'.
+  task_completion: PASS — The assistant provided the list of current promotions it had access to, and when it lacked further details it stated its limits clearly; the user then confirmed they were satisfied and ended the conversation.
+summary: The assistant clearly listed the available promotions and was upfront about its limitations when it lacked further details. It maintained coherent context and a polite tone throughout, though it missed an opportunity to be more helpful by suggesting how the user could find the missing terms (such as checking the app or website). Overall, the conversation was functional and courteous but not maximally informative on the follow-up details.
+
+--- Assertion Results ---
+[PASS] flow_started(live_offers)
+[PASS] action_executed(action_mock_live_offers)
+[PASS] slot_was_set(offers_lookup_result='available')
+[PASS] action_executed(utter_live_offers_available)
+[PASS] flow_completed(live_offers)
+
+--- Raw Transcript ---
+[1] user: Hi, are there any current promotions or deals available right now?
+[2] agent: Here are the offers currently returned by the offers service:
+• Rewards app entrée perk — 20% off one qualifying entrée; expires April 30, 2026. Use the Chipotle app while signed in, add one qualifying entrée, and apply the offer before checkout.
+• Delivery week deal — $0 delivery fee on a qualifying digital delivery order; expires April 7, 2026. Order in the Chipotle app or on chipotle.com and apply the offer at checkout.
+Each offer is one use per account, while available, and cannot be stacked with another offer.
+[3] user: Nice, thanks! For the 20% off entrée perk, does it apply to any entrée or are there exclusions?
+[4] agent: I’m not able to see the specific terms for that offer right now, so I don’t know exactly which entrées are included or excluded. At this point, I don’t have access to a detailed promotion or menu knowledge base.
+[5] agent: Is there anything else I can help you look into today?
+[6] user: Got it, thanks. For the $0 delivery fee deal, is there a minimum order amount or any basic requirement you can see?
+[7] agent: I’m afraid I don’t have that information. Right now I don’t have access to a detailed knowledge base for the specific terms or requirements of that offer.
+[8] agent: Is there anything else I can help you look into today?
+[9] user: No, that’s all I needed—thanks for your help!
+[10] agent: You’re welcome—if you need anything else later on, I’ll be here to help.
+[11] agent: How did I do in helping you today?
+
+--- Inspector URL ---
+http://localhost:9101/webhooks/inspector/inspect.html?sender=sim-686d46f8-5372-43b3-ae4d-2ede870f5610
